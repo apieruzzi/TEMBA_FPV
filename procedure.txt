@@ -1,0 +1,7 @@
+run ubuntu as admin
+
+mamba activate snakemake
+cd /mnt/c/Users/Alessandro\ Pieruzzi/Documenti/Thesis/TEMBA\ 2.1_ENB_all_Tradelinks/
+snakemake -j
+
+When re running make sure to remove all outpu_data and CSVfiles 
