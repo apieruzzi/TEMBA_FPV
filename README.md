@@ -22,8 +22,9 @@ To run the workflow with snakemake, type the command `snakemake`.
 To perform a dry run, use the flag `-n` and to run the workflow in parallel, use the flag `-j` and pass the (optional)
 number of threads to use e.g. `snakemake -j 8`.
 
-## Note: the current version of the snakemake frameworks works on UBUNTU 20.04.6 LTS for Windows, using WSL 2
-## Note: since the python scripts make use of the package xlrd, all the input files have to be passed as .xls and not .xlsx files 
+Note 1: the current version of the snakemake framework works on UBUNTU 20.04.6 LTS for Windows, using WSL 2
+Note 2: the snakemake framework uses Gurobi as default solver. If you wish to run the model with another solver, use the commands in 'run_analysis_cbc' or 'run_analysis_cplex' text files
+Note 3: since the python scripts make use of the package xlrd, all the input files have to be passed as .xls and not .xlsx files 
 
 ## Folder structure
 - Input data are stored in `.xlsx` Excel files in the `input_data` folder
