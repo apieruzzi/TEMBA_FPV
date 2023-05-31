@@ -1,0 +1,189 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job                   count    min threads    max threads
+------------------  -------  -------------  -------------
+all                       1              1              1
+generate_pickle           3              1              1
+generate_results          3              1              1
+remove_zero_values        3              1              1
+solve_lp                  3              2              2
+total                    13              1              2
+
+Select jobs to execute...
+
+[Tue May 23 09:53:06 2023]
+rule solve_lp:
+    input: output_data/TEMBA_Refer.lp.gz
+    output: output_data/TEMBA_Refer.sol
+    log: output_data/gurobi_TEMBA_Refer.log
+    jobid: 4
+    reason: Missing output files: output_data/TEMBA_Refer.sol
+    wildcards: model_run=TEMBA_Refer
+    threads: 2
+    resources: tmpdir=/tmp
+
+
+[Tue May 23 09:53:06 2023]
+rule solve_lp:
+    input: output_data/TEMBA_2.0.lp.gz
+    output: output_data/TEMBA_2.0.sol
+    log: output_data/gurobi_TEMBA_2.0.log
+    jobid: 18
+    reason: Missing output files: output_data/TEMBA_2.0.sol
+    wildcards: model_run=TEMBA_2.0
+    threads: 2
+    resources: tmpdir=/tmp
+
+Write-protecting output file output_data/TEMBA_Refer.sol.
+[Tue May 23 10:00:10 2023]
+Finished job 4.
+1 of 13 steps (8%) done
+Select jobs to execute...
+
+[Tue May 23 10:00:10 2023]
+rule solve_lp:
+    input: output_data/TEMBA_1.5.lp.gz
+    output: output_data/TEMBA_1.5.sol
+    log: output_data/gurobi_TEMBA_1.5.log
+    jobid: 11
+    reason: Missing output files: output_data/TEMBA_1.5.sol
+    wildcards: model_run=TEMBA_1.5
+    threads: 2
+    resources: tmpdir=/tmp
+
+Write-protecting output file output_data/TEMBA_2.0.sol.
+[Tue May 23 10:01:17 2023]
+Finished job 18.
+2 of 13 steps (15%) done
+Select jobs to execute...
+
+[Tue May 23 10:01:17 2023]
+rule remove_zero_values:
+    input: output_data/TEMBA_2.0.sol
+    output: results/TEMBA_2.0.sol
+    jobid: 17
+    reason: Missing output files: results/TEMBA_2.0.sol; Input files updated by another job: output_data/TEMBA_2.0.sol
+    wildcards: model_run=TEMBA_2.0
+    resources: tmpdir=/tmp
+
+
+[Tue May 23 10:01:18 2023]
+rule remove_zero_values:
+    input: output_data/TEMBA_Refer.sol
+    output: results/TEMBA_Refer.sol
+    jobid: 3
+    reason: Missing output files: results/TEMBA_Refer.sol; Input files updated by another job: output_data/TEMBA_Refer.sol
+    wildcards: model_run=TEMBA_Refer
+    resources: tmpdir=/tmp
+
+[Tue May 23 10:02:07 2023]
+Finished job 17.
+3 of 13 steps (23%) done
+Select jobs to execute...
+
+[Tue May 23 10:02:07 2023]
+rule generate_pickle:
+    input: results/TEMBA_2.0.sol, output_data/TEMBA_2.0_modex.txt
+    output: results/TEMBA_2.0.pickle, results/TEMBA_2.0
+    jobid: 16
+    reason: Missing output files: results/TEMBA_2.0.pickle; Input files updated by another job: results/TEMBA_2.0.sol
+    wildcards: model_run=TEMBA_2.0
+    resources: tmpdir=/tmp
+
+[Tue May 23 10:02:08 2023]
+Finished job 3.
+4 of 13 steps (31%) done
+Select jobs to execute...
+
+[Tue May 23 10:02:08 2023]
+rule generate_pickle:
+    input: results/TEMBA_Refer.sol, output_data/TEMBA_Refer_modex.txt
+    output: results/TEMBA_Refer.pickle, results/TEMBA_Refer
+    jobid: 2
+    reason: Missing output files: results/TEMBA_Refer.pickle; Input files updated by another job: results/TEMBA_Refer.sol
+    wildcards: model_run=TEMBA_Refer
+    resources: tmpdir=/tmp
+
+[Tue May 23 10:02:16 2023]
+Finished job 2.
+5 of 13 steps (38%) done
+Select jobs to execute...
+
+[Tue May 23 10:02:16 2023]
+rule generate_results:
+    input: results/TEMBA_Refer.pickle
+    output: results/export_TEMBA_Refer
+    jobid: 1
+    reason: Missing output files: results/export_TEMBA_Refer; Input files updated by another job: results/TEMBA_Refer.pickle
+    wildcards: model_run=TEMBA_Refer
+    resources: tmpdir=/tmp
+
+[Tue May 23 10:02:17 2023]
+Finished job 16.
+6 of 13 steps (46%) done
+Select jobs to execute...
+
+[Tue May 23 10:02:17 2023]
+rule generate_results:
+    input: results/TEMBA_2.0.pickle
+    output: results/export_TEMBA_2.0
+    jobid: 15
+    reason: Missing output files: results/export_TEMBA_2.0; Input files updated by another job: results/TEMBA_2.0.pickle
+    wildcards: model_run=TEMBA_2.0
+    resources: tmpdir=/tmp
+
+[Tue May 23 10:03:25 2023]
+Finished job 15.
+7 of 13 steps (54%) done
+Write-protecting output file output_data/TEMBA_1.5.sol.
+[Tue May 23 10:06:16 2023]
+Finished job 11.
+8 of 13 steps (62%) done
+Select jobs to execute...
+
+[Tue May 23 10:06:16 2023]
+rule remove_zero_values:
+    input: output_data/TEMBA_1.5.sol
+    output: results/TEMBA_1.5.sol
+    jobid: 10
+    reason: Missing output files: results/TEMBA_1.5.sol; Input files updated by another job: output_data/TEMBA_1.5.sol
+    wildcards: model_run=TEMBA_1.5
+    resources: tmpdir=/tmp
+
+[Tue May 23 10:06:46 2023]
+Finished job 10.
+9 of 13 steps (69%) done
+Select jobs to execute...
+
+[Tue May 23 10:06:46 2023]
+rule generate_pickle:
+    input: results/TEMBA_1.5.sol, output_data/TEMBA_1.5_modex.txt
+    output: results/TEMBA_1.5.pickle, results/TEMBA_1.5
+    jobid: 9
+    reason: Missing output files: results/TEMBA_1.5.pickle; Input files updated by another job: results/TEMBA_1.5.sol
+    wildcards: model_run=TEMBA_1.5
+    resources: tmpdir=/tmp
+
+[Tue May 23 10:06:52 2023]
+Finished job 9.
+10 of 13 steps (77%) done
+Select jobs to execute...
+
+[Tue May 23 10:06:52 2023]
+rule generate_results:
+    input: results/TEMBA_1.5.pickle
+    output: results/export_TEMBA_1.5
+    jobid: 8
+    reason: Missing output files: results/export_TEMBA_1.5; Input files updated by another job: results/TEMBA_1.5.pickle
+    wildcards: model_run=TEMBA_1.5
+    resources: tmpdir=/tmp
+
+[Tue May 23 10:09:25 2023]
+Finished job 8.
+11 of 13 steps (85%) done
+Terminating processes on user request, this might take some time.
+Complete log: .snakemake/log/2023-05-23T095301.756936.snakemake.log

@@ -1,0 +1,82 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job                   count    min threads    max threads
+------------------  -------  -------------  -------------
+all                       1              1              1
+generate_pickle           1              1              1
+generate_results          2              1              1
+remove_zero_values        1              1              1
+total                     5              1              1
+
+Select jobs to execute...
+
+[Tue May 23 16:04:09 2023]
+rule generate_results:
+    input: results/TEMBA_1.5.pickle
+    output: results/export_TEMBA_1.5
+    jobid: 8
+    reason: Missing output files: results/export_TEMBA_1.5
+    wildcards: model_run=TEMBA_1.5
+    resources: tmpdir=/tmp
+
+
+[Tue May 23 16:04:10 2023]
+rule remove_zero_values:
+    input: output_data/TEMBA_Refer.sol
+    output: results/TEMBA_Refer.sol
+    jobid: 3
+    reason: Missing output files: results/TEMBA_Refer.sol
+    wildcards: model_run=TEMBA_Refer
+    resources: tmpdir=/tmp
+
+[Tue May 23 16:04:38 2023]
+Finished job 3.
+1 of 5 steps (20%) done
+Select jobs to execute...
+
+[Tue May 23 16:04:38 2023]
+rule generate_pickle:
+    input: results/TEMBA_Refer.sol, output_data/TEMBA_Refer_modex.txt
+    output: results/TEMBA_Refer.pickle, results/TEMBA_Refer
+    jobid: 2
+    reason: Missing output files: results/TEMBA_Refer.pickle; Input files updated by another job: results/TEMBA_Refer.sol
+    wildcards: model_run=TEMBA_Refer
+    resources: tmpdir=/tmp
+
+[Tue May 23 16:04:43 2023]
+Finished job 2.
+2 of 5 steps (40%) done
+Select jobs to execute...
+
+[Tue May 23 16:04:43 2023]
+rule generate_results:
+    input: results/TEMBA_Refer.pickle
+    output: results/export_TEMBA_Refer
+    jobid: 1
+    reason: Missing output files: results/export_TEMBA_Refer; Input files updated by another job: results/TEMBA_Refer.pickle
+    wildcards: model_run=TEMBA_Refer
+    resources: tmpdir=/tmp
+
+[Tue May 23 16:04:59 2023]
+Finished job 8.
+3 of 5 steps (60%) done
+[Tue May 23 16:05:25 2023]
+Finished job 1.
+4 of 5 steps (80%) done
+Select jobs to execute...
+
+[Tue May 23 16:05:25 2023]
+localrule all:
+    input: results/export_TEMBA_Refer, results/export_TEMBA_1.5, results/export_TEMBA_2.0
+    jobid: 0
+    reason: Input files updated by another job: results/export_TEMBA_1.5, results/export_TEMBA_Refer
+    resources: tmpdir=/tmp
+
+[Tue May 23 16:05:25 2023]
+Finished job 0.
+5 of 5 steps (100%) done
+Complete log: .snakemake/log/2023-05-23T160405.338345.snakemake.log

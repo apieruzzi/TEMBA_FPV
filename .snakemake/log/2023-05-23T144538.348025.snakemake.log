@@ -1,0 +1,298 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job                    count    min threads    max threads
+-------------------  -------  -------------  -------------
+all                        1              1              1
+generate_lp_file           3              1              1
+generate_model_file        3              2              2
+generate_pickle            3              1              1
+generate_results           3              1              1
+modify_model_file          3              2              2
+remove_zero_values         3              1              1
+solve_lp                   3              2              2
+total                     22              1              2
+
+Select jobs to execute...
+
+[Tue May 23 14:45:42 2023]
+rule generate_model_file:
+    input: input_data/TEMBA_1.5.xls
+    output: output_data/TEMBA_1.5.txt
+    jobid: 14
+    reason: Updated input files: input_data/TEMBA_1.5.xls
+    wildcards: model_run=TEMBA_1.5
+    threads: 2
+    resources: tmpdir=/tmp
+
+
+[Tue May 23 14:45:42 2023]
+rule generate_model_file:
+    input: input_data/TEMBA_Refer.xls
+    output: output_data/TEMBA_Refer.txt
+    jobid: 7
+    reason: Updated input files: input_data/TEMBA_Refer.xls
+    wildcards: model_run=TEMBA_Refer
+    threads: 2
+    resources: tmpdir=/tmp
+
+[Tue May 23 14:45:45 2023]
+Finished job 14.
+1 of 22 steps (5%) done
+Select jobs to execute...
+
+[Tue May 23 14:45:45 2023]
+rule modify_model_file:
+    input: output_data/TEMBA_1.5.txt
+    output: output_data/TEMBA_1.5_modex.txt
+    jobid: 13
+    reason: Input files updated by another job: output_data/TEMBA_1.5.txt
+    wildcards: model_run=TEMBA_1.5
+    threads: 2
+    resources: tmpdir=/tmp
+
+[Tue May 23 14:45:45 2023]
+Finished job 7.
+2 of 22 steps (9%) done
+Select jobs to execute...
+
+[Tue May 23 14:45:45 2023]
+rule modify_model_file:
+    input: output_data/TEMBA_Refer.txt
+    output: output_data/TEMBA_Refer_modex.txt
+    jobid: 6
+    reason: Input files updated by another job: output_data/TEMBA_Refer.txt
+    wildcards: model_run=TEMBA_Refer
+    threads: 2
+    resources: tmpdir=/tmp
+
+[Tue May 23 14:45:46 2023]
+Finished job 13.
+3 of 22 steps (14%) done
+Select jobs to execute...
+
+[Tue May 23 14:45:46 2023]
+rule generate_model_file:
+    input: input_data/TEMBA_2.0.xls
+    output: output_data/TEMBA_2.0.txt
+    jobid: 21
+    reason: Updated input files: input_data/TEMBA_2.0.xls
+    wildcards: model_run=TEMBA_2.0
+    threads: 2
+    resources: tmpdir=/tmp
+
+[Tue May 23 14:45:46 2023]
+Finished job 6.
+4 of 22 steps (18%) done
+Select jobs to execute...
+
+[Tue May 23 14:45:47 2023]
+rule generate_lp_file:
+    input: output_data/TEMBA_Refer_modex.txt
+    output: output_data/TEMBA_Refer.lp.gz
+    log: output_data/glpsol_TEMBA_Refer.log
+    jobid: 5
+    reason: Missing output files: output_data/TEMBA_Refer.lp.gz; Input files updated by another job: output_data/TEMBA_Refer_modex.txt
+    wildcards: model_run=TEMBA_Refer
+    resources: tmpdir=/tmp
+
+
+[Tue May 23 14:45:47 2023]
+rule generate_lp_file:
+    input: output_data/TEMBA_1.5_modex.txt
+    output: output_data/TEMBA_1.5.lp.gz
+    log: output_data/glpsol_TEMBA_1.5.log
+    jobid: 12
+    reason: Missing output files: output_data/TEMBA_1.5.lp.gz; Input files updated by another job: output_data/TEMBA_1.5_modex.txt
+    wildcards: model_run=TEMBA_1.5
+    resources: tmpdir=/tmp
+
+[Tue May 23 14:45:50 2023]
+Finished job 21.
+5 of 22 steps (23%) done
+Select jobs to execute...
+
+[Tue May 23 14:45:50 2023]
+rule modify_model_file:
+    input: output_data/TEMBA_2.0.txt
+    output: output_data/TEMBA_2.0_modex.txt
+    jobid: 20
+    reason: Input files updated by another job: output_data/TEMBA_2.0.txt
+    wildcards: model_run=TEMBA_2.0
+    threads: 2
+    resources: tmpdir=/tmp
+
+[Tue May 23 14:45:52 2023]
+Finished job 20.
+6 of 22 steps (27%) done
+Select jobs to execute...
+
+[Tue May 23 14:45:52 2023]
+rule generate_lp_file:
+    input: output_data/TEMBA_2.0_modex.txt
+    output: output_data/TEMBA_2.0.lp.gz
+    log: output_data/glpsol_TEMBA_2.0.log
+    jobid: 19
+    reason: Missing output files: output_data/TEMBA_2.0.lp.gz; Input files updated by another job: output_data/TEMBA_2.0_modex.txt
+    wildcards: model_run=TEMBA_2.0
+    resources: tmpdir=/tmp
+
+Write-protecting output file output_data/TEMBA_1.5.lp.gz.
+[Tue May 23 14:49:21 2023]
+Finished job 12.
+7 of 22 steps (32%) done
+Select jobs to execute...
+
+[Tue May 23 14:49:21 2023]
+rule solve_lp:
+    input: output_data/TEMBA_1.5.lp.gz
+    output: output_data/TEMBA_1.5.sol
+    log: output_data/gurobi_TEMBA_1.5.log
+    jobid: 11
+    reason: Missing output files: output_data/TEMBA_1.5.sol; Input files updated by another job: output_data/TEMBA_1.5.lp.gz
+    wildcards: model_run=TEMBA_1.5
+    threads: 2
+    resources: tmpdir=/tmp
+
+Write-protecting output file output_data/TEMBA_Refer.lp.gz.
+[Tue May 23 14:49:29 2023]
+Finished job 5.
+8 of 22 steps (36%) done
+Select jobs to execute...
+Write-protecting output file output_data/TEMBA_2.0.lp.gz.
+[Tue May 23 14:50:08 2023]
+Finished job 19.
+9 of 22 steps (41%) done
+
+[Tue May 23 14:50:08 2023]
+rule solve_lp:
+    input: output_data/TEMBA_2.0.lp.gz
+    output: output_data/TEMBA_2.0.sol
+    log: output_data/gurobi_TEMBA_2.0.log
+    jobid: 18
+    reason: Missing output files: output_data/TEMBA_2.0.sol; Input files updated by another job: output_data/TEMBA_2.0.lp.gz
+    wildcards: model_run=TEMBA_2.0
+    threads: 2
+    resources: tmpdir=/tmp
+
+Write-protecting output file output_data/TEMBA_1.5.sol.
+[Tue May 23 14:59:08 2023]
+Finished job 11.
+10 of 22 steps (45%) done
+Select jobs to execute...
+
+[Tue May 23 14:59:08 2023]
+rule solve_lp:
+    input: output_data/TEMBA_Refer.lp.gz
+    output: output_data/TEMBA_Refer.sol
+    log: output_data/gurobi_TEMBA_Refer.log
+    jobid: 4
+    reason: Missing output files: output_data/TEMBA_Refer.sol; Input files updated by another job: output_data/TEMBA_Refer.lp.gz
+    wildcards: model_run=TEMBA_Refer
+    threads: 2
+    resources: tmpdir=/tmp
+
+Write-protecting output file output_data/TEMBA_2.0.sol.
+[Tue May 23 15:01:56 2023]
+Finished job 18.
+11 of 22 steps (50%) done
+Select jobs to execute...
+
+[Tue May 23 15:01:56 2023]
+rule remove_zero_values:
+    input: output_data/TEMBA_1.5.sol
+    output: results/TEMBA_1.5.sol
+    jobid: 10
+    reason: Missing output files: results/TEMBA_1.5.sol; Input files updated by another job: output_data/TEMBA_1.5.sol
+    wildcards: model_run=TEMBA_1.5
+    resources: tmpdir=/tmp
+
+
+[Tue May 23 15:01:56 2023]
+rule remove_zero_values:
+    input: output_data/TEMBA_2.0.sol
+    output: results/TEMBA_2.0.sol
+    jobid: 17
+    reason: Missing output files: results/TEMBA_2.0.sol; Input files updated by another job: output_data/TEMBA_2.0.sol
+    wildcards: model_run=TEMBA_2.0
+    resources: tmpdir=/tmp
+
+[Tue May 23 15:02:38 2023]
+Finished job 10.
+12 of 22 steps (55%) done
+Select jobs to execute...
+
+[Tue May 23 15:02:38 2023]
+rule generate_pickle:
+    input: results/TEMBA_1.5.sol, output_data/TEMBA_1.5_modex.txt
+    output: results/TEMBA_1.5.pickle, results/TEMBA_1.5
+    jobid: 9
+    reason: Missing output files: results/TEMBA_1.5.pickle; Input files updated by another job: results/TEMBA_1.5.sol, output_data/TEMBA_1.5_modex.txt
+    wildcards: model_run=TEMBA_1.5
+    resources: tmpdir=/tmp
+
+[Tue May 23 15:02:39 2023]
+Finished job 17.
+13 of 22 steps (59%) done
+Select jobs to execute...
+
+[Tue May 23 15:02:39 2023]
+rule generate_pickle:
+    input: results/TEMBA_2.0.sol, output_data/TEMBA_2.0_modex.txt
+    output: results/TEMBA_2.0.pickle, results/TEMBA_2.0
+    jobid: 16
+    reason: Missing output files: results/TEMBA_2.0.pickle; Input files updated by another job: output_data/TEMBA_2.0_modex.txt, results/TEMBA_2.0.sol
+    wildcards: model_run=TEMBA_2.0
+    resources: tmpdir=/tmp
+
+[Tue May 23 15:02:47 2023]
+Finished job 9.
+14 of 22 steps (64%) done
+Select jobs to execute...
+
+[Tue May 23 15:02:47 2023]
+rule generate_results:
+    input: results/TEMBA_1.5.pickle
+    output: results/export_TEMBA_1.5
+    jobid: 8
+    reason: Missing output files: results/export_TEMBA_1.5; Input files updated by another job: results/TEMBA_1.5.pickle
+    wildcards: model_run=TEMBA_1.5
+    resources: tmpdir=/tmp
+
+[Tue May 23 15:02:48 2023]
+Finished job 16.
+15 of 22 steps (68%) done
+Select jobs to execute...
+
+[Tue May 23 15:02:48 2023]
+rule generate_results:
+    input: results/TEMBA_2.0.pickle
+    output: results/export_TEMBA_2.0
+    jobid: 15
+    reason: Missing output files: results/export_TEMBA_2.0; Input files updated by another job: results/TEMBA_2.0.pickle
+    wildcards: model_run=TEMBA_2.0
+    resources: tmpdir=/tmp
+
+[Tue May 23 15:02:52 2023]
+Error in rule generate_results:
+    jobid: 8
+    input: results/TEMBA_1.5.pickle
+    output: results/export_TEMBA_1.5
+    conda-env: /mnt/c/Users/Alessandro Pieruzzi/Documents/Thesis/TEMBA 2.1_ENB_all_Tradelinks/.snakemake/conda/e028ef44c68a0ec577680b84ce5becd7_
+    shell:
+        python scripts/generate_results.py results/TEMBA_1.5.pickle TEMBA_1.5 results/export_TEMBA_1.5
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Tue May 23 15:06:48 2023]
+Finished job 15.
+16 of 22 steps (73%) done
+Write-protecting output file output_data/TEMBA_Refer.sol.
+[Tue May 23 15:07:44 2023]
+Finished job 4.
+17 of 22 steps (77%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2023-05-23T144538.348025.snakemake.log

@@ -1,0 +1,55 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job                    count    min threads    max threads
+-------------------  -------  -------------  -------------
+all                        1              1              1
+generate_lp_file           1              1              1
+generate_model_file        1              2              2
+generate_pickle            1              1              1
+generate_results           1              1              1
+modify_model_file          1              2              2
+remove_zero_values         1              1              1
+solve_lp                   1              2              2
+total                      8              1              2
+
+Select jobs to execute...
+
+[Thu May 25 10:44:13 2023]
+rule generate_model_file:
+    input: input_data/TEMBA_1.5.xls
+    output: output_data/TEMBA_1.5.txt
+    jobid: 14
+    reason: Updated input files: input_data/TEMBA_1.5.xls
+    wildcards: model_run=TEMBA_1.5
+    threads: 2
+    resources: tmpdir=/tmp
+
+[Thu May 25 10:44:15 2023]
+Finished job 14.
+1 of 8 steps (12%) done
+Select jobs to execute...
+
+[Thu May 25 10:44:15 2023]
+rule modify_model_file:
+    input: output_data/TEMBA_1.5.txt
+    output: output_data/TEMBA_1.5_modex.txt
+    jobid: 13
+    reason: Input files updated by another job: output_data/TEMBA_1.5.txt
+    wildcards: model_run=TEMBA_1.5
+    threads: 2
+    resources: tmpdir=/tmp
+
+[Thu May 25 10:44:17 2023]
+Finished job 13.
+2 of 8 steps (25%) done
+Select jobs to execute...
+ProtectedOutputException in rule generate_lp_file in file /mnt/c/Users/Alessandro Pieruzzi/Documents/Thesis/TEMBA 2.1_ENB_all_Tradelinks/Snakefile, line 27:
+Write-protected output files for rule generate_lp_file:
+    output: output_data/TEMBA_1.5.lp.gz
+    wildcards: model_run=TEMBA_1.5
+    affected files:
+        output_data/TEMBA_1.5.lp.gz
