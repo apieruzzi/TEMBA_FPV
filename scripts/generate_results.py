@@ -86,7 +86,7 @@ with tempfile.TemporaryDirectory() as temp:
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         df['y'] = years
-        # df=df[df['y']>2018]
+        # df=df[df['y']>2022]
         return df
 
     def df_plot(df, y_title, p_title):
@@ -104,7 +104,7 @@ with tempfile.TemporaryDirectory() as temp:
                         title=p_title+"-"+scenario,
                         showlegend=True,
                         asFigure=True)
-            fig.update_xaxes(range=[2015, 2065])
+            fig.update_xaxes(range=[2022, 2065])
             pio.write_image(fig, os.path.join(homedir, '{}.png'.format(p_title)), 
                             scale=1, width=1500, height=1000)
             df.to_csv(os.path.join(homedir, p_title+"-"+scenario+".csv"))
@@ -122,7 +122,7 @@ with tempfile.TemporaryDirectory() as temp:
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         df['y'] = years
-        # df=df[df['y']>2018]
+        # df=df[df['y']>2022]
         return df
 
     def df_filter_emission_tot(df):
@@ -136,7 +136,7 @@ with tempfile.TemporaryDirectory() as temp:
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         df['y'] = years
-        # df=df[df['y']>2018]
+        # df=df[df['y']>2022]
         return df
 
     def power_chart(Country):
@@ -188,7 +188,7 @@ with tempfile.TemporaryDirectory() as temp:
         cap_new_df = cap_new_df.reindex(sorted(cap_new_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #cap_new_df['y'] = years
-        # cap_new_df=cap_new_df[cap_new_df['y']>2018]
+        # cap_new_df=cap_new_df[cap_new_df['y']>2022]
         # The following code can be unhashed to get a detailed power capacity graph.
         df_plot(cap_new_df,'Gigawatts (GW)','New Power Generation Capacity (Detail)')
         # ***********************************************
@@ -241,7 +241,7 @@ with tempfile.TemporaryDirectory() as temp:
         gen_df = gen_df.reindex(sorted(gen_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #gen_df['y'] = years
-        # gen_df=gen_df[gen_df['y']>2018]
+        # gen_df=gen_df[gen_df['y']>2022]
         df_plot(gen_df,'Petajoules (PJ)',cc+"-"+'Power Generation (Detail)')
         #####
         # Power generation (Aggregated)
@@ -265,7 +265,7 @@ with tempfile.TemporaryDirectory() as temp:
             "Power Generation (Aggregate)"+scenario,
             showlegend=True,
             asFigure=True)
-        fig.update_xaxes(range=[2015, 2065])
+        fig.update_xaxes(range=[2022, 2065])
         title = (cc+"-"+"Power Generation (Aggregate)")
         pio.write_image(fig, os.path.join(homedir, '{}.png'.format(title+"-"+scenario)), 
                         scale=1, width=1500, height=1000)
@@ -290,7 +290,7 @@ with tempfile.TemporaryDirectory() as temp:
         wat_w_df = wat_w_df.reindex(sorted(wat_w_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #wat_w_df['y'] = years
-        # wat_w_df=wat_w_df[wat_w_df['y']>2018]
+        # wat_w_df=wat_w_df[wat_w_df['y']>2022]
         #df_plot(wat_w_df,'Million cubic metres (Mm^3)',cc+"-"+'Water Withdrawal')
         ###
         # Water Withdrawal (Aggregated)
@@ -318,7 +318,7 @@ with tempfile.TemporaryDirectory() as temp:
         wat_o_df = wat_o_df.reindex(sorted(wat_o_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #wat_o_df['y'] = years
-        # wat_o_df=wat_o_df[wat_o_df['y']>2018]
+        # wat_o_df=wat_o_df[wat_o_df['y']>2022]
         #df_plot(wat_o_df,'Million cubic metres (Mm^3)',cc+"-"+'Water output')
         ###
         # Water consumption missing row additions
@@ -368,7 +368,7 @@ with tempfile.TemporaryDirectory() as temp:
     #             pass
     #     co2_df = co2_df.reindex(sorted(co2_df.columns), axis=1).set_index('y').reset_index().rename(columns=det_col)
     #     #co2_df['y'] = years
-    #     #co2_df=co2_df[co2_df['y']>2018]
+        #co2_df=co2_df[co2_df['y']>2022]
     #     df_plot(co2_df,'Million Tonnes (Mt)',cc+'-'+'Emissions (CO2)-by technology')
     #     co2_df.iplot(x='y',
     #                   kind='bar',
@@ -407,7 +407,7 @@ with tempfile.TemporaryDirectory() as temp:
         gas_df = gas_df.reindex(sorted(gas_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #gas_df['y'] = years
-        # gas_df=gas_df[gas_df['y']>2018]
+        # gas_df=gas_df[gas_df['y']>2022]
         for each in gas_df.columns:
             if each == 'Natural gas exports (Liquification terminal)':
                 gas_df[each] = gas_df[each].astype(float)*-1
@@ -426,7 +426,7 @@ with tempfile.TemporaryDirectory() as temp:
                             title=cc+"-"+"Gas extraction, imports and exports"+"-"+scenario,
                             showlegend=True,
                             asFigure=True)
-            fig.update_xaxes(range=[2015, 2065])
+            fig.update_xaxes(range=[2022, 2065])
             title = (cc+"-"+"Gas extraction, imports and exports")
             pio.write_image(fig, os.path.join(homedir, 
                 '{}.png'.format(title+"-"+scenario)),  width=1300, height=800)
@@ -448,7 +448,7 @@ with tempfile.TemporaryDirectory() as temp:
         cru_r_df = cru_r_df.reindex(sorted(cru_r_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #cru_r_df['y'] = years
-        # cru_r_df=cru_r_df[cru_r_df['y']>2018]
+        # cru_r_df=cru_r_df[cru_r_df['y']>2022]
         df_plot(cru_r_df, 'Petajoules (PJ)', cc + '-' +
                 'Crude oil refined in the country')
         # Crude oil production/imports/exports (Detailed)
@@ -463,7 +463,7 @@ with tempfile.TemporaryDirectory() as temp:
         cru_df = cru_df.reindex(sorted(cru_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #cru_df['y'] = years
-        # cru_df=cru_df[cru_df['y']>2018]
+        # cru_df=cru_df[cru_df['y']>2022]
         if len(cru_df.columns) == 1:
             print('There are no values for the result variable that you want to plot')
         else:
@@ -477,7 +477,7 @@ with tempfile.TemporaryDirectory() as temp:
                             title=cc+"-"+"Crude oil extraction, imports and exports"+"-"+scenario,
                             showlegend=True,
                             asFigure=True)
-            fig.update_xaxes(range=[2015, 2065])
+            fig.update_xaxes(range=[2022, 2065])
             title = (cc+"-"+"Crude oil extraction, imports and exports")
             pio.write_image(fig, os.path.join(homedir, 
                 '{}.png'.format(title+"-"+scenario)),  width=1300, height=800)
@@ -499,7 +499,7 @@ with tempfile.TemporaryDirectory() as temp:
         coal_df = coal_df.reindex(sorted(coal_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #coal_df['y'] = years
-        # coal_df=coal_df[coal_df['y']>2018]
+        # coal_df=coal_df[coal_df['y']>2022]
         df_plot(coal_df, 'Petajoules (PJ)', cc+'-'+'Coal production by technology')
         # Biomass overview
         biom_df = all_params['ProductionByTechnologyAnnual']
@@ -512,7 +512,7 @@ with tempfile.TemporaryDirectory() as temp:
         biom_df = biom_df.reindex(sorted(biom_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #biom_df['y'] = years
-        # biom_df=biom_df[biom_df['y']>2018]
+        # biom_df=biom_df[biom_df['y']>2022]
         df_plot(biom_df, 'Petajoules (PJ)', cc+'-' +
                 'Biomass production by technology')
 
@@ -530,7 +530,7 @@ with tempfile.TemporaryDirectory() as temp:
         hfo_df = hfo_df.reindex(sorted(hfo_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #hfo_df['y'] = years
-        # hfo_df=hfo_df[hfo_df['y']>2018]
+        # hfo_df=hfo_df[hfo_df['y']>2022]
         df_plot(hfo_df, 'Petajoules (PJ)', cc+'-'+'HFO production by technology')
         # Light Fuel Oil overview
         lfo_df = all_params['ProductionByTechnologyAnnual']
@@ -543,7 +543,7 @@ with tempfile.TemporaryDirectory() as temp:
         lfo_df = lfo_df.reindex(sorted(lfo_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #lfo_df['y'] = years
-        # lfo_df=lfo_df[lfo_df['y']>2018]
+        # lfo_df=lfo_df[lfo_df['y']>2022]
         df_plot(lfo_df, 'Petajoules (PJ)', cc+'-'+'LFO production by technology')
 
     for ref_y in [2020, 2030, 2040, 2050, 2060, 2070]:
@@ -581,7 +581,7 @@ with tempfile.TemporaryDirectory() as temp:
             gen_df = gen_df.reindex(sorted(gen_df.columns), axis=1).set_index(
                 'y').reset_index().rename(columns=det_col)
             #gen_df['y'] = years
-            # gen_df=gen_df[gen_df['y']>2018]
+            # gen_df=gen_df[gen_df['y']>2022]
             #df_plot(gen_df,'Petajoules (PJ)',cc+"-"+'Power Generation (Detail)')
             #####
             # Power generation (Aggregated)
@@ -721,7 +721,7 @@ with tempfile.TemporaryDirectory() as temp:
                                 "Power Generation (Aggregate)"+"-" + scenario,
                                 showlegend=True,
                                 asFigure=True)
-        fig.update_xaxes(range=[2015, 2065])
+        fig.update_xaxes(range=[2022, 2065])
         title = (tk+"-"+"Power Generation (Aggregate)"+"-" + scenario)
         pio.write_image(fig, os.path.join(homedir, '{}.png'.format(title)),
                         scale=1, width=1500, height=1000)
@@ -766,7 +766,7 @@ with tempfile.TemporaryDirectory() as temp:
             wat_w_df = wat_w_df.reindex(sorted(wat_w_df.columns), axis=1).set_index(
                 'y').reset_index().rename(columns=det_col)
             #wat_w_df['y'] = years
-            # wat_w_df=wat_w_df[wat_w_df['y']>2018]
+            # wat_w_df=wat_w_df[wat_w_df['y']>2022]
             #df_plot(wat_w_df,'Million cubic metres (Mm^3)',cc+"-"+'Water Withdrawal')
             ###
             # Water Withdrawal (Aggregated)
@@ -794,7 +794,7 @@ with tempfile.TemporaryDirectory() as temp:
             wat_o_df = wat_o_df.reindex(sorted(wat_o_df.columns), axis=1).set_index(
                 'y').reset_index().rename(columns=det_col)
             #wat_o_df['y'] = years
-            # wat_o_df=wat_o_df[wat_o_df['y']>2018]
+            # wat_o_df=wat_o_df[wat_o_df['y']>2022]
             #df_plot(wat_o_df,'Million cubic metres (Mm^3)',cc+"-"+'Water output')
             ###
             # Water consumption missing row additions
@@ -897,7 +897,7 @@ with tempfile.TemporaryDirectory() as temp:
             total_hfo_df = total_hfo_df.set_index('y').add(
                 hfo_df.set_index('y'), fill_value=0).reset_index()
             #hfo_df['y'] = years
-            # hfo_df=hfo_df[hfo_df['y']>2018]
+            # hfo_df=hfo_df[hfo_df['y']>2022]
             # Light Fuel Oil overview
             lfo_df = all_params['ProductionByTechnologyAnnual']
             lfo_df = lfo_df[lfo_df['f'].str[:6] == cc+'LFOI'].copy()
@@ -912,7 +912,7 @@ with tempfile.TemporaryDirectory() as temp:
             total_lfo_df = total_lfo_df.set_index('y').add(
                 lfo_df.set_index('y'), fill_value=0).reset_index()
             #lfo_df['y'] = years
-            # lfo_df=lfo_df[lfo_df['y']>2018]
+            # lfo_df=lfo_df[lfo_df['y']>2022]
         total_hfo_df['y'] = years
         total_lfo_df['y'] = years
         total_hfo_df = total_hfo_df[total_hfo_df['y'] <= 2065]
@@ -955,7 +955,7 @@ with tempfile.TemporaryDirectory() as temp:
                 coal_df.set_index('y'), fill_value=0).reset_index()
             # total_coal_df=coal_df+total_coal_df
             #coal_df['y'] = years
-            # coal_df=coal_df[coal_df['y']>2018]
+            # coal_df=coal_df[coal_df['y']>2022]
 
             # Biomass overview
             biom_df = all_params['ProductionByTechnologyAnnual']
@@ -970,7 +970,7 @@ with tempfile.TemporaryDirectory() as temp:
             total_biom_df = total_biom_df.set_index('y').add(
                 biom_df.set_index('y'), fill_value=0).reset_index()
             #biom_df['y'] = years
-            # biom_df=biom_df[biom_df['y']>2018]
+            # biom_df=biom_df[biom_df['y']>2022]
         total_coal_df['y'] = years
         total_biom_df['y'] = years
         total_coal_df = total_coal_df[total_coal_df['y'] <= 2065]
