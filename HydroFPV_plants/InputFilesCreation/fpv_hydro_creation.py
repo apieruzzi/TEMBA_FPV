@@ -73,12 +73,25 @@ for tech in ['hydro', 'solar']:
     df[col_name] = df.apply(lambda row: create_codes(row,tech), axis = 1)
 
 
-# Save in a new df
-df_techs_hydro = df['hydro_codes']
-df_techs_solar = df['solar_codes'][:19] #harcoded index
+# Split solar and hydro dfs
+cols_hydro = ['Country', 'Unit Name', 'Latitude ', 'Longitude', 'Status',
+       'Reservoir area (km2)', 'Capacity (MW)', 'CF_H1D1', 'CF_H1D2',
+       'CF_H2D1', 'CF_H2D2', 'CF_H3D1', 'CF_H3D2', 'CF_H4D1', 'CF_H4D2',
+        'First Year', 'loc_codes', 'hydro_codes']
+cols_solar = ['Country', 'Unit Name', 'Latitude ', 'Longitude', 'Status',
+       'Reservoir area (km2)', 'Capacity (MW)', 'CF_S1D1', 'CF_S1D2',
+       'CF_S2D1', 'CF_S2D2', 'CF_S3D1', 'CF_S3D2','CF_S4D1', 'CF_S4D2',
+       'First Year', 'loc_codes', 'solar_codes']
+df_hydro = df[cols_hydro]
+df_hydro = df_hydro[(df_hydro['hydro_codes'] != 'ETHYDLTS02')] #No hydropower on lake tana
+df_hydro = df_hydro.reset_index(drop=True)
+df_solar = df[cols_solar][:19] #harcoded index for plants without reservoir (no fpv)
+
+df_techs_hydro = df_hydro['hydro_codes']
+df_techs_solar = df_solar['solar_codes']
 df_techs = pd.concat([df_techs_hydro, df_techs_solar], ignore_index = True) #it is a series, problems with saving column name 
-df_techs_df = pd.DataFrame(df_techs, columns = ['TECHNOLOGY'])
-df_list.append(df_techs_df)
+df_techs = pd.DataFrame(df_techs).rename(columns={0:'TECHNOLOGY'})
+df_list.append(df_techs)
 
 # ------------------------------------------------------------------------------
 timeslices_full = np.arange(2015,2071,1)
@@ -124,7 +137,7 @@ df_tot = pd.concat([df_new,timeslices_exp], axis = 1)
 
 # Create df with tech codes and CF only
 
-df_cf_hydro = df[[ 'hydro_codes', 'CF_H1D1', 'CF_H1D2','CF_H2D1', 'CF_H2D2',
+df_cf_hydro = df_hydro[[ 'hydro_codes', 'CF_H1D1', 'CF_H1D2','CF_H2D1', 'CF_H2D2',
                   'CF_H3D1', 'CF_H3D2', 'CF_H4D1', 'CF_H4D2']]
 
 df_cf_hydro = df_cf_hydro.rename(columns={'CF_H1D1':'S1D1', 
@@ -137,7 +150,7 @@ df_cf_hydro = df_cf_hydro.rename(columns={'CF_H1D1':'S1D1',
                                           'CF_H4D2':'S4D2', 
                                           'hydro_codes':'codes'})
 
-df_cf_solar = df[['solar_codes','CF_S1D1', 'CF_S1D2', 'CF_S2D1', 'CF_S2D2',
+df_cf_solar = df_solar[['solar_codes','CF_S1D1', 'CF_S1D2', 'CF_S2D1', 'CF_S2D2',
                   'CF_S3D1', 'CF_S3D2','CF_S4D1', 'CF_S4D2']]
 df_cf_solar = df_cf_solar.rename(columns={'solar_codes':'codes',
                                           'CF_S1D1':'S1D1', 
@@ -154,7 +167,9 @@ df_tot2 = pd.concat([df_cf_hydro, df_cf_solar], ignore_index=True)
 # Flatten df 
 cf_array = df_tot2.to_numpy()[:,1:].flatten().astype(float)
 cf_list = cf_array.tolist()
-cf_df = pd.DataFrame(cf_list, columns=['2015'])
+cf_df = pd.DataFrame(cf_list, columns=[2015])
+cf_df = pd.concat([cf_df[2015]]*56, axis=1,
+                      ignore_index=True).rename(lambda x: 2015+x, axis=1)
 
 # Put the df together
 df_cf = pd.concat([df_tot,cf_df], axis=1) 
@@ -431,7 +446,7 @@ df_list.append(df_opl)
 # Planned plants have as residual capacity 0
 # FPV: 0 for all
 
-df_resc = pd.DataFrame(df[['hydro_codes','Capacity (MW)', 'Status']])
+df_resc = pd.DataFrame(df_hydro[['hydro_codes','Capacity (MW)', 'Status']])
 df_resc = df_resc.rename(columns = {'hydro_codes' : 'TECHNOLOGY'})
 cols = col_names.copy()
 cols.insert(1,'Capacity (MW)')
@@ -464,18 +479,48 @@ df_resc = pd.concat([df_resc, df_resc_solar], axis=0, ignore_index=True)
 
 df_list.append(df_resc)
 
+
 # -----------------------------------------------------------------------------
 # TotalAnnualMaxCapacity
 # Total capacity allowed for a specific tech in a specific year
-# FPV: depends on the area available and year of construction of a dam
+
 # Hydro: max capacity of the HP plant every year 
+df_tamc = pd.DataFrame(df_hydro[['hydro_codes','Capacity (MW)']])
+df_tamc = df_tamc.rename(columns = {'hydro_codes' : 'TECHNOLOGY'})
+df_capmax = pd.concat([df_tamc['Capacity (MW)']/1000]*56, axis=1,
+                      ignore_index=True).rename(lambda x: 2015+x, axis=1)
+df_tamc_hydro = pd.concat([df_tamc['TECHNOLOGY'], df_capmax], axis=1)
+
+# FPV: depends on the area available and year of construction of a dam (0 for ref scenario)
+df_tamc = pd.DataFrame(df_solar[['solar_codes','Capacity (MW)']])
+df_tamc = df_tamc.rename(columns = {'solar_codes' : 'TECHNOLOGY'})
+df_capmax = pd.DataFrame(np.zeros((len(df_tamc),56)), columns = col_names[1:])
+df_tamc_solar = pd.concat([df_tamc['TECHNOLOGY'], df_capmax], axis = 1)
+
+df_tamc_tot = pd.concat([df_tamc_hydro, df_tamc_solar], axis=0, ignore_index=True)
+df_list.append(df_tamc_tot)
+
 
 # -----------------------------------------------------------------------------
 # TotalAnnualMaxCapacityInvestment
-# Total capacity installable for a specific tech in a specific year 
+# Total capacity installable for a specific tech in a specific year  
+
+# Hydro: max capacity of the HP plant every year, after year of construction
+df_tmci_hydro = pd.concat([df_tamc_hydro, df_hydro['First Year']], axis = 1)
+
+for i in range(np.shape(df_tmci_hydro)[0]):
+    for j in range(1,np.shape(df_tmci_hydro)[1]-1):
+        if df_tmci_hydro.columns[j] < df_tmci_hydro['First Year'][i]:
+            df_tmci_hydro.iloc[i,j] = 0
+
+df_tmci_hydro = df_tmci_hydro.iloc[:,:-1]    
+
 # FPV: same as max capacity: after the lake is present, osemosys can allocate 
-# how much of the total available capacity as it wants every year
-# Hydro: max capacity of the HP plant every year
+# how much of the total available capacity as it wants every year (0 for ref scenario)
+df_tmci_solar = df_tamc_solar
+
+df_tmci_tot = pd.concat([df_tmci_hydro, df_tmci_solar], axis=0, ignore_index=True)
+df_list.append(df_tmci_tot)
 
 # -----------------------------------------------------------------------------
 # VariableCost
@@ -486,14 +531,15 @@ values = [values_hyd, values_sol]
 df_vc = create_df(df_techs, values, col_names)
 df_list.append(df_vc)
 
-
+# -----------------------------------------------------------------------------
 
 
 # Save all dataframes to excel in different sheets
 sheet_names = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 
                'CapacityToActivityUnit','CapitalCost', 'EmissionActivityRatio', 
                'FixedCost', 'InputActivityRatio','OutputActivityRatio', 
-               'OperationalLife', 'ResidualCapacity', 'VariableCost']
+               'OperationalLife', 'ResidualCapacity', 'TotalAnnualMaxCapacity',
+               'TotalAnnualMaxCapacityInvestmen','VariableCost']
 
 # 'TotalAnnualMaxCapacity',
 # 'TotalAnnualMaxCapacityInvestment',
