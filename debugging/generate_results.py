@@ -70,8 +70,8 @@ with tempfile.TemporaryDirectory() as temp:
     colorcode_hydro = colorcode[colorcode['tech_code'].str.contains('HYD')].iloc[1:].drop('tech_code', axis=1)
     new_colors_hydro = ['blue', 'blueviolet', 'cadetblue', 'cornflowerblue',
                         'cyan', 'darkseagreen', 'dodgerblue', 'forestgreen',
-                        'green', 'indigo', 'greenyellow', 'lightblue', 
-                        'lightcyan', 'lightskyblue', 'lime', 'salmon',
+                        'yellow', 'indigo', 'greenyellow', 'lightblue', 
+                        'lightcyan', 'navy', 'lime', 'salmon',
                         'midnightblue', 'olive', 'powderblue', 'purple', 
                         'teal', 'steelblue']
     colorcode_hydro.iloc[4:,1] = new_colors_hydro

@@ -1,5 +1,5 @@
 tech_code,tech_name,colour
-BACAGG,Backstop,coral
+BACAGG,Backstop,red
 BACKSTOP,Backstop technology,aliceblue
 BIOAGG,Biofuel and Biomass production,bisque
 BIOFUELX,Biofuel production,aqua
@@ -25,7 +25,7 @@ CO2,CO2,black
 COALAGG,Coal,black
 COEXPORT,Coal exports,black
 CO00X00X,Coal extraction (mining),darkred
-CO00I00X,Coal imports (inland transport/ maritime freight),darkmagenta
+CO00I00X,"Coal imports (inland transport, maritime freight)",darkmagenta
 COSCP01N,Coal power plant - Air cooling (new),ghostwhite
 COSCP01O,Coal power plant - Air cooling (old),dimgray
 COSCP02N,Coal power plant - MDT cooling (new),goldenrod
@@ -64,7 +64,7 @@ ETELSDBP00,Ethiopia - Sudan EL existing trade link,beige
 FW00P00X,Firewood process (non-power sector),indianred
 GASAGG,Gas,orange
 gas_trade,gas_trade,polarpurple
-GEOTHERMAL,Geothermal,polarorange
+GEOTHERMAL,Geothermal,maroon
 GOCVP01N,Geothermal power plant - Air cooling (new),lightpurple
 GOCVP01O,Geothermal power plant - Air cooling (old),ivory
 GOCVP02N,Geothermal power plant - MDT cooling (new),lightcoral
@@ -133,7 +133,7 @@ HFGCP03O,Oil fired gas turbine (SCGT) - NDT cooling (old),lightblue2
 HFGCP04N,Oil fired gas turbine (SCGT) - OTF/OTS cooling (new),mediumgray
 HFGCP04O,Oil fired gas turbine (SCGT) - OTF/OTS cooling (old),lime
 OREAGG,Other renewables,lightgreen
-power_trade,power_trade,pinksalmon
+power_trade,power_trade,deeppink
 HYDMS01X,Small hydropower plant,mediumturquoise
 SOLCSP,Solar CSP,lightgoldenrodyellow
 SOLAR00X,Solar potential,lightgrey
@@ -197,4 +197,3 @@ SDSOFPVKJ3,Kajbar FPV,palegoldenrod
 SDSOFPVDG3,Dagash FPV,palegoldenrod
 SDSOFPVMG3,Mograt FPV,palegoldenrod
 SDSOFPVSB3,Sabaloka FPV,palegoldenrod
-
