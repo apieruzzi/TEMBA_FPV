@@ -1,5 +1,5 @@
 tech_code,tech_name,colour
-BACAGG,Backstop,coral
+BACAGG,Backstop,red
 BACKSTOP,Backstop technology,aliceblue
 BIOAGG,Biofuel and Biomass production,bisque
 BIOFUELX,Biofuel production,aqua
@@ -64,7 +64,7 @@ ETELSDBP00,Ethiopia - Sudan EL existing trade link,beige
 FW00P00X,Firewood process (non-power sector),indianred
 GASAGG,Gas,orange
 gas_trade,gas_trade,polarpurple
-GEOTHERMAL,Geothermal,polarorange
+GEOTHERMAL,Geothermal,maroon
 GOCVP01N,Geothermal power plant - Air cooling (new),lightpurple
 GOCVP01O,Geothermal power plant - Air cooling (old),ivory
 GOCVP02N,Geothermal power plant - MDT cooling (new),lightcoral
@@ -133,7 +133,7 @@ HFGCP03O,Oil fired gas turbine (SCGT) - NDT cooling (old),lightblue2
 HFGCP04N,Oil fired gas turbine (SCGT) - OTF/OTS cooling (new),mediumgray
 HFGCP04O,Oil fired gas turbine (SCGT) - OTF/OTS cooling (old),lime
 OREAGG,Other renewables,lightgreen
-power_trade,power_trade,pinksalmon
+power_trade,power_trade,deeppink
 HYDMS01X,Small hydropower plant,mediumturquoise
 SOLCSP,Solar CSP,lightgoldenrodyellow
 SOLAR00X,Solar potential,lightgrey
@@ -155,3 +155,46 @@ CO00E00X,Coal exports (outside Africa),black
 CR00E00X,Crude oil exports (outside Africa),sienna
 HF00E00X,HFO exports (outside Africa),lightteal
 LF00E00X,LFO exports (outside Africa),polarbluelight
+HYDHAS03,High Aswan Dam,aquamarine
+HYDA1S03,Aswan 1,aquamarine
+HYDA2S03,Aswan 2,aquamarine
+HYDRNS03,Renaissance,aquamarine
+HYDUMS03,Upper Mandaya,aquamarine
+HYDKAS03,Karadobi,aquamarine
+HYDBAS03,Beko Abo,aquamarine
+HYDCYS03,Chemoga Yeda,aquamarine
+HYDMRS03,Merowe,aquamarine
+HYDROS03,Roseires,aquamarine
+HYDSES02,Sennar,aquamarine
+HYDJAS02,Jebel Aulia,aquamarine
+HYDDAS03,Dal,aquamarine
+HYDSHS03,Shereik,aquamarine
+HYDKJS03,Kajbar,aquamarine
+HYDDGS03,Dagash,aquamarine
+HYDMGS03,Mograt,aquamarine
+HYDSBS03,Sabaloka,aquamarine
+HYDESS02,Esna,aquamarine
+HYDNHS02,Naga Hamadi,aquamarine
+HYDNAS02,New Assiut Barrage,aquamarine
+HYDT1S02,Tis Abay 2,aquamarine
+HYDT2S02,Tis Abay 1,aquamarine
+SOFPVHA3,High Aswan Dam FPV,palegoldenrod
+SOFPVA13,Aswan 1 FPV,palegoldenrod
+SOFPVA23,Aswan 2 FPV,palegoldenrod
+SOFPVRN3,Renaissance FPV,palegoldenrod
+SOFPVUM3,Upper Mandaya FPV,palegoldenrod
+SOFPVKA3,Karadobi FPV,palegoldenrod
+SOFPVBA3,Beko Abo FPV,palegoldenrod
+SOFPVCY3,Chemoga Yeda FPV,palegoldenrod
+SOFPVLT3,Lake Tana FPV,palegoldenrod
+SOFPVMR3,Merowe FPV,palegoldenrod
+SOFPVRO3,Roseires FPV,palegoldenrod
+SOFPVSE3,Sennar FPV,palegoldenrod
+SOFPVJA3,Jebel Aulia FPV,palegoldenrod
+SOFPVDA3,Dal FPV,palegoldenrod
+SOFPVSH3,Shereik FPV,palegoldenrod
+SOFPVKJ3,Kajbar FPV,palegoldenrod
+SOFPVDG3,Dagash FPV,palegoldenrod
+SOFPVMG3,Mograt FPV,palegoldenrod
+SOFPVSB3,Sabaloka FPV,palegoldenrod
+
