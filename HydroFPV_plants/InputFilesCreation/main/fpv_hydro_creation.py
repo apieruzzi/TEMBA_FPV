@@ -93,10 +93,11 @@ df_techs = pd.concat([df_techs_hydro, df_techs_solar], ignore_index = True) #it 
 df_techs = pd.DataFrame(df_techs).rename(columns={0:'TECHNOLOGY'})
 df_list.append(df_techs)
 
-# ------------------------------------------------------------------------------
 timeslices_full = np.arange(2015,2071,1)
 col_names = timeslices_full.tolist()
 col_names.insert(0,'TECHNOLOGY')
+
+# ------------------------------------------------------------------------------
 
 # AvailabilityFactor
 def select_values(row, values):
@@ -524,11 +525,13 @@ df_list.append(df_tmci_tot)
 
 # -----------------------------------------------------------------------------
 # VariableCost
-values_hyd = np.ones(56) * 0.00001
-values_sol = np.ones(56) * 0.00001
+values_hyd = np.insert(np.ones(56) * 0.00001, 0, 1)
+values_sol = np.insert(np.ones(56) * 0.00001, 0, 1)
 values = [values_hyd, values_sol]
 
-df_vc = create_df(df_techs, values, col_names)
+cols = col_names.copy()
+cols.insert(1, 'MODEOFOPERATION')
+df_vc = create_df(df_techs, values, cols)
 df_list.append(df_vc)
 
 # -----------------------------------------------------------------------------
