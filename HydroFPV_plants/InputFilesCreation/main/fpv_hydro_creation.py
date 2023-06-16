@@ -493,9 +493,20 @@ df_capmax = pd.concat([df_tamc['Capacity (MW)']/1000]*56, axis=1,
 df_tamc_hydro = pd.concat([df_tamc['TECHNOLOGY'], df_capmax], axis=1)
 
 # FPV: depends on the area available and year of construction of a dam (0 for ref scenario)
+# Trial 1. using values from Sanchez: 8810 MWp for whole EAPP if 1% coverage (existing plants only).
+# Assumed total capacity between the 4 countries to be 8000 including planned 
+# Spreading over the plants based on their capacity (as proxy for area)
+
 df_tamc = pd.DataFrame(df_solar[['solar_codes','Capacity (MW)']])
 df_tamc = df_tamc.rename(columns = {'solar_codes' : 'TECHNOLOGY'})
 df_capmax = pd.DataFrame(np.zeros((len(df_tamc),56)), columns = col_names[1:])
+
+tot_capmax = 8
+perc = df_tamc["Capacity (MW)"] / df_tamc["Capacity (MW)"].sum()
+perc[8] = perc[0] # lake tana
+cap = perc * tot_capmax
+df_capmax_fpv = pd.concat([cap]*49, axis = 1, ignore_index=True).rename(lambda x: 2022+x, axis=1)
+df_capmax.loc[:,2022:] = df_capmax_fpv #only allow after 2022
 df_tamc_solar = pd.concat([df_tamc['TECHNOLOGY'], df_capmax], axis = 1)
 
 df_tamc_tot = pd.concat([df_tamc_hydro, df_tamc_solar], axis=0, ignore_index=True)
@@ -518,7 +529,20 @@ df_tmci_hydro = df_tmci_hydro.iloc[:,:-1]
 
 # FPV: same as max capacity: after the lake is present, osemosys can allocate 
 # how much of the total available capacity as it wants every year (0 for ref scenario)
-df_tmci_solar = df_tamc_solar
+df_tmci_solar = df_tamc_solar #for ref scenario 
+
+df_solar.loc[8,'First Year'] = 2022
+df_tmci_solar = pd.concat([df_tamc_solar, df_solar['First Year']], axis = 1)
+
+
+for i in range(np.shape(df_tmci_solar)[0]):
+    for j in range(1,np.shape(df_tmci_solar)[1]-1):
+        if df_tmci_solar.columns[j] < df_tmci_solar['First Year'][i] + 2: # considering 2 years of construction time 
+            df_tmci_solar.iloc[i,j] = 0
+            
+df_tmci_solar = df_tmci_solar.iloc[:,:-1]  
+
+
 
 df_tmci_tot = pd.concat([df_tmci_hydro, df_tmci_solar], axis=0, ignore_index=True)
 df_list.append(df_tmci_tot)
