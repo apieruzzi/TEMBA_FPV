@@ -1,7 +1,3 @@
-,y,Medium hydropower plant (Run-of river),Large hydropower plant (Dam)
-0,2018.0,0.032,0.0
-1,2023.0,0.25,0.5
-2,2032.0,0.14585394605848306,0.0
-3,2033.0,0.10414605394151699,0.0
-4,2034.0,0.25,0.5
-5,2041.0,0.25,0.5
+,y,Small hydropower plant,Medium hydropower plant (Run-of river),Large hydropower plant (Dam)
+0,2021.0,0.0,0.91826,0.972
+1,2023.0,0.25,0.0,0.0

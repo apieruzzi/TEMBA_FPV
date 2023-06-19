@@ -12,10 +12,10 @@ import pandas as pd
 
 #Import all filenames
 
-PG_mod_EG_filename = r'results\export_TEMBA_Refer\country\EG\EG-Power Generation (Aggregate)-TEMBA_Refer.csv'
-PG_mod_ET_filename = r'results\export_TEMBA_Refer\country\ET\ET-Power Generation (Aggregate)-TEMBA_Refer.csv'
-PG_mod_SD_filename = r'results\export_TEMBA_Refer\country\SD\SD-Power Generation (Aggregate)-TEMBA_Refer.csv'
-PG_mod_SS_filename = r'results\export_TEMBA_Refer\country\SS\SS-Power Generation (Aggregate)-TEMBA_Refer.csv'
+PG_mod_EG_filename = r'debugging\results\export_Combined_techs_input_file\country\EG\EG-Power Generation (Aggregate)-Combined_techs_input_file.csv'
+PG_mod_ET_filename = r'debugging\results\export_Combined_techs_input_file\country\ET\ET-Power Generation (Aggregate)-Combined_techs_input_file.csv'
+PG_mod_SD_filename = r'debugging\results\export_Combined_techs_input_file\country\SD\SD-Power Generation (Aggregate)-Combined_techs_input_file.csv'
+PG_mod_SS_filename = r'debugging\results\export_Combined_techs_input_file\country\SS\SS-Power Generation (Aggregate)-Combined_techs_input_file.csv'
 
 PG_act_EG_filename = r'Literature\Data IEA\Electricity generation by source - Egypt (1).csv'
 PG_act_ET_filename = r'Literature\Data IEA\Electricity generation by source - Ethiopia (1).csv'
@@ -39,7 +39,7 @@ df_list_mod = [PG_mod_EG, PG_mod_ET, PG_mod_SD, PG_mod_SS]
 df_list_act = [PG_act_EG, PG_act_ET, PG_act_SD, PG_act_SS]
 sheet_names = ["EG", "ET", "SD", "SS"]
 
-writer = pd.ExcelWriter(r'results\export_TEMBA_Refer\results_check.xlsx')
+writer = pd.ExcelWriter(r'debugging\results\results_check.xlsx')
 
 for i in range(len(df_list_mod)):
     # Select df
