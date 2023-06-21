@@ -34,6 +34,10 @@ cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
 picklefile = sys.argv[1]
 scenario = sys.argv[2]
 destination_folder = sys.argv[3]
+
+# picklefile = r'input_data/Combined_techs_input_file.pickle'
+# scenario = 'Combined_techs_input_file'
+# destination_folder = 'results/export_Combined_techs_input_file'
 first_year = 2015
 last_year = 2070
 # homedir = r'C:\Users\Alessandro Pieruzzi\Documents\Thesis\TEMBA_FPV\debugging\debugplots'
@@ -67,21 +71,21 @@ with tempfile.TemporaryDirectory() as temp:
     color_dict = dict(
         [(a, b) for a, b in zip(colorcode2.tech_name, colorcode2.colour)])
     colorcode_hydro = colorcode[colorcode['tech_code'].str.contains('HYD')].iloc[1:].drop('tech_code', axis=1)
-    new_colors_hydro = ['blue', 'blueviolet', 'cadetblue', 'cornflowerblue',
-                        'cyan', 'darkseagreen', 'dodgerblue', 'forestgreen',
+    new_colors_hydro = ['yellow','chartreuse', 'cornflowerblue', 'brown', 'blue',
+                        'chocolate', 'coral', 'crimson', 'forestgreen',
                         'yellow', 'indigo', 'greenyellow', 'lightblue', 
-                        'lightcyan', 'navy', 'lime', 'salmon',
-                        'midnightblue', 'olive', 'powderblue', 'purple', 
-                        'teal', 'steelblue']
-    colorcode_hydro.iloc[4:,1] = new_colors_hydro
+                        'red', 'blue', 'lime', 'salmon',
+                        'midnightblue', 'olive', 'orange', 'purple', 
+                        'teal', 'lime']
+    colorcode_hydro.iloc[3:,1] = new_colors_hydro
     color_dict_hydro = dict(
         [(a, b) for a, b in zip(colorcode_hydro.tech_name, colorcode_hydro.colour)])
     colorcode_solar = colorcode[colorcode['tech_code'].str.contains('SO')].drop('tech_code', axis=1)
-    new_colors_solar = ['chartreuse', 'cornflowerblue', 'brown', 'burlywood', 'chocolate', 
-                        'coral', 'crimson', 'darkgoldenrod', 'yellow', 'darkorange', 
-                        'gold', 'darkgoldenrod', 'lime', 'magenta', 'olive', 'saddlebrown', 
-                        'slategrey', 'tomato']
-    colorcode_solar.iloc[10:,1] = new_colors_solar
+    new_colors_solar = ['yellow','chartreuse', 'cornflowerblue', 'brown', 'blue', 'chocolate', 
+                        'coral', 'crimson', 'darkgoldenrod', 'forestgreen', 'yellow', 
+                        'indigo', 'greenyellow', 'lightblue', 'red', 'blue', 'lime', 
+                        'salmon', 'midnightblue']
+    colorcode_solar.iloc[9:,1] = new_colors_solar
     color_dict_solar = dict(
         [(a, b) for a, b in zip(colorcode_solar.tech_name, colorcode_solar.colour)])
     
@@ -1090,5 +1094,4 @@ with tempfile.TemporaryDirectory() as temp:
             if (f.startswith(en)):
                 filepath = os.path.join(homedir, f)
                 shutil.move(filepath, dest2)
-
 

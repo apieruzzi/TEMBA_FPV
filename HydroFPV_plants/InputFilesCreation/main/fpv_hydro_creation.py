@@ -200,7 +200,7 @@ timeslices_new = np.arange(2015,2041,1)
 
 
 # Read data
-capex_irena = pd.read_csv('Data/capital_cost_curves_IRENA.csv').to_numpy().astype(float).T.flatten()
+# capex_irena = pd.read_csv('Data/capital_cost_curves_IRENA.csv').to_numpy().astype(float).T.flatten()
 capex_temba = pd.read_csv('Data/capital_cost_curves_TEMBA.csv').to_numpy().astype(float).T.flatten()
 
 
@@ -208,43 +208,44 @@ capex_temba = pd.read_csv('Data/capital_cost_curves_TEMBA.csv').to_numpy().astyp
 # interp_lin = scipy.interpolate.interp1d(timeslices_old, capex_irena)
 # capex_irena_lin = interp_lin(timeslices_new)
 
-interp = scipy.interpolate.interp1d(timeslices_old, capex_irena, kind = 'cubic')
-capex_irena = interp(timeslices_new)
+# interp = scipy.interpolate.interp1d(timeslices_old, capex_irena, kind = 'cubic')
+# capex_irena = interp(timeslices_new)
 
-# interp_slin = scipy.interpolate.interp1d(timeslices_old, capex_irena, kind = 'slinear')
-# capex_irena_slin = interp_cub(timeslices_new)
+# # interp_slin = scipy.interpolate.interp1d(timeslices_old, capex_irena, kind = 'slinear')
+# # capex_irena_slin = interp_cub(timeslices_new)
 
-# plt.figure()
-# plt.plot(timeslices_new,capex_irena_lin)
-# plt.plot(timeslices_new,capex_irena)
-# plt.plot(timeslices_new,capex_irena_slin)
+# # plt.figure()
+# # plt.plot(timeslices_new,capex_irena_lin)
+# # plt.plot(timeslices_new,capex_irena)
+# # plt.plot(timeslices_new,capex_irena_slin)
 
-# Calculate opex IRENA
-opex_irena = capex_irena * op_cap_pv 
+# # Calculate opex IRENA
+# opex_irena = capex_irena * op_cap_pv 
 
-# Extend series to 2040 using TEMBA
-# Extract function from temba series from 2040 onwards 
+# # Extend series to 2040 using TEMBA
+# # Extract function from temba series from 2040 onwards 
 
-def lin_funct(a,b,x):
-    return a + b * x
+# def lin_funct(a,b,x):
+#     return a + b * x
 
-a = capex_irena[-1]
-b = (capex_temba[-1] - capex_temba[25]) / (30)
-capex_irena_end = lin_funct(a,b,np.arange(0,30,1))
+# a = capex_irena[-1]
+# b = (capex_temba[-1] - capex_temba[25]) / (30)
+# capex_irena_end = lin_funct(a,b,np.arange(0,30,1))
 
-# Merge the series 
-capex_irena_tot = np.hstack((capex_irena, capex_irena_end))
+# # Merge the series 
+# capex_irena_tot = np.hstack((capex_irena, capex_irena_end))
 
-opex_irena_end = np.ones(29)*opex_irena[-1]
-opex_irena_tot = np.hstack((opex_irena, opex_irena_end))
-
+# opex_irena_end = np.ones(29)*opex_irena[-1]
+# opex_irena_tot = np.hstack((opex_irena, opex_irena_end))
+# np.savetxt('capex_irena_tot.txt', capex_irena_tot)
+# np.savetxt('opex_irena_tot.txt', opex_irena_tot)
 
 # Calculate costs for FPV
-capex_fpv = capex_irena_tot * fpv_gpv
+capex_fpv = capex_temba * fpv_gpv
 opex_fpv = capex_fpv * op_cap_fpv
 
 
-# Add cost for hydro 
+# Add cost for hydro (TEMBA)
 capex_hydro_large = 3074.61 * np.ones(56) #same for medium size
 capex_hydro_small = 4831.53 * np.ones(56)
 
