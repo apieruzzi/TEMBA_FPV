@@ -38,7 +38,7 @@ destination_folder = sys.argv[3]
 # picklefile = r'input_data/Combined_techs_input_file.pickle'
 # scenario = 'Combined_techs_input_file'
 # destination_folder = 'results/export_Combined_techs_input_file'
-first_year = 2015
+first_year = 2023
 last_year = 2070
 # homedir = r'C:\Users\Alessandro Pieruzzi\Documents\Thesis\TEMBA_FPV\debugging\debugplots'
 

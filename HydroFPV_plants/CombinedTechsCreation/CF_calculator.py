@@ -78,7 +78,7 @@ cols = ['loc_name', 's1d1', 's1d2', 's2d1', 's2d2',
 
 df = pd.DataFrame(data=tot_list,columns=cols)
 
-df.to_excel('CapacityFactors.xlsx')
+df.to_excel('CapacityFactors_solar.xlsx')
     
     
     

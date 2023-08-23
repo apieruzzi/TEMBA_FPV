@@ -18,10 +18,15 @@ folder = r'Data'
 df_list = []
 
 # Create tech codes
-loc_codes = ['HA', 'A1', 'A2', 'RN', 'UM', 'KA', 'BA', 'CY', 'LT', 'MR', 
-             'RO', 'SE', 'JA', 'DA', 'SH', 'KJ', 'DG', 'MG', 'SB', 'ES', 
-             'NH', 'NA', 'T1', 'T2']
-country_codes = ['EG', 'ET', 'SD']
+# loc_codes = ['HA', 'A1', 'A2', 'RN', 'UM', 'KA', 'BA', 'CY', 'LT', 'MR', 
+             # 'RO', 'SE', 'JA', 'DA', 'SH', 'KJ', 'DG', 'MG', 'SB', 'ES', 
+             # 'NH', 'NA', 'T1', 'T2']
+# loc_codes = ['AE', 'AW', 'AN', 'A1', 'A2', 'BR', 'BA', 'BB', 'CY', 'DG', 
+#              'DL', 'FC', 'GB', 'GJ', 'HA', 'JA', 'JB', 'KB', 'KR', 'KS', 
+#              'LT', 'LD', 'LS', 'MR', 'MG', 'RN', 'RS', 'SB', 'SN', 'SH', 
+#              'S2', 'TM', 'T1', 'T2', 'UA', 'UD', 'UM', 'WA', 'BD', 'ES', 
+#              'FL', 'FS', 'LK', 'NH', 'NA', 'SL', 'SR', 'T1', 'T2']
+country_codes = ['EG', 'ET', 'SD', 'SS']
 
 
 # Read file
@@ -29,9 +34,9 @@ filename = r'Data/CombinedHydroSolar.csv'
 df = pd.read_csv(filename)
 df = df.fillna(0)
 
-# Add codes column
-loc_codes_df = pd.DataFrame(loc_codes, columns = ['loc_codes'])
-df = pd.concat([df,loc_codes_df], axis = 1)
+# # Add codes column
+# loc_codes_df = pd.DataFrame(loc_codes, columns = ['loc_codes'])
+# df = pd.concat([df,loc_codes_df], axis = 1)
 
 
 # Create technology codes
@@ -68,6 +73,12 @@ def create_codes(row, tech):
         return str(country_codes[2] + prefix
                    + row['loc_codes'] + suffix)
     
+    elif row['Country'] == 'SOUTH SUDAN':
+        return str(country_codes[3] + prefix
+                   + row['loc_codes'] + suffix)
+    else:
+        print('Missing country')
+    
 for tech in ['hydro', 'solar']:  
     col_name = tech + '_codes'
     df[col_name] = df.apply(lambda row: create_codes(row,tech), axis = 1)
@@ -85,7 +96,7 @@ cols_solar = ['Country', 'Unit Name', 'Latitude ', 'Longitude', 'Status',
 df_hydro = df[cols_hydro]
 df_hydro = df_hydro[(df_hydro['hydro_codes'] != 'ETHYDLTS02')] #No hydropower on lake tana
 df_hydro = df_hydro.reset_index(drop=True)
-df_solar = df[cols_solar][:19] #harcoded index for plants without reservoir (no fpv)
+df_solar = df[cols_solar][:38] #harcoded index for plants without reservoir (no fpv)
 
 df_techs_hydro = df_hydro['hydro_codes']
 df_techs_solar = df_solar['solar_codes']
@@ -519,6 +530,7 @@ df_list.append(df_tamc_tot)
 # Total capacity installable for a specific tech in a specific year  
 
 # Hydro: max capacity of the HP plant every year, after year of construction
+# Assumption: force the model to install the plant in the year it is supposed to be ready
 df_tmci_hydro = pd.concat([df_tamc_hydro, df_hydro['First Year']], axis = 1)
 
 for i in range(np.shape(df_tmci_hydro)[0]):
