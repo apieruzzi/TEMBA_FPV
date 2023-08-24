@@ -25,7 +25,7 @@ CO2,CO2,black
 COALAGG,Coal,black
 COEXPORT,Coal exports,black
 CO00X00X,Coal extraction (mining),darkred
-CO00I00X,"Coal imports (inland transport, maritime freight)",darkmagenta
+CO00I00X,Coal imports (inland transport-maritime freight),darkmagenta
 COSCP01N,Coal power plant - Air cooling (new),ghostwhite
 COSCP01O,Coal power plant - Air cooling (old),dimgray
 COSCP02N,Coal power plant - MDT cooling (new),goldenrod
@@ -155,46 +155,90 @@ CO00E00X,Coal exports (outside Africa),black
 CR00E00X,Crude oil exports (outside Africa),sienna
 HF00E00X,HFO exports (outside Africa),lightteal
 LF00E00X,LFO exports (outside Africa),polarbluelight
-HYDHAS03,High Aswan Dam,aquamarine
-HYDA1S03,Aswan 1,aquamarine
-HYDA2S03,Aswan 2,aquamarine
-HYDRNS03,Renaissance,aquamarine
-HYDUMS03,Upper Mandaya,aquamarine
-HYDKAS03,Karadobi,aquamarine
-HYDBAS03,Beko Abo,aquamarine
-HYDCYS03,Chemoga Yeda,aquamarine
-HYDMRS03,Merowe,aquamarine
-HYDROS03,Roseires,aquamarine
-HYDSES02,Sennar,aquamarine
-HYDJAS02,Jebel Aulia,aquamarine
-HYDDAS03,Dal,aquamarine
-HYDSHS03,Shereik,aquamarine
-HYDKJS03,Kajbar,aquamarine
-HYDDGS03,Dagash,aquamarine
-HYDMGS03,Mograt,aquamarine
-HYDSBS03,Sabaloka,aquamarine
-HYDESS02,Esna,aquamarine
-HYDNHS02,Naga Hamadi,aquamarine
-HYDNAS02,New Assiut Barrage,aquamarine
-HYDT1S02,Tis Abay 2,aquamarine
-HYDT2S02,Tis Abay 1,aquamarine
-SOFPVHA3,High Aswan Dam FPV,palegoldenrod
-SOFPVA13,Aswan 1 FPV,palegoldenrod
-SOFPVA23,Aswan 2 FPV,palegoldenrod
-SOFPVRN3,Renaissance FPV,palegoldenrod
-SOFPVUM3,Upper Mandaya FPV,palegoldenrod
-SOFPVKA3,Karadobi FPV,palegoldenrod
-SOFPVBA3,Beko Abo FPV,palegoldenrod
-SOFPVCY3,Chemoga Yeda FPV,palegoldenrod
-SOFPVLT3,Lake Tana FPV,palegoldenrod
-SOFPVMR3,Merowe FPV,palegoldenrod
-SOFPVRO3,Roseires FPV,palegoldenrod
-SOFPVSE3,Sennar FPV,palegoldenrod
-SOFPVJA3,Jebel Aulia FPV,palegoldenrod
-SOFPVDA3,Dal FPV,palegoldenrod
-SOFPVSH3,Shereik FPV,palegoldenrod
-SOFPVKJ3,Kajbar FPV,palegoldenrod
-SOFPVDG3,Dagash FPV,palegoldenrod
-SOFPVMG3,Mograt FPV,palegoldenrod
-SOFPVSB3,Sabaloka FPV,palegoldenrod
-
+EGHYDA1S03,Aswan 1,aquamarine
+EGHYDA2S03,Aswan 2,aquamarine
+EGHYDHAS03,High Aswan Dam,aquamarine
+ETHYDAES03,Aleltu East,aquamarine
+ETHYDAWS03,Aleltu West,aquamarine
+ETHYDANS02,Amarti-Neshe,aquamarine
+ETHYDBRS03,Baro,aquamarine
+ETHYDBAS03,Beko Abo,aquamarine
+ETHYDBBS03,Birbir,aquamarine
+ETHYDCYS03,Chemoga Yeda,aquamarine
+ETHYDFCS03,Finchaa,aquamarine
+ETHYDGBS03,Geba,aquamarine
+ETHYDGJS03,Genji,aquamarine
+ETHYDKRS03,Karadobi,aquamarine
+ETHYDLTS03,Lake Tana - Beles,aquamarine
+ETHYDLDS03,Lower Dabus,aquamarine
+ETHYDLSS03,Lower Dedessa,aquamarine
+ETHYDRNS03,Renaissance,aquamarine
+ETHYDS2S02,Sor 2,aquamarine
+ETHYDTMS03,Tams,aquamarine
+ETHYDT1S03,Tekeze 1,aquamarine
+ETHYDT2S03,Tekeze 2,aquamarine
+ETHYDUDS03,Upper Dabus,aquamarine
+ETHYDUMS03,Upper Mandaya,aquamarine
+SSHYDJBS03,Juba Barrage,aquamarine
+SSHYDWAS02,Wau,aquamarine
+SDHYDDGS03,Dagash,aquamarine
+SDHYDDLS03,Dal,aquamarine
+SDHYDJAS02,Jebel Aulia,aquamarine
+SDHYDKBS03,Kajbar,aquamarine
+SDHYDKSS02,Kashm El Girba ,aquamarine
+SDHYDMRS03,Merowe,aquamarine
+SDHYDMGS03,Mograt,aquamarine
+SDHYDRSS03,Roseires,aquamarine
+SDHYDSBS03,Sabaloka,aquamarine
+SDHYDSNS02,Sennar,aquamarine
+SDHYDSHS03,Shereik,aquamarine
+SDHYDUAS03,Upper Atbara,aquamarine
+EGHYDESS02,Esna,aquamarine
+EGHYDNHS02,Naga Hamadi,aquamarine
+EGHYDNBS02,New Assiut Barrage,aquamarine
+ETHYDSRS02,Sor,aquamarine
+ETHYDT1S02,Tis Abay 1,aquamarine
+ETHYDT2S02,Tis Abay 2,aquamarine
+SSHYDBDS03,Bedden,aquamarine
+SSHYDFLS03,Fula,aquamarine
+SSHYDFSS02,Fula Small,aquamarine
+SSHYDLKS03,Lakki,aquamarine
+SSHYDSLS03,Shukoli,aquamarine
+EGSOFPVA13,Aswan 1 FPV,palegoldenrod
+EGSOFPVA23,Aswan 2 FPV,palegoldenrod
+EGSOFPVHA3,High Aswan Dam FPV,palegoldenrod
+ETSOFPVAE3,Aleltu East FPV,palegoldenrod
+ETSOFPVAW3,Aleltu West FPV,palegoldenrod
+ETSOFPVAN3,Amarti-Neshe FPV,palegoldenrod
+ETSOFPVBR3,Baro FPV,palegoldenrod
+ETSOFPVBA3,Beko Abo FPV,palegoldenrod
+ETSOFPVBB3,Birbir FPV,palegoldenrod
+ETSOFPVCY3,Chemoga Yeda FPV,palegoldenrod
+ETSOFPVFC3,Finchaa FPV,palegoldenrod
+ETSOFPVGB3,Geba FPV,palegoldenrod
+ETSOFPVGJ3,Genji FPV,palegoldenrod
+ETSOFPVKR3,Karadobi FPV,palegoldenrod
+ETSOFPVLT3,Lake Tana - Beles FPV,palegoldenrod
+ETSOFPVLD3,Lower Dabus FPV,palegoldenrod
+ETSOFPVLS3,Lower Dedessa FPV,palegoldenrod
+ETSOFPVRN3,Renaissance FPV,palegoldenrod
+ETSOFPVS23,Sor 2 FPV,palegoldenrod
+ETSOFPVTM3,Tams FPV,palegoldenrod
+ETSOFPVT13,Tekeze 1 FPV,palegoldenrod
+ETSOFPVT23,Tekeze 2 FPV,palegoldenrod
+ETSOFPVUD3,Upper Dabus FPV,palegoldenrod
+ETSOFPVUM3,Upper Mandaya FPV,palegoldenrod
+SSSOFPVJB3,Juba Barrage FPV,palegoldenrod
+SSSOFPVWA3,Wau FPV,palegoldenrod
+SDSOFPVDG3,Dagash FPV,palegoldenrod
+SDSOFPVDL3,Dal FPV,palegoldenrod
+SDSOFPVJA3,Jebel Aulia FPV,palegoldenrod
+SDSOFPVKB3,Kajbar FPV,palegoldenrod
+SDSOFPVKS3,Kashm El Girba  FPV,palegoldenrod
+SDSOFPVMR3,Merowe FPV,palegoldenrod
+SDSOFPVMG3,Mograt FPV,palegoldenrod
+SDSOFPVRS3,Roseires FPV,palegoldenrod
+SDSOFPVSB3,Sabaloka FPV,palegoldenrod
+SDSOFPVSN3,Sennar FPV,palegoldenrod
+SDSOFPVSH3,Shereik FPV,palegoldenrod
+SDSOFPVUA3,Upper Atbara FPV,palegoldenrod

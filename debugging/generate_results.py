@@ -71,20 +71,33 @@ with tempfile.TemporaryDirectory() as temp:
     color_dict = dict(
         [(a, b) for a, b in zip(colorcode2.tech_name, colorcode2.colour)])
     colorcode_hydro = colorcode[colorcode['tech_code'].str.contains('HYD')].iloc[1:].drop('tech_code', axis=1)
-    new_colors_hydro = ['yellow','chartreuse', 'cornflowerblue', 'brown', 'blue',
-                        'chocolate', 'coral', 'crimson', 'forestgreen',
-                        'yellow', 'indigo', 'greenyellow', 'lightblue', 
-                        'red', 'blue', 'lime', 'salmon',
-                        'midnightblue', 'olive', 'orange', 'purple', 
-                        'teal', 'lime']
+    new_colors_hydro = ['yellow','chartreuse', 'cornflowerblue', #Egypt
+                        'brown', 'blue', 'chocolate', 'coral', 'crimson', 
+                        'forestgreen','yellow', 'indigo', 'greenyellow', 'lightblue', 
+                        'red', 'black', 'lime', 'salmon', 'midnightblue', 
+                        'olive', 'orange', 'purple', 'teal', 'lime', 'dimgrey', #Ethiopia
+                        'yellow', 'red', #SouthSudan
+                        'brown', 'blue', 'chocolate', 'coral', 'crimson', 
+                        'forestgreen','yellow', 'indigo', 'greenyellow', 'lightblue', 
+                        'red', 'black', #Sudan
+                        'red', 'orange', 'green', #Egypt ROR
+                        'pink', 'violet', 'lightyellow', #Ethiopia ROR
+                        'yellow','chartreuse', 'cornflowerblue', 'orange', 'green' #SS ROR
+                        ]
     colorcode_hydro.iloc[3:,1] = new_colors_hydro
     color_dict_hydro = dict(
         [(a, b) for a, b in zip(colorcode_hydro.tech_name, colorcode_hydro.colour)])
     colorcode_solar = colorcode[colorcode['tech_code'].str.contains('SO')].drop('tech_code', axis=1)
-    new_colors_solar = ['yellow','chartreuse', 'cornflowerblue', 'brown', 'blue', 'chocolate', 
-                        'coral', 'crimson', 'darkgoldenrod', 'forestgreen', 'yellow', 
-                        'indigo', 'greenyellow', 'lightblue', 'red', 'blue', 'lime', 
-                        'salmon', 'midnightblue']
+    new_colors_solar = ['yellow','chartreuse', 'cornflowerblue', #Egypt
+                        'brown', 'blue', 'chocolate', 'coral', 'crimson', 
+                        'forestgreen','yellow', 'indigo', 'greenyellow', 'lightblue', 
+                        'red', 'black', 'lime', 'salmon', 'midnightblue', 
+                        'olive', 'orange', 'purple', 'teal', 'lime', 'darkslategrey', #Ethiopia
+                        'yellow', 'red', #SouthSudan
+                        'brown', 'blue', 'chocolate', 'coral', 'crimson', 
+                        'forestgreen','yellow', 'indigo', 'greenyellow', 'lightblue', 
+                        'red', 'black' #Sudan
+                        ]
     colorcode_solar.iloc[9:,1] = new_colors_solar
     color_dict_solar = dict(
         [(a, b) for a, b in zip(colorcode_solar.tech_name, colorcode_solar.colour)])

@@ -459,16 +459,21 @@ df_list.append(df_opl)
 # Planned plants have as residual capacity 0
 # FPV: 0 for all
 
-df_resc = pd.DataFrame(df_hydro[['hydro_codes','Capacity (MW)', 'Status']])
+df_resc = pd.DataFrame(df_hydro[['hydro_codes','Capacity (MW)', 'Status', 'First Year']])
 df_resc = df_resc.rename(columns = {'hydro_codes' : 'TECHNOLOGY'})
 cols = col_names.copy()
 cols.insert(1,'Capacity (MW)')
 cols.insert(2, 'Status' )
+cols.insert(3,'First Year')
 df_resc = df_resc.reindex(columns = cols)
 
 def get_capacities(row):
     if row['Status'] == 'Existing':
-        value = (np.ones(56) * row['Capacity (MW)'] / 1000).tolist()
+        if row['First Year'] > 2015:
+            value = (np.ones(56-(row['First Year']-2015)) * row['Capacity (MW)'] / 1000).tolist()
+            value[0:0] = np.zeros(row['First Year']-2015).tolist()
+        else:
+            value = (np.ones(56) * row['Capacity (MW)'] / 1000).tolist()
         return value
     elif row['Status'] == 'Candidate':
         return np.zeros(56)
@@ -476,7 +481,7 @@ def get_capacities(row):
 values = df_resc[cols].apply(lambda row: get_capacities(row), axis = 1)
 
 for i in range(len(values)):
-    df_resc.iloc[i,3:] = values[i]
+    df_resc.iloc[i,4:] = values[i]
 
 df_resc = df_resc[col_names]
 
@@ -517,8 +522,8 @@ tot_capmax = 8
 perc = df_tamc["Capacity (MW)"] / df_tamc["Capacity (MW)"].sum()
 perc[8] = perc[0] # lake tana
 cap = perc * tot_capmax
-df_capmax_fpv = pd.concat([cap]*49, axis = 1, ignore_index=True).rename(lambda x: 2022+x, axis=1)
-df_capmax.loc[:,2022:] = df_capmax_fpv #only allow after 2022
+df_capmax_fpv = pd.concat([cap]*49, axis = 1, ignore_index=True).rename(lambda x: 2023+x, axis=1)
+df_capmax.loc[:,2023:] = df_capmax_fpv #only allow FPV after 2023
 df_tamc_solar = pd.concat([df_tamc['TECHNOLOGY'], df_capmax], axis = 1)
 
 df_tamc_tot = pd.concat([df_tamc_hydro, df_tamc_solar], axis=0, ignore_index=True)
@@ -530,7 +535,7 @@ df_list.append(df_tamc_tot)
 # Total capacity installable for a specific tech in a specific year  
 
 # Hydro: max capacity of the HP plant every year, after year of construction
-# Assumption: force the model to install the plant in the year it is supposed to be ready
+# Assumption: force the model to install the plant from the year it is supposed to be ready
 df_tmci_hydro = pd.concat([df_tamc_hydro, df_hydro['First Year']], axis = 1)
 
 for i in range(np.shape(df_tmci_hydro)[0]):
