@@ -187,8 +187,19 @@ cf_df = pd.concat([cf_df[2015]]*56, axis=1,
 df_cf = pd.concat([df_tot,cf_df], axis=1) 
 df_list.append(df_cf)
 
-
 # -----------------------------------------------------------------------------
+# CapacityOfOneTechnologyUnit
+
+df_cotu = pd.DataFrame(df_hydro[['hydro_codes','Capacity (MW)', 'First Year']])
+df_cotu = df_cotu.rename(columns = {'hydro_codes' : 'TECHNOLOGY'})
+df_cotu = df_cotu.iloc[np.where(df_hydro['First Year']>2015)]
+df_cotu_tot = pd.concat([df_cotu['Capacity (MW)']/1000]*56, axis=1,
+                      ignore_index=True).rename(lambda x: 2015+x, axis=1)
+df_cotu = pd.concat([df_cotu['TECHNOLOGY'], df_cotu_tot], axis=1)
+df_list.append(df_cotu)
+# -----------------------------------------------------------------------------
+
+
 # CapacityToActivityUnit
 values_hyd = np.ones(1) * 31.536 
 values_sol = np.ones(1) * 31.536  
@@ -257,21 +268,21 @@ opex_fpv = capex_fpv * op_cap_fpv
 
 
 # Add cost for hydro (TEMBA)
-capex_hydro_large = 3074.61 * np.ones(56) #same for medium size
-capex_hydro_small = 4831.53 * np.ones(56)
+# capex_hydro_large = 3074.61 * np.ones(56) #same for medium size
+# capex_hydro_small = 4831.53 * np.ones(56)
 
 opex_hydro_large = 55 * np.ones(56)
 opex_hydro_small = 65 * np.ones(56)
 
 # Create capital and fixed costs dataframes 
 
-capexes = [capex_hydro_large, capex_hydro_small, capex_fpv]
+# capexes = [capex_hydro_large, capex_hydro_small, capex_fpv]
 opexes = [opex_hydro_large, opex_hydro_small, opex_fpv]
 
-df_capex = pd.DataFrame(df_techs, columns = ['TECHNOLOGY'])
+# df_capex = pd.DataFrame(df_techs, columns = ['TECHNOLOGY'])
 df_opex = pd.DataFrame(df_techs, columns = ['TECHNOLOGY'])
 
-df_capex = df_capex.reindex(columns = col_names)
+# df_capex = df_capex.reindex(columns = col_names)
 df_opex = df_opex.reindex(columns = col_names)
 
 def create_costs(row, costs):
@@ -283,13 +294,42 @@ def create_costs(row, costs):
         return costs[2].tolist()
 
 
-values_capex = df_capex[col_names].apply(lambda row: create_costs(row, capexes), axis = 1)
+# values_capex = df_capex[col_names].apply(lambda row: create_costs(row, capexes), axis = 1)
 values_opex = df_opex[col_names].apply(lambda row: create_costs(row, opexes), axis = 1)
 
-for i in range(len(values_capex)):
-    df_capex.iloc[i,1:] = values_capex[i]
+for i in range(len(values_opex)):
+    # df_capex.iloc[i,1:] = values_capex[i]
     df_opex.iloc[i,1:] = values_opex[i]
 
+
+capacity_values = [0.1, 1, 10, 500, 11000]
+cost_values = [3744.4, 3256, 2836, 2446, 2054.5]
+new_cap_values = df_hydro['Capacity (MW)'].tolist()
+new_cap_values = sorted(new_cap_values)
+
+interp_lin = scipy.interpolate.interp1d(capacity_values, cost_values)
+new_cost_values = interp_lin(new_cap_values)
+
+df_capcost = pd.DataFrame(np.column_stack([new_cap_values, new_cost_values]), 
+                          columns = ['Capacity', 'Cost'])
+
+df_hydro_sorted = df_hydro.sort_values('Capacity (MW)')
+df_hydro_sorted['CapCost'] = new_cost_values.tolist()
+
+df_capex_hydro = pd.DataFrame(df_hydro_sorted[['hydro_codes','CapCost']])
+df_capex_hydro = df_capex_hydro.rename(columns = {'hydro_codes' : 'TECHNOLOGY'})
+df_capcost = pd.concat([df_capex_hydro['CapCost']]*56, axis = 1, ignore_index=True).rename(lambda x: 2015+x, axis=1)
+df_capex_hydro = pd.concat([df_capex_hydro['TECHNOLOGY'], df_capcost], axis=1)
+
+
+df_capex_fpv = pd.DataFrame(df_solar[['solar_codes']])
+df_capex_fpv = df_capex_fpv.rename(columns = {'solar_codes' : 'TECHNOLOGY'})
+df_capcost_fpv = pd.DataFrame([capex_fpv], columns = col_names[1:])
+df_capcost_fpv = pd.concat([df_capcost_fpv]*len(df_techs_solar), ignore_index=True)
+
+df_capex_fpv = pd.concat([df_capex_fpv['TECHNOLOGY'], df_capcost_fpv], axis = 1)
+
+df_capex = pd.concat([df_capex_hydro, df_capex_fpv], axis=0, ignore_index=True)
 df_list.append(df_capex)
 
 
@@ -468,15 +508,17 @@ cols.insert(3,'First Year')
 df_resc = df_resc.reindex(columns = cols)
 
 def get_capacities(row):
-    if row['Status'] == 'Existing':
-        if row['First Year'] > 2015:
-            value = (np.ones(56-(row['First Year']-2015)) * row['Capacity (MW)'] / 1000).tolist()
-            value[0:0] = np.zeros(row['First Year']-2015).tolist()
-        else:
-            value = (np.ones(56) * row['Capacity (MW)'] / 1000).tolist()
+    if ((row['First Year'] >= 2015) & (row['First Year'] <= 2023)):
+        value = (np.ones(56-(row['First Year']-2015)) * row['Capacity (MW)'] / 1000).tolist()
+        value[0:0] = np.zeros(row['First Year']-2015).tolist()
         return value
-    elif row['Status'] == 'Candidate':
+    elif row['First Year'] < 2015:
+        value = (np.ones(56) * row['Capacity (MW)'] / 1000).tolist()
+        return value
+    elif row['First Year'] > 2023:
         return np.zeros(56)
+    else:
+        print('Something is wrong')
 
 values = df_resc[cols].apply(lambda row: get_capacities(row), axis = 1)
 
@@ -520,7 +562,7 @@ df_capmax = pd.DataFrame(np.zeros((len(df_tamc),56)), columns = col_names[1:])
 
 tot_capmax = 8
 perc = df_tamc["Capacity (MW)"] / df_tamc["Capacity (MW)"].sum()
-perc[8] = perc[0] # lake tana
+# perc[8] = perc[0] # lake tana
 cap = perc * tot_capmax
 df_capmax_fpv = pd.concat([cap]*49, axis = 1, ignore_index=True).rename(lambda x: 2023+x, axis=1)
 df_capmax.loc[:,2023:] = df_capmax_fpv #only allow FPV after 2023
@@ -565,6 +607,7 @@ df_tmci_solar = df_tmci_solar.iloc[:,:-1]
 df_tmci_tot = pd.concat([df_tmci_hydro, df_tmci_solar], axis=0, ignore_index=True)
 df_list.append(df_tmci_tot)
 
+
 # -----------------------------------------------------------------------------
 # VariableCost
 values_hyd = np.insert(np.ones(56) * 0.00001, 0, 1)
@@ -580,7 +623,7 @@ df_list.append(df_vc)
 
 
 # Save all dataframes to excel in different sheets
-sheet_names = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 
+sheet_names = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 'CapacityOfOneTechnologyUnit',
                'CapacityToActivityUnit','CapitalCost', 'EmissionActivityRatio', 
                'FixedCost', 'InputActivityRatio','OutputActivityRatio', 
                'OperationalLife', 'ResidualCapacity', 'TotalAnnualMaxCapacity',

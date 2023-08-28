@@ -25,7 +25,7 @@ CO2,CO2,black
 COALAGG,Coal,black
 COEXPORT,Coal exports,black
 CO00X00X,Coal extraction (mining),darkred
-CO00I00X,Coal imports (inland transport-maritime freight),darkmagenta
+CO00I00X,Coal imports (inland transport, maritime freight),darkmagenta
 COSCP01N,Coal power plant - Air cooling (new),ghostwhite
 COSCP01O,Coal power plant - Air cooling (old),dimgray
 COSCP02N,Coal power plant - MDT cooling (new),goldenrod
@@ -138,6 +138,7 @@ HYDMS01X,Small hydropower plant,mediumturquoise
 SOLCSP,Solar CSP,lightgoldenrodyellow
 SOLAR00X,Solar potential,lightgrey
 SOLPV,Solar PV,yellow
+SOLFPV,Solar FPV,darkgreen
 SOV1F01X,Solar PV (roof top),navajowhite
 SOU1P03X,Solar PV (utility),mediumorchid
 SOV2F01X,Solar PV with storage,pearl04

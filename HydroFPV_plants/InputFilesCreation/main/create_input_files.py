@@ -14,7 +14,7 @@ import os
 # Import existing input file
 filename = r'TEMBA_Refer.xlsx'
 
-sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 
+sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 'CapacityOfOneTechnologyUnit',
                'CapacityToActivityUnit','CapitalCost', 'EmissionActivityRatio',
                'FixedCost', 'InputActivityRatio','OutputActivityRatio',
                'OperationalLife', 'ResidualCapacity', 'TotalAnnualMaxCapacity',
