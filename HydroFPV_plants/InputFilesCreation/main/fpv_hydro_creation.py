@@ -508,14 +508,14 @@ cols.insert(3,'First Year')
 df_resc = df_resc.reindex(columns = cols)
 
 def get_capacities(row):
-    if ((row['First Year'] >= 2015) & (row['First Year'] <= 2023)):
-        value = (np.ones(56-(row['First Year']-2015)) * row['Capacity (MW)'] / 1000).tolist()
-        value[0:0] = np.zeros(row['First Year']-2015).tolist()
-        return value
-    elif row['First Year'] < 2015:
+    # if ((row['First Year'] >= 2015) & (row['First Year'] <= 2023)):
+    #     value = (np.ones(56-(row['First Year']-2015)) * row['Capacity (MW)'] / 1000).tolist()
+    #     value[0:0] = np.zeros(row['First Year']-2015).tolist()
+    #     return value
+    if row['First Year'] <= 2015:
         value = (np.ones(56) * row['Capacity (MW)'] / 1000).tolist()
         return value
-    elif row['First Year'] > 2023:
+    elif row['First Year'] > 2015:
         return np.zeros(56)
     else:
         print('Something is wrong')
@@ -609,6 +609,25 @@ df_list.append(df_tmci_tot)
 
 
 # -----------------------------------------------------------------------------
+# TotalAnnualMinCapacityInvestment
+df_mincap = pd.DataFrame(df_hydro[['hydro_codes','First Year', 'Capacity (MW)']])
+df_mincap = df_mincap.iloc[np.where((df_mincap['hydro_codes'] == 'ETHYDRNS03') |
+                      (df_mincap['hydro_codes'] == 'EGHYDNBS02') |
+                      (df_mincap['hydro_codes'] == 'SDHYDUAS03'))[0]].reset_index(drop=True)
+df_mincap['value'] = np.zeros(len(df_mincap)).tolist()
+
+df_value = pd.concat([df_mincap['value']]*56, axis = 1, ignore_index=True).rename(lambda x: 2015+x, axis=1)
+df_mincap = pd.concat([df_mincap,df_value], axis =1)
+
+df_mincap.iloc[0,df_mincap['First Year'][0]-2015+4] = df_mincap['Capacity (MW)'][0]/1000
+df_mincap.iloc[1,df_mincap['First Year'][1]-2015+4] = df_mincap['Capacity (MW)'][1]/1000
+df_mincap.iloc[2,df_mincap['First Year'][2]-2015+4] = df_mincap['Capacity (MW)'][2]/1000
+
+df_mincap = df_mincap.drop(columns = ['First Year', 'Capacity (MW)', 'value'])
+df_mincap = df_mincap.rename(columns = {'hydro_codes' : 'TECHNOLOGY'})
+df_list.append(df_mincap)
+
+# -----------------------------------------------------------------------------
 # VariableCost
 values_hyd = np.insert(np.ones(56) * 0.00001, 0, 1)
 values_sol = np.insert(np.ones(56) * 0.00001, 0, 1)
@@ -627,7 +646,7 @@ sheet_names = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 'CapacityOf
                'CapacityToActivityUnit','CapitalCost', 'EmissionActivityRatio', 
                'FixedCost', 'InputActivityRatio','OutputActivityRatio', 
                'OperationalLife', 'ResidualCapacity', 'TotalAnnualMaxCapacity',
-               'TotalAnnualMaxCapacityInvestmen','VariableCost']
+               'TotalAnnualMaxCapacityInvestmen','TotalAnnualMinCapacityInvestmen', 'VariableCost']
 
 # 'TotalAnnualMaxCapacity',
 # 'TotalAnnualMaxCapacityInvestment',

@@ -18,7 +18,7 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 'Ca
                'CapacityToActivityUnit','CapitalCost', 'EmissionActivityRatio',
                'FixedCost', 'InputActivityRatio','OutputActivityRatio',
                'OperationalLife', 'ResidualCapacity', 'TotalAnnualMaxCapacity',
-               'TotalAnnualMaxCapacityInvestmen', 'VariableCost']
+               'TotalAnnualMaxCapacityInvestmen', 'TotalAnnualMinCapacityInvestmen', 'VariableCost']
 
 
 first_year = 2015

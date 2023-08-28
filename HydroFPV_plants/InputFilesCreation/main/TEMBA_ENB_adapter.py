@@ -10,19 +10,22 @@ import numpy as np
 import os
 
 
-folder = r'E:\TUDELFT\THESIS\OSeMOSYS\TEMBA 2.1_ENB\input_data'
-filenames =  ["TEMBA_Refer.xlsx", "TEMBA_1.5.xlsx", "TEMBA_2.0.xlsx"]
+# folder = r'E:\TUDELFT\THESIS\OSeMOSYS\TEMBA 2.1_ENB\input_data'
+# filenames =  ["TEMBA_Refer.xlsx", "TEMBA_1.5.xlsx", "TEMBA_2.0.xlsx"]
 
 
 prefixes = ["EG","ET","SD","SS", "ISNGEGBP00","LYELEGBP00"]
 carbon_removal_tech = pd.DataFrame(['DZLYC', 'MATNC', 'RSACO'],columns = ['CIFGA'])
 
 #  Data to add extra fuels for trade links that become external: 
-values_el = np.ones((3,56))*0.95
-values_gas = np.ones((1,56))*0.99
+nyears = 36
+values_el = np.ones((3,nyears))*0.95
+values_gas = np.ones((1, nyears))*0.99
 data = [['ETELDJBP00','ETDUEL', 1 ], ['ETELKEBP00','ETDUEL', 1 ],
         ['ETNGDJBP00', 'ETDUNG',1], ['LYELEGBP00', 'EGDUEL', 1]]
 
+folder = r'Data'
+filenames = ['TEMBA_SSP1-26.xlsx']
 
 
 for x, filename in enumerate(filenames):
@@ -38,7 +41,6 @@ for x, filename in enumerate(filenames):
                        'TIMESLICE',
                        'YEAR',
                        'AnnualExogenousEmission',
-                       'CapacityOfOneTechnologyUnit',
                        'DiscountRate', 
                        'DepreciationMethod',
                        'ModelPeriodEmissionLimit',
