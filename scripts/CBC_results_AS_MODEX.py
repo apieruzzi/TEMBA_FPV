@@ -15,7 +15,7 @@ def main(data_file):
     lines = []
     with open(data_file, 'r') as f1:
         for line in f1:
-            if not line.startswith(('set MODEper', 'set MODEx')):
+            if not line.startswith(('set MODEper', 'set MODEx', 'set TECHS_FPVx')):
                 lines.append(line)
 
     with open(data_file, 'w') as f2:
@@ -45,6 +45,10 @@ def main(data_file):
                 storage_list = line.split(' ')[3:-1]
             if line.startswith('set MODE_OF_OPERATION'):
                 mode_list = line.split(' ')[3:-1]
+            if line.startswith('set TECHS_HYD'):
+                techs_hyd_list = line.split(' ')[3:-1]
+            if line.startswith('set TECHS_FPV'):
+                techs_FPV_list = line.split(' ')[3:-1]
         print("Start year: {}".format(start_year))
 
     with open(data_file, 'r') as f:
@@ -122,12 +126,13 @@ def main(data_file):
                             # data_all.append(tuple([tech,mode_list[i]]))
             if line.startswith('param TechnologyFromStorage'):
                 parsing = True
-
+    
     dict_out = defaultdict(list)
     dict_inp = defaultdict(list)
     dict_all = defaultdict(list)
     dict_stt = defaultdict(list)
     dict_stf = defaultdict(list)
+
 
     for f, t, m in data_out:
         dict_out[f].append((m,t))
@@ -181,24 +186,30 @@ def main(data_file):
             else:
                 line = 'set MODEperTECHNOLOGY[' + str(each) + ']:='
             file_out.write(line + ';' + '\n')
+        
+        for i,each in enumerate(techs_hyd_list):
+            line = 'set TECHS_FPVxHYD[' + str(each) + ']:=' + str(techs_FPV_list[i])
+            line = line.replace(',','').replace(':=[',':= ').replace(']*','').replace("'","")
+            file_out.write(line + ';' + '\n')
+        
 
-        if len(storage_list) > 1:
-            for each in storage_list:
-                if each in dict_stt.keys():
-                    line = 'set MODExTECHNOLOGYperSTORAGEto[' + str(each)+']:=' + str(dict_out[each])
-                    line = line.replace('),',')').replace('[(',' (').replace(')]',')').replace("'","")
-                else:
-                    line = 'set MODExTECHNOLOGYperSTORAGEto[' + str(each) + ']:='
-                file_out.write(line + ';' + '\n')
+        # if len(storage_list) > 1:
+        #     for each in storage_list:
+        #         if each in dict_stt.keys():
+        #             line = 'set MODExTECHNOLOGYperSTORAGEto[' + str(each)+']:=' + str(dict_out[each])
+        #             line = line.replace('),',')').replace('[(',' (').replace(')]',')').replace("'","")
+        #         else:
+        #             line = 'set MODExTECHNOLOGYperSTORAGEto[' + str(each) + ']:='
+        #         file_out.write(line + ';' + '\n')
 
-        if len(storage_list) > 1:
-            for each in storage_list:
-                if each in dict_stf.keys():
-                    line = 'set MODExTECHNOLOGYperSTORAGEfrom[' + str(each)+']:=' + str(dict_out[each])
-                    line = line.replace('),',')').replace('[(',' (').replace(')]',')').replace("'","")
-                else:
-                    line = 'set MODExTECHNOLOGYperSTORAGEfrom[' + str(each) + ']:='
-                file_out.write(line + ';' + '\n')
+        # if len(storage_list) > 1:
+        #     for each in storage_list:
+        #         if each in dict_stf.keys():
+        #             line = 'set MODExTECHNOLOGYperSTORAGEfrom[' + str(each)+']:=' + str(dict_out[each])
+        #             line = line.replace('),',')').replace('[(',' (').replace(')]',')').replace("'","")
+        #         else:
+        #             line = 'set MODExTECHNOLOGYperSTORAGEfrom[' + str(each) + ']:='
+        #         file_out.write(line + ';' + '\n')
 
         file_out.write('end;\n')
 
@@ -214,4 +225,14 @@ if __name__ == '__main__':
         try:
             main(data_file)
         except:
+            print('failed CBC_results_AS_MODEX')
             sys.exit(1)
+
+
+
+
+
+
+
+
+

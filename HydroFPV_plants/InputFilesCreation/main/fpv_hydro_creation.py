@@ -108,6 +108,20 @@ timeslices_full = np.arange(2015,2071,1)
 col_names = timeslices_full.tolist()
 col_names.insert(0,'TECHNOLOGY')
 
+
+# ------------------------------------------------------------------------------
+
+# HYD and FPV Techs sets
+df_sel = df.iloc[np.where((df['Type'] == 'Reservoir') &
+                          (df['First Year'] > 2023))[0]]
+df_sorted = df_sel.sort_values(by=['Country', 'Unit Name'])
+
+df_fpv = df_sorted['solar_codes']
+df_hyd = df_sorted['hydro_codes']
+
+df_list.append(df_hyd)
+df_list.append(df_fpv)
+
 # ------------------------------------------------------------------------------
 
 # AvailabilityFactor
@@ -642,7 +656,7 @@ df_list.append(df_vc)
 
 
 # Save all dataframes to excel in different sheets
-sheet_names = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 'CapacityOfOneTechnologyUnit',
+sheet_names = ['TECHNOLOGY', 'TECHS_HYD', 'TECHS_FPV', 'AvailabilityFactor', 'CapacityFactor', 'CapacityOfOneTechnologyUnit',
                'CapacityToActivityUnit','CapitalCost', 'EmissionActivityRatio', 
                'FixedCost', 'InputActivityRatio','OutputActivityRatio', 
                'OperationalLife', 'ResidualCapacity', 'TotalAnnualMaxCapacity',
@@ -654,7 +668,10 @@ sheet_names = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 'CapacityOf
 writer = pd.ExcelWriter('Parameters_hybrid_plants.xlsx')
 
 for i,dfr in enumerate(df_list):
-    dfr.to_excel(writer, sheet_name = sheet_names[i], index=False)
+    if sheet_names[i] in ['TECHS_HYD', 'TECHS_FPV']:
+        dfr.to_excel(writer, sheet_name = sheet_names[i], index=False, header=False)
+    else:
+        dfr.to_excel(writer, sheet_name = sheet_names[i], index=False)
 
 writer.close()
     

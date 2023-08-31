@@ -18,14 +18,14 @@ prefixes = ["EG","ET","SD","SS", "ISNGEGBP00","LYELEGBP00"]
 carbon_removal_tech = pd.DataFrame(['DZLYC', 'MATNC', 'RSACO'],columns = ['CIFGA'])
 
 #  Data to add extra fuels for trade links that become external: 
-nyears = 36
+nyears = 56
 values_el = np.ones((3,nyears))*0.95
 values_gas = np.ones((1, nyears))*0.99
 data = [['ETELDJBP00','ETDUEL', 1 ], ['ETELKEBP00','ETDUEL', 1 ],
-        ['ETNGDJBP00', 'ETDUNG',1], ['LYELEGBP00', 'EGDUEL', 1]]
+        ['ETNGDJBP00', 'ETDUNG',1], ['LYELEGBP00', 'EGDUEL', 2]]
 
 folder = r'Data'
-filenames = ['TEMBA_SSP1-26.xlsx']
+filenames = ['TEMBA_Refer.xlsx']
 
 
 for x, filename in enumerate(filenames):
@@ -59,7 +59,7 @@ for x, filename in enumerate(filenames):
     index = [sheet_names.index(i) for i in sheet_names_to_modify]
     
 
-    writer = pd.ExcelWriter(filenames[x])
+    writer = pd.ExcelWriter(filenames[x][0:-5]+'_ENB.xlsx')
     
     for i,df in enumerate(DF_list):
         
@@ -84,8 +84,15 @@ for x, filename in enumerate(filenames):
             df_values = pd.concat([df_2,df_3])
             df_fuels = pd.concat([df_1,df_values],axis=1)
             df = pd.concat([df,df_fuels], ignore_index=True)
-            
-        df.to_excel(writer, sheet_name = sheet_names[i], index=False)
+        
+        # Fix technology header
+        if sheet_names[i] == 'TECHNOLOGY':
+            df = df.rename(columns = {list(df)[0]: 'TECHNOLOGY'}, inplace = True)
+         
+        if sheet_names[i] in ['FUEL', 'EMISSION']:
+            df.to_excel(writer, sheet_name = sheet_names[i], index=False, header=False)
+        else:
+            df.to_excel(writer, sheet_name = sheet_names[i], index=False)
     
     writer.close()
 

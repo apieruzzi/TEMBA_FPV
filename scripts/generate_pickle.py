@@ -69,6 +69,7 @@ def main(input_file : str, data_file : str, pickle_file : str, result_format='gu
     params = df.parameter.unique()
     all_params = {}
     cols = {'NewCapacity': ['r','t','y'],
+            'NumberOfNewTechnologyUnits': ['r','t','y'],
             'AccumulatedNewCapacity':['r','t','y'], 
             'TotalCapacityAnnual':['r','t','y'],
             'CapitalInvestment':['r','t','y'],
@@ -86,7 +87,9 @@ def main(input_file : str, data_file : str, pickle_file : str, result_format='gu
             'AnnualTechnologyEmissionByMode':['r','t','e','m','y'],
             'AnnualTechnologyEmission':['r','t','e','y'],
             'AnnualEmissions':['r','e','y'],
-            'UseByTechnologyAnnual':['r','t','f','y']
+            'UseByTechnologyAnnual':['r','t','f','y'],
+            'z':['r','t','y'],
+            'v':['r','t','y']
             }
 
     for each in params:

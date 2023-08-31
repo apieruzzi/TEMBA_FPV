@@ -70,6 +70,10 @@ set STORAGE;
 set MODEperTECHNOLOGY{TECHNOLOGY} within MODE_OF_OPERATION;
 set MODExTECHNOLOGYperFUELout{FUEL} within MODE_OF_OPERATION cross TECHNOLOGY;
 set MODExTECHNOLOGYperFUELin{FUEL} within MODE_OF_OPERATION cross TECHNOLOGY;
+set TECHS_FPV;
+set TECHS_HYD;
+set TECHS_FPVxHYD{TECHS_HYD} within TECHS_FPV;
+
 #
 #####################
 #    Parameters     #
@@ -127,6 +131,8 @@ param ResidualStorageCapacity{r in REGION, s in STORAGE, y in YEAR};
 param CapacityOfOneTechnologyUnit{r in REGION, t in TECHNOLOGY, y in YEAR};
 param TotalAnnualMaxCapacity{r in REGION, t in TECHNOLOGY, y in YEAR};
 param TotalAnnualMinCapacity{r in REGION, t in TECHNOLOGY, y in YEAR};
+param M := 7;
+param eps := 0.005;
 #
 #########                        Investment Constraints                #############
 #
@@ -231,6 +237,8 @@ var NumberOfNewTechnologyUnits{r in REGION, t in TECHNOLOGY, y in YEAR} >= 0,int
 var NewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR} >= 0;
 var AccumulatedNewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR} >= 0;
 var TotalCapacityAnnual{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
+var z{r in REGION, t in TECHNOLOGY, y in YEAR}, binary; 
+var v{r in REGION, t in TECHNOLOGY, y in YEAR} >=0;
 #
 #########                    Activity Variables                         #############
 #
@@ -445,6 +453,13 @@ s.t. TCC2_TotalAnnualMinCapacityConstraint{r in REGION, t in TECHNOLOGY, y in YE
 #
 s.t. NCC1_TotalAnnualMaxNewCapacityConstraint{r in REGION, t in TECHNOLOGY, y in YEAR}: NewCapacity[r,t,y] <= TotalAnnualMaxCapacityInvestment[r,t,y];
 s.t. NCC2_TotalAnnualMinNewCapacityConstraint{r in REGION, t in TECHNOLOGY, y in YEAR: TotalAnnualMinCapacityInvestment[r,t,y]>0}: NewCapacity[r,t,y] >= TotalAnnualMinCapacityInvestment[r,t,y];
+s.t. NCC3{r in REGION, t in TECHS_HYD, y in YEAR}: TotalCapacityAnnual[r,t,y] <= z[r,t,y]*M;
+s.t. NCC4{r in REGION, t in TECHS_HYD, y in YEAR}: TotalCapacityAnnual[r,t,y] >= z[r,t,y]-1 + eps;
+s.t. NCC5{r in REGION, t in TECHS_HYD, tt in TECHS_FPVxHYD[t], y in YEAR}: v[r,tt,y] <= M*z[r,t,y];
+s.t. NCC6{r in REGION, t in TECHS_HYD, tt in TECHS_FPVxHYD[t], y in YEAR}: v[r,tt,y] <= NewCapacity[r,tt,y];
+s.t. NCC7{r in REGION, t in TECHS_HYD, tt in TECHS_FPVxHYD[t],y in YEAR}: v[r,tt,y] >= NewCapacity[r,tt,y]-M*(1-z[r,t,y]);
+s.t. NCC8{r in REGION, t in TECHS_HYD, tt in TECHS_FPVxHYD[t], y in YEAR}: v[r,tt,y] <= M;
+s.t. NCC9{r in REGION, t in TECHS_HYD, tt in TECHS_FPVxHYD[t], y in YEAR}: NewCapacity[r,tt,y] = v[r,tt,y];
 #
 #########                   Annual Activity Constraints        ##############
 #

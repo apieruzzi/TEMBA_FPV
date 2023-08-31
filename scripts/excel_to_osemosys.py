@@ -24,7 +24,6 @@ def csv_from_excel(input_workbook, output_file):
     sheetNames = workBook.sheet_names()  # I read all the sheets in the xlsx file
     # I modify the names of the sheets since some do not match with the actual ones
     modifiedSheetNames = modifyNames(sheetNames)
-
     # Create all the csv files in a new folder called CSVFiles
     for i in range(len(sheetNames)):
         sh = workBook.sheet_by_name(sheetNames[i])  # all the sheet names
@@ -58,8 +57,8 @@ def parseCSVFilesAndConvert(sheetNames):
     for i in range(len(sheetNames)):
         # 8 #all the     parameters thad do not have variables
         if (sheetNames[i] in ['STORAGE', 'EMISSION', 'MODE_OF_OPERATION',
-                              'REGION', 'FUEL', 'TIMESLICE', 'TECHNOLOGY',
-                              'YEAR']):
+                              'REGION', 'FUEL', 'TIMESLICE', 'TECHNOLOGY', 'TECHS_HYD',
+                              'TECHS_FPV', 'YEAR']):
             result += 'set ' + sheetNames[i] + ' := '
             with open('CSVFiles/' + sheetNames[i] + '.csv', newline='') as csvfile:
                 reader = csv.reader(csvfile)
@@ -67,7 +66,7 @@ def parseCSVFilesAndConvert(sheetNames):
                     result += " ".join(row) + " "
                 result += ";\n"
         # 24 #all the parameters     that have one variable
-        elif (sheetNames[i] in ['AccumulatedAnnualDemand', 'CapitalCost',
+        elif (sheetNames[i] in ['AccumulatedAnnualDemand', 'CapacityOfOneTechnologyUnit','CapitalCost',
                                 'FixedCost', 'ResidualCapacity',
                                 'SpecifiedAnnualDemand',
                                 'TotalAnnualMinCapacity',
@@ -97,8 +96,7 @@ def parseCSVFilesAndConvert(sheetNames):
         elif (sheetNames[i] in ['YearSplit']):
             result += 'param ' + sheetNames[i] + ' default 0 :\n'
             result += insert_table(sheetNames[i])
-        elif (sheetNames[i] in ['CapacityOfOneTechnologyUnit',
-                                'EmissionsPenalty', 'REMinProductionTarget',
+        elif (sheetNames[i] in ['EmissionsPenalty', 'REMinProductionTarget',
                                 'RETagFuel', 'RETagTechnology',
                                 'ReserveMargin', 'ReserveMarginTagFuel',
                                 'ReserveMarginTagTechnology', 'TradeRoute']):
@@ -115,7 +113,7 @@ def parseCSVFilesAndConvert(sheetNames):
         elif (sheetNames[i] in ['CapacityFactor']):
             result += 'param ' + sheetNames[i] + ' default 1 := \n'
             result += insert_two_variables(sheetNames, i)
-        # 3 #all the parameters that have 3     variables
+        # 4 #all the parameters that have 3     variables
         elif (sheetNames[i] in ['EmissionActivityRatio', 'InputActivityRatio',
                                 'OutputActivityRatio']):
             result += 'param ' + sheetNames[i] + ' default 0 := \n'
@@ -253,5 +251,9 @@ if __name__ == '__main__':
     else:
         try:
             main(sys.argv[1], sys.argv[2])
-        except:
+        except Exception as ex:
+            print(ex)
             sys.exit(1)
+            
+
+

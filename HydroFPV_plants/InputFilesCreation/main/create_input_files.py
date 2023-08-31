@@ -12,7 +12,7 @@ import os
 
 
 # Import existing input file
-filename = r'TEMBA_Refer.xlsx'
+filename = r'TEMBA_Refer_ENB.xlsx'
 
 sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 'CapacityOfOneTechnologyUnit',
                'CapacityToActivityUnit','CapitalCost', 'EmissionActivityRatio',
@@ -33,6 +33,12 @@ writer = pd.ExcelWriter('Combined_techs_input_file.xlsx')
 
 xl = pd.ExcelFile(filename)
 sheet_names = xl.sheet_names
+
+# Add two sheets for the new sets
+df_hyd = pd.read_excel(filename_plants, sheet_name='TECHS_HYD')
+df_fpv = pd.read_excel(filename_plants, sheet_name='TECHS_FPV')
+df_hyd.to_excel(writer, sheet_name = 'TECHS_HYD', index=False)
+df_fpv.to_excel(writer, sheet_name = 'TECHS_FPV', index=False)  
 
 for i in range(len(sheet_names)):
     
@@ -243,10 +249,14 @@ for i in range(len(sheet_names)):
         
         # Remove generic hydro techs for all countries but Ethiopia
         if 'TECHNOLOGY' in df_comb.columns: 
-            df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('EGHYDMS')]
+            # df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('EGHYDMS')]
             df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SDHYDMS')]
             df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SSHYDMS')]
-        df_comb.to_excel(writer, sheet_name = sheet_names[i], index=False)
+            
+        if sheet_names[i] == 'TECHNOLOGY':
+            df_comb.to_excel(writer, sheet_name = sheet_names[i], index=False, header=False)
+        else:    
+            df_comb.to_excel(writer, sheet_name = sheet_names[i], index=False)
     
     else:
         if sheet_names[i] == 'TotalAnnualMinCapacityInvestmen':
@@ -257,12 +267,10 @@ for i in range(len(sheet_names)):
             
         # Remove generic hydro techs for all countries but Ethiopia
         if 'TECHNOLOGY' in df.columns:  
-            df = df[~df['TECHNOLOGY'].str.contains('EGHYD')]
+            # df = df[~df['TECHNOLOGY'].str.contains('EGHYD')]
             df = df[~df['TECHNOLOGY'].str.contains('SDHYD')]
             df = df[~df['TECHNOLOGY'].str.contains('SSHYD')]
         df.to_excel(writer, sheet_name = sheet_names[i], index=False)
-    
-        
 
 writer.close()
 
