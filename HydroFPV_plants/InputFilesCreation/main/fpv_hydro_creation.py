@@ -96,7 +96,7 @@ cols_solar = ['Country', 'Unit Name', 'Latitude ', 'Longitude', 'Status',
 df_hydro = df[cols_hydro]
 df_hydro = df_hydro[(df_hydro['hydro_codes'] != 'ETHYDLTS02')] #No hydropower on lake tana
 df_hydro = df_hydro.reset_index(drop=True)
-df_solar = df[cols_solar][:38] #harcoded index for plants without reservoir (no fpv)
+df_solar = df[cols_solar][:37] #harcoded index for plants without reservoir (no fpv)
 
 df_techs_hydro = df_hydro['hydro_codes']
 df_techs_solar = df_solar['solar_codes']

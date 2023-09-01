@@ -14,11 +14,13 @@ import os
 # Import existing input file
 filename = r'TEMBA_Refer_ENB.xlsx'
 
-sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 'CapacityOfOneTechnologyUnit',
-               'CapacityToActivityUnit','CapitalCost', 'EmissionActivityRatio',
-               'FixedCost', 'InputActivityRatio','OutputActivityRatio',
-               'OperationalLife', 'ResidualCapacity', 'TotalAnnualMaxCapacity',
-               'TotalAnnualMaxCapacityInvestmen', 'TotalAnnualMinCapacityInvestmen', 'VariableCost']
+sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 
+                       'CapacityOfOneTechnologyUnit', 'CapacityToActivityUnit',
+                       'CapitalCost', 'EmissionActivityRatio', 'FixedCost', 
+                       'InputActivityRatio','OutputActivityRatio','OperationalLife',
+                       'ResidualCapacity', 'TotalAnnualMaxCapacity',
+                       'TotalAnnualMaxCapacityInvestmen',
+                       'TotalAnnualMinCapacityInvestmen', 'VariableCost']
 
 
 first_year = 2015
@@ -65,209 +67,131 @@ for i in range(len(sheet_names)):
         
         # Fix hydropower outside of the Nile Basin
         if sheet_names[i] == 'ResidualCapacity':
-            # Residual capacities of HP plants in the Nile for each country per size
-            resc_eg_med_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('EGHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_eg_large_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('EGHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_et_med_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('ETHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_et_large_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('ETHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_sd_med_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SDHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_sd_large_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SDHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_ss_med_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SSHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_ss_large_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SSHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-        
-            # Total residual capacities of HP plants for each country per size (from TEMBA)
-            resc_eg_med_temba = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('EGHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_eg_large_temba = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('EGHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_et_med_temba = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('ETHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_et_large_temba = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('ETHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_sd_med_temba = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SDHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_sd_large_temba = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SDHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_ss_med_temba = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SSHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            resc_ss_large_temba = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SSHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            
-         
-            # Actual residual capacities of HP plants in other rivers for each country per size
-            resc_eg_med = max(resc_eg_med_temba - resc_eg_med_nile, 0)
-            resc_eg_large = max(resc_eg_large_temba - resc_eg_large_nile, 0)
-            resc_et_med = max(resc_et_med_temba - resc_et_med_nile, 0)
-            resc_et_large = max(resc_et_large_temba - resc_et_large_nile, 0)
-            resc_sd_med = max(resc_sd_med_temba - resc_sd_med_nile, 0)
-            resc_sd_large = max(resc_sd_large_temba - resc_sd_large_nile, 0)
-            resc_ss_med = max(resc_ss_med_temba - resc_ss_med_nile, 0)
-            resc_ss_large = max(resc_ss_large_temba - resc_ss_large_nile, 0)
-        
-            # Insert the calculated value in the df 
-            resc_eg_med_list = (np.ones(len(years)) * resc_eg_med).tolist()
-            resc_eg_large_list = (np.ones(len(years)) * resc_eg_large).tolist()
-            resc_et_med_list = (np.ones(len(years)) * resc_et_med).tolist()
-            resc_et_large_list = (np.ones(len(years)) * resc_et_large).tolist()
-            resc_sd_med_list = (np.ones(len(years)) * resc_sd_med).tolist()
-            resc_sd_large_list = (np.ones(len(years)) * resc_sd_large).tolist()
-            resc_ss_med_list = (np.ones(len(years)) * resc_ss_med).tolist()
-            resc_ss_large_list = (np.ones(len(years)) * resc_ss_large).tolist()
-            
-            def insert_row_resc(row):
+            resc_med1 = (np.ones(46)*0.107).tolist() #2015 to 2060
+            resc_med2 = (np.ones(6)*0.064).tolist() #2060 to 2066
+            resc_med3 = (np.ones(4)*0.032).tolist() #2066 to 2070
+            resc_med = resc_med1+resc_med2+resc_med3
+            resc_small =np.zeros(56).tolist()
+            resc_large = (np.ones(56)*0.604).tolist()
+            data = [resc_large, resc_med, resc_small]
+
+            def insert_row(row, data):                
                 if 'HYDMS03X' in row['TECHNOLOGY']:
                     if 'ET' in row['TECHNOLOGY']:
-                        return resc_et_large_list
-                    elif 'SD' in row['TECHNOLOGY']:
-                        return resc_sd_large_list
-                    elif 'SS' in row['TECHNOLOGY']:
-                        return resc_ss_large_list
-                    elif 'EG' in row['TECHNOLOGY']:
-                        return resc_eg_large_list
-                
+                        return data[0]
                 elif 'HYDMS02X' in row['TECHNOLOGY']:
                     if 'ET' in row['TECHNOLOGY']:
-                        return resc_et_med_list
-                    elif 'SD' in row['TECHNOLOGY']:
-                        return resc_sd_med_list
-                    elif 'SS' in row['TECHNOLOGY']:
-                        return resc_ss_med_list
-                    elif 'EG' in row['TECHNOLOGY']:
-                        return resc_eg_med_list
-                    
+                        return data[1]
+                if 'HYDMS01X' in row['TECHNOLOGY']:
+                    if 'ET' in row['TECHNOLOGY']:
+                        return data[2]
                 else: 
                     return row[1:]
                 
-            df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row_resc(row), axis = 1)
-            
+            df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
         
         if sheet_names[i] == 'TotalAnnualMaxCapacity':
-            # Total potentials
-            potential_large = np.array([3664, 44000, 4920, 2000]) / 1000
-            potential_med = np.array([1100, 1500, 1476, 1000]) / 1000
-            potential_small = np.array([52, 1500, 14, 13]) / 1000
-    
-            # Nile capacities
-            capacity_eg_med_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('EGHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            capacity_eg_large_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('EGHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            capacity_et_med_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('ETHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            capacity_et_large_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('ETHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            capacity_sd_med_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SDHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            capacity_sd_large_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SDHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            capacity_ss_med_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SSHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S02'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            capacity_ss_large_nile = sum(df_comb[(df_comb['TECHNOLOGY'].str.contains('SSHY'))
-                                             & (df_comb['TECHNOLOGY'].str.contains('S03'))
-                                             &~ (df_comb['TECHNOLOGY'].str.contains('DM'))][first_year])
-            
-            # Actual max capacities of HP plants in other rivers for each country per size
-            capacity_eg_med = max(potential_med[0] - capacity_eg_med_nile, 0)
-            capacity_eg_large = max(potential_large[0] - capacity_eg_large_nile, 0)
-            capacity_et_med = max(potential_med[1] - capacity_et_med_nile, 0)
-            capacity_et_large = max(potential_large[1] - capacity_et_large_nile, 0)
-            capacity_sd_med = max(potential_med[2] - capacity_sd_med_nile, 0)
-            capacity_sd_large = max(potential_large[2] - capacity_sd_large_nile, 0)
-            capacity_ss_med = max(potential_med[3] - capacity_ss_med_nile, 0)
-            capacity_ss_large = max(potential_large[3] - capacity_ss_large_nile, 0)
-            
-            # Insert the calculated value in the df 
-            capacity_eg_med_list = (np.ones(len(years)) * capacity_eg_med).tolist()
-            capacity_eg_large_list = (np.ones(len(years)) * capacity_eg_large).tolist()
-            capacity_et_med_list = (np.ones(len(years)) * capacity_et_med).tolist()
-            capacity_et_large_list = (np.ones(len(years)) * capacity_et_large).tolist()
-            capacity_sd_med_list = (np.ones(len(years)) * capacity_sd_med).tolist()
-            capacity_sd_large_list = (np.ones(len(years)) * capacity_sd_large).tolist()
-            capacity_ss_med_list = (np.ones(len(years)) * capacity_ss_med).tolist()
-            capacity_ss_large_list = (np.ones(len(years)) * capacity_ss_large).tolist()
-            
-            def insert_row_maxc(row):
-                if 'HYDMS03X' in row['TECHNOLOGY']:
-                    if 'ET' in row['TECHNOLOGY']:
-                        return capacity_et_large_list
-                    elif 'SD' in row['TECHNOLOGY']:
-                        return capacity_sd_large_list
-                    elif 'SS' in row['TECHNOLOGY']:
-                        return capacity_ss_large_list
-                    elif 'EG' in row['TECHNOLOGY']:
-                        return capacity_eg_large_list
-                
-                elif 'HYDMS02X' in row['TECHNOLOGY']:
-                    if 'ET' in row['TECHNOLOGY']:
-                        return capacity_et_med_list
-                    elif 'SD' in row['TECHNOLOGY']:
-                        return capacity_sd_med_list
-                    elif 'SS' in row['TECHNOLOGY']:
-                        return capacity_ss_med_list
-                    elif 'EG' in row['TECHNOLOGY']:
-                        return capacity_eg_med_list
-                    
-                else: 
-                    return row[1:]
-                
-            df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row_maxc(row), axis = 1)
-            
+            maxc_large = (np.ones(56)*3.262).tolist()
+            maxc_med = (np.ones(56)*0.291).tolist()
+            maxc_small = (np.ones(56)*0.006).tolist() 
+            data = [maxc_large, maxc_med, maxc_small]
+            df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
             
         if sheet_names[i] == 'TotalAnnualMaxCapacityInvestmen':
-            df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row_maxc(row), axis = 1)
+            maxci_large1 = np.zeros(9).tolist()
+            maxci_large1[2] = 1.87 #2017
+            maxci_large1[8] = 0.688 #2023
+            maxci_large2 = (np.ones(47)*2.658).tolist() 
+            maxci_large = maxci_large1 + maxci_large2
+            maxci_med1 = np.zeros(17).tolist()
+            maxci_med2 = (np.ones(39)*0.088).tolist() 
+            maxci_med = maxci_med1 + maxci_med2
+            maxci_small1 = np.zeros(17).tolist()
+            maxci_small2 = (np.ones(39)*0.006).tolist() 
+            maxci_small = maxci_small1 + maxci_small2
+            data = [maxci_large, maxci_med, maxci_small]
+            df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
         
+        if sheet_names[i] == 'TotalAnnualMinCapacityInvestmen':
+            minci_large = np.zeros(56).tolist()
+            minci_large[2] = 1.87 #2017
+            minci_large[8] = 0.688 #2023
+            minci_med = np.zeros(56).tolist()
+            minci_small = np.zeros(56).tolist()
+            data = [minci_large, minci_med, minci_small]
+            df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
+        
+        # Fix emission activity ratios
+        if sheet_names[i] == 'EmissionActivityRatio':
+            row_eg_hyd = df_comb.iloc[np.where(df_comb['TECHNOLOGY'] == 'EGHYDMS03X')]
+            values_eg_hyd = row_eg_hyd.iloc[:,1:].values.flatten().tolist()
+            row_sd_hyd = df_comb.iloc[np.where(df_comb['TECHNOLOGY'] == 'SDHYDMS03X')]
+            values_sd_hyd = row_sd_hyd.iloc[:,1:].values.flatten().tolist()
+            row_eg_sol = df_comb.iloc[np.where(df_comb['TECHNOLOGY'] == 'EGSOU1P03X')]
+            values_eg_sol = row_eg_sol.iloc[:,1:].values.flatten().tolist()
+            row_sd_sol = df_comb.iloc[np.where(df_comb['TECHNOLOGY'] == 'SDSOU1P03X')]
+            values_sd_sol = row_sd_sol.iloc[:,1:].values.flatten().tolist()
+            
+            def assign_row(row):
+                if 'EGHYD'in row['TECHNOLOGY']:
+                    return values_eg_hyd
+                elif 'SDHYD' in row['TECHNOLOGY']:
+                    return values_sd_hyd
+                if 'EGSO'in row['TECHNOLOGY']:
+                    return values_eg_sol
+                elif 'SDSO' in row['TECHNOLOGY']:
+                    return values_sd_sol
+                else:
+                    return row[1:]
+            
+            df_comb.iloc[:,1:] = df_comb.apply(lambda row: assign_row(row), axis=1)
+            
+            # Remove the ET and SS hydro and FPV techs 
+            df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('ETHYD')]
+            df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('ETSOFPV')]
+            df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SSHYD')]
+            df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SSSOFPV')]
+        
+        # Fix trade link costs
+        if sheet_names[i] == 'VariableCost':
+            def add_row(row):
+                if 'ETELKE' in row['TECHNOLOGY']:
+                    if row['MODEOFOPERATION'] == 1:
+                        return (np.ones(56)*(-180)).tolist()
+                    elif row['MODEOFOPERATION'] == 2:
+                        return (np.ones(56)*(180)).tolist()
+                if 'ETELDJ'in row['TECHNOLOGY']:
+                    if row['MODEOFOPERATION'] == 1:
+                        return (np.ones(56)*(-100)).tolist()
+                    elif row['MODEOFOPERATION'] == 2:
+                        return (np.ones(56)*(99999)).tolist()
+                if 'LYELEG'in row['TECHNOLOGY']:
+                    if row['MODEOFOPERATION'] == 1:
+                        return (np.ones(56)*(85)).tolist()
+                    elif row['MODEOFOPERATION'] == 2:
+                        return (np.ones(56)*(-85)).tolist()
+                else:
+                    return row[2:]
+                
+            df_comb.iloc[:,2:] = df_comb.apply(lambda row: add_row(row), axis=1)
+            
         # Remove generic hydro techs for all countries but Ethiopia
         if 'TECHNOLOGY' in df_comb.columns: 
-            # df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('EGHYDMS')]
+            df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('EGHYDMS')]
             df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SDHYDMS')]
             df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SSHYDMS')]
-            
+        
+        # Don't save the header for the techs sheet
         if sheet_names[i] == 'TECHNOLOGY':
             df_comb.to_excel(writer, sheet_name = sheet_names[i], index=False, header=False)
         else:    
             df_comb.to_excel(writer, sheet_name = sheet_names[i], index=False)
+        
     
-    else:
-        if sheet_names[i] == 'TotalAnnualMinCapacityInvestmen':
-            # Set min investment capacity of generic techs to 0
-            df.loc[df['TECHNOLOGY'].str.contains('HYDMS02X') 
-                   | df['TECHNOLOGY'].str.contains('HYDMS03X') 
-                   |df['TECHNOLOGY'].str.contains('HYDMS01X'), df.columns[1:]] = 0
-            
+    else:            
         # Remove generic hydro techs for all countries but Ethiopia
         if 'TECHNOLOGY' in df.columns:  
-            # df = df[~df['TECHNOLOGY'].str.contains('EGHYD')]
+            df = df[~df['TECHNOLOGY'].str.contains('EGHYD')]
             df = df[~df['TECHNOLOGY'].str.contains('SDHYD')]
             df = df[~df['TECHNOLOGY'].str.contains('SSHYD')]
         df.to_excel(writer, sheet_name = sheet_names[i], index=False)
