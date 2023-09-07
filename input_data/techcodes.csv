@@ -25,8 +25,8 @@ CO2,CO2,black
 COALAGG,Coal,black
 COEXPORT,Coal exports,black
 CO00X00X,Coal extraction (mining),darkred
-CO00I00X,"Coal imports (inland transport, maritime freight)",darkmagenta
-COSCP01N,Coal power plant - Air cooling (new),ghostwhite
+CO00I00X,Coal imports (inland transport-maritime freight),darkmagenta
+COSCP01N,Coal power plant - Air cooling (new),red
 COSCP01O,Coal power plant - Air cooling (old),dimgray
 COSCP02N,Coal power plant - MDT cooling (new),goldenrod
 COSCP02O,Coal power plant - MDT cooling (old),dodgerblue
@@ -50,7 +50,7 @@ CRUDRE2X,Crude oil refinery 2,grey13
 CRUDPROX,Crude oil refinery capacity,grey07
 CREXPORT,Crude oil exports,sienna
 SOC2P00X,CSP (with storage),lavender
-SOC1P00X,CSP (without storage),grey
+SOC1P00X,CSP (without storage),dimgrey
 EL00TDTX,Distribution technology (Distribution to final electricity demand),grey13
 EGELJOBP00,Egypt - Jordan Historic EL trade link,yellow
 EGELSABP00,Egypt - Saudi Arabia Planned EL trade link,beige
@@ -58,9 +58,9 @@ EGELSDBP00,Egypt - Sudan Historic and Planned EL trade link,tomato
 EGNGTUBP00,Egypt - Turkey Historic and Planned NG trade link,polarorange
 ETHANOLX,Ethanol production,honeydew
 ETELDJBP00,Ethiopia - Djibouti EL existing trade link,yellow
-ETNGDJBP00,Ethiopia - Djibouti NG planned trade link,beige
+ETNGDJBP00,Ethiopia - Djibouti NG planned trade link,yellow
 ETELKEBP00,Ethiopia - Kenya EL planned trade link,tomato
-ETELSDBP00,Ethiopia - Sudan EL existing trade link,cyan
+ETELSDBP00,Ethiopia - Sudan EL existing trade link,yellow
 FW00P00X,Firewood process (non-power sector),indianred
 GASAGG,Gas,orange
 gas_trade,gas_trade,polarpurple
@@ -135,10 +135,10 @@ HFGCP04O,Oil fired gas turbine (SCGT) - OTF/OTS cooling (old),lime
 OREAGG,Other renewables,lightgreen
 power_trade,power_trade,deeppink
 HYDMS01X,Small hydropower plant,mediumturquoise
-SOLCSP,Solar CSP,chartreuse
+SOLCSP,Solar CSP,red
 SOLAR00X,Solar potential,lightgrey
 SOLPV,Solar PV,yellow
-SOLFPV,Solar FPV,green
+SOLFPV,Solar FPV,darkgreen
 SOV1F01X,Solar PV (roof top),navajowhite
 SOU1P03X,Solar PV (utility),mediumorchid
 SOV2F01X,Solar PV with storage,pearl04
@@ -156,46 +156,90 @@ CO00E00X,Coal exports (outside Africa),black
 CR00E00X,Crude oil exports (outside Africa),sienna
 HF00E00X,HFO exports (outside Africa),lightteal
 LF00E00X,LFO exports (outside Africa),polarbluelight
-HYDHAS03,High Aswan Dam,aquamarine
 HYDA1S03,Aswan 1,aquamarine
 HYDA2S03,Aswan 2,aquamarine
-HYDRNS03,Renaissance,aquamarine
-HYDUMS03,Upper Mandaya,aquamarine
-HYDKAS03,Karadobi,aquamarine
+HYDHAS03,High Aswan Dam,aquamarine
+HYDAES03,Aleltu East,aquamarine
+HYDAWS03,Aleltu West,aquamarine
+HYDANS02,Amarti-Neshe,aquamarine
+HYDBRS03,Baro,aquamarine
 HYDBAS03,Beko Abo,aquamarine
+HYDBBS03,Birbir,aquamarine
 HYDCYS03,Chemoga Yeda,aquamarine
-HYDMRS03,Merowe,aquamarine
-HYDROS03,Roseires,aquamarine
-HYDSES02,Sennar,aquamarine
-HYDJAS02,Jebel Aulia,aquamarine
-HYDDAS03,Dal,aquamarine
-HYDSHS03,Shereik,aquamarine
-HYDKJS03,Kajbar,aquamarine
+HYDFCS03,Finchaa,aquamarine
+HYDGBS03,Geba,aquamarine
+HYDGJS03,Genji,aquamarine
+HYDKRS03,Karadobi,aquamarine
+HYDLTS03,Lake Tana - Beles,aquamarine
+HYDLDS03,Lower Dabus,aquamarine
+HYDLSS03,Lower Dedessa,aquamarine
+HYDRNS03,Renaissance,aquamarine
+HYDS2S02,Sor 2,aquamarine
+HYDTMS03,Tams,aquamarine
+HYDT1S03,Tekeze 1,aquamarine
+HYDT2S03,Tekeze 2,aquamarine
+HYDUDS03,Upper Dabus,aquamarine
+HYDUMS03,Upper Mandaya,aquamarine
+HYDJBS03,Juba Barrage,aquamarine
+HYDWAS02,Wau,aquamarine
 HYDDGS03,Dagash,aquamarine
+HYDDLS03,Dal,aquamarine
+HYDJAS02,Jebel Aulia,aquamarine
+HYDKBS03,Kajbar,aquamarine
+HYDKSS02,Kashm El Girba ,aquamarine
+HYDMRS03,Merowe,aquamarine
 HYDMGS03,Mograt,aquamarine
+HYDRSS03,Roseires,aquamarine
 HYDSBS03,Sabaloka,aquamarine
+HYDSNS02,Sennar,aquamarine
+HYDSHS03,Shereik,aquamarine
+HYDUAS03,Upper Atbara,aquamarine
 HYDESS02,Esna,aquamarine
 HYDNHS02,Naga Hamadi,aquamarine
-HYDNAS02,New Assiut Barrage,aquamarine
-HYDT1S02,Tis Abay 2,aquamarine
-HYDT2S02,Tis Abay 1,aquamarine
-SOFPVHA3,High Aswan Dam FPV,palegoldenrod
+HYDNBS02,New Assiut Barrage,aquamarine
+HYDSRS02,Sor,aquamarine
+HYDT1S02,Tis Abay 1,aquamarine
+HYDT2S02,Tis Abay 2,aquamarine
+HYDBDS03,Bedden,aquamarine
+HYDFLS03,Fula,aquamarine
+HYDFSS02,Fula Small,aquamarine
+HYDLKS03,Lakki,aquamarine
+HYDSLS03,Shukoli,aquamarine
 SOFPVA13,Aswan 1 FPV,palegoldenrod
 SOFPVA23,Aswan 2 FPV,palegoldenrod
-SOFPVRN3,Renaissance FPV,palegoldenrod
-SOFPVUM3,Upper Mandaya FPV,palegoldenrod
-SOFPVKA3,Karadobi FPV,palegoldenrod
+SOFPVHA3,High Aswan Dam FPV,palegoldenrod
+SOFPVAE3,Aleltu East FPV,palegoldenrod
+SOFPVAW3,Aleltu West FPV,palegoldenrod
+SOFPVAN3,Amarti-Neshe FPV,palegoldenrod
+SOFPVBR3,Baro FPV,palegoldenrod
 SOFPVBA3,Beko Abo FPV,palegoldenrod
+SOFPVBB3,Birbir FPV,palegoldenrod
 SOFPVCY3,Chemoga Yeda FPV,palegoldenrod
-SOFPVLT3,Lake Tana FPV,palegoldenrod
-SOFPVMR3,Merowe FPV,palegoldenrod
-SOFPVRO3,Roseires FPV,palegoldenrod
-SOFPVSE3,Sennar FPV,palegoldenrod
-SOFPVJA3,Jebel Aulia FPV,palegoldenrod
-SOFPVDA3,Dal FPV,palegoldenrod
-SOFPVSH3,Shereik FPV,palegoldenrod
-SOFPVKJ3,Kajbar FPV,palegoldenrod
+SOFPVFC3,Finchaa FPV,palegoldenrod
+SOFPVGB3,Geba FPV,palegoldenrod
+SOFPVGJ3,Genji FPV,palegoldenrod
+SOFPVKR3,Karadobi FPV,palegoldenrod
+SOFPVLT3,Lake Tana - Beles FPV,palegoldenrod
+SOFPVLD3,Lower Dabus FPV,palegoldenrod
+SOFPVLS3,Lower Dedessa FPV,palegoldenrod
+SOFPVRN3,Renaissance FPV,palegoldenrod
+SOFPVS23,Sor 2 FPV,palegoldenrod
+SOFPVTM3,Tams FPV,palegoldenrod
+SOFPVT13,Tekeze 1 FPV,palegoldenrod
+SOFPVT23,Tekeze 2 FPV,palegoldenrod
+SOFPVUD3,Upper Dabus FPV,palegoldenrod
+SOFPVUM3,Upper Mandaya FPV,palegoldenrod
+SOFPVJB3,Juba Barrage FPV,palegoldenrod
+SOFPVWA3,Wau FPV,palegoldenrod
 SOFPVDG3,Dagash FPV,palegoldenrod
+SOFPVDL3,Dal FPV,palegoldenrod
+SOFPVJA3,Jebel Aulia FPV,palegoldenrod
+SOFPVKB3,Kajbar FPV,palegoldenrod
+SOFPVKS3,Kashm El Girba  FPV,palegoldenrod
+SOFPVMR3,Merowe FPV,palegoldenrod
 SOFPVMG3,Mograt FPV,palegoldenrod
+SOFPVRS3,Roseires FPV,palegoldenrod
 SOFPVSB3,Sabaloka FPV,palegoldenrod
-
+SOFPVSN3,Sennar FPV,palegoldenrod
+SOFPVSH3,Shereik FPV,palegoldenrod
+SOFPVUA3,Upper Atbara FPV,palegoldenrod

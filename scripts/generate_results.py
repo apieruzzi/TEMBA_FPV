@@ -31,13 +31,13 @@ import tempfile
 cufflinks.go_offline()
 cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
 
-picklefile = sys.argv[1]
-scenario = sys.argv[2]
-destination_folder = sys.argv[3]
+# picklefile = sys.argv[1]
+# scenario = sys.argv[2]
+# destination_folder = sys.argv[3]
 
-# picklefile = r'input_data/REF_FPV.pickle'
-# scenario = 'REF_FPV'
-# destination_folder = 'results/export_REF_FPV'
+picklefile = r'input_data/REF_FPV.pickle'
+scenario = 'REF_FPV'
+destination_folder = 'results/export_REF_FPV'
 first_year = 2015
 last_year = 2070
 # homedir = r'C:\Users\Alessandro Pieruzzi\Documents\Thesis\TEMBA_FPV\debugging\debugplots'
@@ -74,12 +74,12 @@ with tempfile.TemporaryDirectory() as temp:
     new_colors_hydro = ['yellow','chartreuse', 'cornflowerblue', #Egypt
                         'brown', 'blue', 'chocolate', 'coral', 'crimson', 
                         'forestgreen','yellow', 'indigo', 'greenyellow', 'lightblue', 
-                        'red', 'black', 'lime', 'salmon', 'midnightblue', 
+                        'red', 'black', 'lime', 'darkred', 'midnightblue', 
                         'olive', 'orange', 'purple', 'teal', 'lime', 'dimgrey', #Ethiopia
                         'yellow', 'red', #SouthSudan
                         'brown', 'blue', 'chocolate', 'coral', 'crimson', 
                         'forestgreen','yellow', 'indigo', 'greenyellow', 'lightblue', 
-                        'red', 'black', #Sudan
+                        'midnightblue', 'black', #Sudan
                         'red', 'orange', 'green', #Egypt ROR
                         'pink', 'violet', 'lightyellow', #Ethiopia ROR
                         'yellow','chartreuse', 'cornflowerblue', 'orange', 'green' #SS ROR
@@ -91,12 +91,12 @@ with tempfile.TemporaryDirectory() as temp:
     new_colors_solar = ['yellow','chartreuse', 'cornflowerblue', #Egypt
                         'brown', 'blue', 'chocolate', 'coral', 'crimson', 
                         'forestgreen','yellow', 'indigo', 'greenyellow', 'lightblue', 
-                        'red', 'black', 'lime', 'salmon', 'midnightblue', 
+                        'red', 'black', 'lime', 'darkred', 'midnightblue', 
                         'olive', 'orange', 'purple', 'teal', 'lime', 'darkslategrey', #Ethiopia
                         'yellow', 'red', #SouthSudan
                         'brown', 'blue', 'chocolate', 'coral', 'crimson', 
                         'forestgreen','yellow', 'indigo', 'greenyellow', 'lightblue', 
-                        'red', 'black' #Sudan
+                        'midnightblue', 'black' #Sudan
                         ]
     colorcode_solar.iloc[9:,1] = new_colors_solar
     color_dict_solar = dict(
@@ -131,7 +131,7 @@ with tempfile.TemporaryDirectory() as temp:
     
     # Country code list
     country_code = pd.read_csv(url3, sep=',', encoding="ISO-8859-1")
-
+    
     years = pd.Series(range(2015, 2071))
 
     def df_filter(df, lb, ub, t_exclude):
@@ -205,7 +205,6 @@ with tempfile.TemporaryDirectory() as temp:
         df['y'] = years
         # df=df[df['y']>2022]
         return df
-
     
     def detailed_power_chart(cc,col_name, t_include=t_include, color_dict=color_dict, barmode='stack', add_title = None, plotting=True):
         df = all_params[col_name]
@@ -240,14 +239,11 @@ with tempfile.TemporaryDirectory() as temp:
             df_plot(df, unit, title, color_dict=color_dict, barmode=barmode)
         return df
 
-        
-    
-    
     def power_chart(Country):
         cc = country_code[country_code['Country Name'] == Country]['Country code'].tolist()[0]
        
         # Power capacity (Detailed):
-        cap_df = detailed_power_chart(cc,'TotalCapacityAnnual')
+        cap_df = detailed_power_chart(cc,'TotalCapacityAnnual', plotting=False)
         cap_df_hydro = detailed_power_chart(cc,'TotalCapacityAnnual',
                                             t_include_hydro, 
                                             color_dict_hydro, 
@@ -344,7 +340,7 @@ with tempfile.TemporaryDirectory() as temp:
                 pass
         gen_df = gen_df.reindex(sorted(gen_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
-        df_plot(gen_df,'Petajoules (PJ)',cc+"-"+'Power Generation (Detail)', barmode='relative')
+        # df_plot(gen_df,'Petajoules (PJ)',cc+"-"+'Power Generation (Detail)', barmode='relative')
         
         # Power generation (trades only):
         cols = [col for col in gen_df.columns if 'trade' in col]
@@ -395,6 +391,8 @@ with tempfile.TemporaryDirectory() as temp:
                                         columns='t',
                                         values='value',
                                         aggfunc='sum').reset_index().fillna(0)
+        wat_w_df_original = wat_w_df.reindex(sorted(wat_w_df.columns), axis=1).set_index(
+            'y').reset_index()
         wat_w_df = wat_w_df.reindex(sorted(wat_w_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #wat_w_df['y'] = years
@@ -423,6 +421,8 @@ with tempfile.TemporaryDirectory() as temp:
                                         columns='t',
                                         values='value',
                                         aggfunc='sum').reset_index().fillna(0)
+        wat_o_df_original = wat_o_df.reindex(sorted(wat_o_df.columns), axis=1).set_index(
+            'y').reset_index()
         wat_o_df = wat_o_df.reindex(sorted(wat_o_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         #wat_o_df['y'] = years
@@ -436,13 +436,32 @@ with tempfile.TemporaryDirectory() as temp:
                     pass
                 else:
                     wat_o_df[wd] = 0
+        
+        for wd in wat_w_df_original.columns:
+            for wc in wat_o_df_original.columns:
+                if wd in wat_o_df_original.columns:
+                    pass
+                else:
+                    wat_o_df_original[wd] = 0
+        
+        
         #####
         # Water consumption (Detailed)
         wat_c_df = wat_w_df.set_index('y')-wat_o_df.set_index('y')
         wat_c_df = wat_c_df.fillna(0.00)
         wat_c_df.reset_index(inplace=True)
+        
+        wat_c_df_original = wat_w_df_original.set_index('y')-wat_o_df_original.set_index('y')
+        wat_c_df_original = wat_c_df_original.fillna(0.00)
+        wat_c_df_original.reset_index(inplace=True)
+        wat_c_df_original['y']=years
+        wat_c_df_original = wat_c_df_original.set_index('y')
+        wat_c_df_original = wat_c_df_original[[col for col in wat_c_df_original.columns if col in t_include_hydro]]
+        wat_c_df_original.reset_index(inplace=True)
+        wat_c_df_hydro = wat_c_df_original.rename(columns=det_col)
         # wat_c_df['y']=years
-        #df_plot(wat_c_df,'Million cubic metres (Mm^3)',cc+"-"+'Water consumption')
+        df_plot(wat_c_df_hydro,'Million cubic metres (Mm^3)',cc+"-"+'Water consumption (Detail Hydro)', color_dict=color_dict_hydro)
+       
         # Water consumption (Aggregate)
         watc_agg_df = pd.DataFrame(columns=agg_col)
         watc_agg_df.insert(0, 'y', wat_c_df['y'])
@@ -653,6 +672,7 @@ with tempfile.TemporaryDirectory() as temp:
         #lfo_df['y'] = years
         # lfo_df=lfo_df[lfo_df['y']>2022]
         df_plot(lfo_df, 'Petajoules (PJ)', cc+'-'+'LFO production by technology')
+
 
     for ref_y in [2020, 2030, 2040, 2050, 2060, 2070]:
 
