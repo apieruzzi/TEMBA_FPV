@@ -509,7 +509,7 @@ df_list.append(df_opl)
 # -----------------------------------------------------------------------------
 # ResidualCapacity
 # Hydro:
-# Existing plants have as residual capacity their full capacity for the whole period (assumption)
+# Existing plants have as residual capacity their full capacity for 80 years
 # Planned plants have as residual capacity 0
 # FPV: 0 for all
 
@@ -522,12 +522,11 @@ cols.insert(3,'First Year')
 df_resc = df_resc.reindex(columns = cols)
 
 def get_capacities(row):
-    # if ((row['First Year'] >= 2015) & (row['First Year'] <= 2023)):
-    #     value = (np.ones(56-(row['First Year']-2015)) * row['Capacity (MW)'] / 1000).tolist()
-    #     value[0:0] = np.zeros(row['First Year']-2015).tolist()
-    #     return value
     if row['First Year'] <= 2015:
-        value = (np.ones(56) * row['Capacity (MW)'] / 1000).tolist()
+        last_year = row['First Year'] + 80
+        idx = min(last_year - 2015, 56)
+        value = (np.ones(idx) * row['Capacity (MW)'] / 1000).tolist()
+        value = value + np.zeros(56-idx).tolist()
         return value
     elif row['First Year'] > 2015:
         return np.zeros(56)
@@ -574,10 +573,11 @@ df_tamc = pd.DataFrame(df_solar[['solar_codes','Capacity (MW)']])
 df_tamc = df_tamc.rename(columns = {'solar_codes' : 'TECHNOLOGY'})
 df_capmax = pd.DataFrame(np.zeros((len(df_tamc),56)), columns = col_names[1:])
 
-tot_capmax = 8
-perc = df_tamc["Capacity (MW)"] / df_tamc["Capacity (MW)"].sum()
-# perc[8] = perc[0] # lake tana
-cap = perc * tot_capmax
+tot_capmax = 8 #GW
+# perc = df_tamc["Capacity (MW)"] / df_tamc["Capacity (MW)"].sum()
+# cap = perc * tot_capmax
+cap = df_tamc["Capacity (MW)"]/1000
+
 df_capmax_fpv = pd.concat([cap]*49, axis = 1, ignore_index=True).rename(lambda x: 2023+x, axis=1)
 df_capmax.loc[:,2023:] = df_capmax_fpv #only allow FPV after 2023
 df_tamc_solar = pd.concat([df_tamc['TECHNOLOGY'], df_capmax], axis = 1)
@@ -603,11 +603,25 @@ df_tmci_hydro = df_tmci_hydro.iloc[:,:-1]
 
 # FPV: same as max capacity: after the lake is present, osemosys can allocate 
 # how much of the total available capacity as it wants every year (0 for ref scenario)
-df_tmci_solar = df_tamc_solar #for ref scenario 
+
+max_cap_inv = cap
+for i in range(len(max_cap_inv)):
+    max_cap_inv[i]=min(max_cap_inv[i],0.3)
+    
+
+df_tmci_solar = df_tamc_solar 
 
 df_solar.loc[8,'First Year'] = 2022
 df_tmci_solar = pd.concat([df_tamc_solar, df_solar['First Year']], axis = 1)
 
+for i in range(len(df_tmci_solar)):
+    df_tmci_solar.loc[i,2022:2040] = np.minimum(df_tmci_solar.loc[i,2015:2040], 
+                                                np.ones(len(df_tmci_solar.loc[i,2015:2040]))*0.3)
+    df_tmci_solar.loc[i,2041:2050] = np.minimum(df_tmci_solar.loc[i,2041:2050], 
+                                                np.ones(len(df_tmci_solar.loc[i,2041:2050]))*0.6)
+    df_tmci_solar.loc[i,2051:2070] = np.minimum(df_tmci_solar.loc[i,2051:2070], 
+                                                np.ones(len(df_tmci_solar.loc[i,2051:2070])))
+    
 
 for i in range(np.shape(df_tmci_solar)[0]):
     for j in range(1,np.shape(df_tmci_solar)[1]-1):
