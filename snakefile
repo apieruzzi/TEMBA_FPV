@@ -6,7 +6,7 @@ rule all:
 
 rule generate_model_file:
     input: 
-        "input_data/{model_run}.xls"
+        "input_data/{model_run}.xlsx"
     output: 
         "output_data/{model_run}.txt"
     threads: 

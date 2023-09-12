@@ -598,6 +598,8 @@ for i in range(np.shape(df_tmci_hydro)[0]):
     for j in range(1,np.shape(df_tmci_hydro)[1]-1):
         if df_tmci_hydro.columns[j] < df_tmci_hydro['First Year'][i]:
             df_tmci_hydro.iloc[i,j] = 0
+        if df_tmci_hydro['First Year'][i] < 2015:
+            df_tmci_hydro.iloc[i,j] = 0
 
 df_tmci_hydro = df_tmci_hydro.iloc[:,:-1]    
 

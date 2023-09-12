@@ -9,6 +9,7 @@ import xlrd
 import csv
 import os
 import sys
+import pandas as pd
 
 
 def main(input_workbook, output_file):
@@ -20,13 +21,17 @@ def main(input_workbook, output_file):
 def csv_from_excel(input_workbook, output_file):
     """Read the workbook and
     """
-    workBook = xlrd.open_workbook(os.path.join(input_workbook))
-    sheetNames = workBook.sheet_names()  # I read all the sheets in the xlsx file
+    xl = pd.ExcelFile(input_workbook)
+    sheetNames = xl.sheet_names
+    
+    # workBook = xlrd.open_workbook(os.path.join(input_workbook))
+    # sheetNames = workBook.sheet_names()  # I read all the sheets in the xlsx file
     # I modify the names of the sheets since some do not match with the actual ones
     modifiedSheetNames = modifyNames(sheetNames)
     # Create all the csv files in a new folder called CSVFiles
     for i in range(len(sheetNames)):
-        sh = workBook.sheet_by_name(sheetNames[i])  # all the sheet names
+        df = pd.read_excel(input_workbook, sheet_name = sheetNames[i], header=None)
+        # sh = workBook.sheet_by_name(sheetNames[i])  # all the sheet names
         if not os.path.exists("CSVFiles"):
             os.makedirs("CSVFiles")  # creates the csv folder
 
@@ -34,12 +39,19 @@ def csv_from_excel(input_workbook, output_file):
         with open('CSVfiles/' + modifiedSheetNames[i] + '.csv', 'w', newline='') as your_csv_file:
             wr = csv.writer(your_csv_file, quoting=csv.QUOTE_ALL)
 
-            for rownum in range(sh.nrows):  # reads each row in the csv file
-                if (all(isinstance(n, float) for n in sh.row_values(rownum))):
+            # for rownum in range(sh.nrows):  # reads each row in the csv file
+            #     if (all(isinstance(n, float) for n in sh.row_values(rownum))):
+            #         # function to convert all float numbers to integers....need to check it!!
+            #         wr.writerow(list(map(int, sh.row_values(rownum))))
+            #     else:
+            #         wr.writerow(sh.row_values(rownum))
+            
+            for rownum in range(len(df)):  # reads each row in the csv file
+                if (all(isinstance(n, float) for n in df.loc[rownum,:].values)):
                     # function to convert all float numbers to integers....need to check it!!
-                    wr.writerow(list(map(int, sh.row_values(rownum))))
+                    wr.writerow(list(map(int, df.loc[rownum,:].values)))
                 else:
-                    wr.writerow(sh.row_values(rownum))
+                    wr.writerow(df.loc[rownum,:].values)
 
     # I create a txt file - string that contains the csv files
     fileOutput = parseCSVFilesAndConvert(modifiedSheetNames)
@@ -47,8 +59,8 @@ def csv_from_excel(input_workbook, output_file):
         text_file.write(fileOutput)
         text_file.write("end;\n")
 
-    workBook.release_resources()  # release the workbook-resources
-    del workBook
+    # workBook.release_resources()  # release the workbook-resources
+    # del workBook
 
 
 # for loop pou trexei ola ta sheet name kai paragei to format se csv
