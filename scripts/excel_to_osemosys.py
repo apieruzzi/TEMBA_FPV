@@ -32,8 +32,7 @@ def csv_from_excel(input_workbook, output_file):
     for i in range(len(sheetNames)):
         df = pd.read_excel(input_workbook, sheet_name = sheetNames[i], header=None)
         # sh = workBook.sheet_by_name(sheetNames[i])  # all the sheet names
-        if not os.path.exists("CSVFiles"):
-            os.makedirs("CSVFiles")  # creates the csv folder
+        os.makedirs("CSVFiles", exist_ok=True)  # creates the csv folder
 
         # Open the sheet name in the xlsx file and write it in csv format
         with open('CSVfiles/' + modifiedSheetNames[i] + '.csv', 'w', newline='') as your_csv_file:
