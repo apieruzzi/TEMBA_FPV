@@ -14,7 +14,7 @@ import os
 # Import existing input file
 
 filenames = ["TEMBA_Refer_ENB.xlsx", "TEMBA_1.5_ENB.xlsx", "TEMBA_2.0_ENB.xlsx"]
-
+hydrological_regime = 'RCP85_dry'
 
 
 sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 
@@ -30,13 +30,13 @@ first_year = 2015
 years = np.arange(first_year,2071)
 
 # Import disaggregated plant file
-filename_plants = r'Parameters_hybrid_plants.xlsx'
+filename_plants = 'Parameters_hybrid_plants_RCP85_dry.xlsx'
 folder = r'Created Files'
 
 
 
 for x, filename in enumerate(filenames):
-    writer = pd.ExcelWriter(os.path.join(folder,filenames[x]))
+    writer = pd.ExcelWriter(os.path.join(folder,filenames[x][0:-5]+'_'+hydrological_regime+'.xlsx'))
     xl = pd.ExcelFile(filename)
     sheet_names = xl.sheet_names
     

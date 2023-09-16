@@ -30,7 +30,8 @@ country_codes = ['EG', 'ET', 'SD', 'SS']
 
 
 # Read file
-filename = r'Data/CombinedHydroSolar.csv'
+filename = r'Data/CombinedHydroSolar_RCP85_dry.csv'
+filename_out = 'Parameters_hybrid_plants_RCP85_dry.xlsx'
 df = pd.read_csv(filename)
 df = df.fillna(0)
 
@@ -234,69 +235,18 @@ op_cap_fpv = 0.025 # opex are 2.5% of capex for FPV
 timeslices_old = np.arange(2015,2045,5)
 timeslices_new = np.arange(2015,2041,1)
 
-
 # Read data
-# capex_irena = pd.read_csv('Data/capital_cost_curves_IRENA.csv').to_numpy().astype(float).T.flatten()
 capex_temba = pd.read_csv('Data/capital_cost_curves_TEMBA.csv').to_numpy().astype(float).T.flatten()
-
-
-# Interpolate IRENA
-# interp_lin = scipy.interpolate.interp1d(timeslices_old, capex_irena)
-# capex_irena_lin = interp_lin(timeslices_new)
-
-# interp = scipy.interpolate.interp1d(timeslices_old, capex_irena, kind = 'cubic')
-# capex_irena = interp(timeslices_new)
-
-# # interp_slin = scipy.interpolate.interp1d(timeslices_old, capex_irena, kind = 'slinear')
-# # capex_irena_slin = interp_cub(timeslices_new)
-
-# # plt.figure()
-# # plt.plot(timeslices_new,capex_irena_lin)
-# # plt.plot(timeslices_new,capex_irena)
-# # plt.plot(timeslices_new,capex_irena_slin)
-
-# # Calculate opex IRENA
-# opex_irena = capex_irena * op_cap_pv 
-
-# # Extend series to 2040 using TEMBA
-# # Extract function from temba series from 2040 onwards 
-
-# def lin_funct(a,b,x):
-#     return a + b * x
-
-# a = capex_irena[-1]
-# b = (capex_temba[-1] - capex_temba[25]) / (30)
-# capex_irena_end = lin_funct(a,b,np.arange(0,30,1))
-
-# # Merge the series 
-# capex_irena_tot = np.hstack((capex_irena, capex_irena_end))
-
-# opex_irena_end = np.ones(29)*opex_irena[-1]
-# opex_irena_tot = np.hstack((opex_irena, opex_irena_end))
-# np.savetxt('capex_irena_tot.txt', capex_irena_tot)
-# np.savetxt('opex_irena_tot.txt', opex_irena_tot)
 
 # Calculate costs for FPV
 capex_fpv = capex_temba * fpv_gpv
 opex_fpv = capex_fpv * op_cap_fpv
-
-
-# Add cost for hydro (TEMBA)
-# capex_hydro_large = 3074.61 * np.ones(56) #same for medium size
-# capex_hydro_small = 4831.53 * np.ones(56)
-
 opex_hydro_large = 55 * np.ones(56)
 opex_hydro_small = 65 * np.ones(56)
 
 # Create capital and fixed costs dataframes 
-
-# capexes = [capex_hydro_large, capex_hydro_small, capex_fpv]
 opexes = [opex_hydro_large, opex_hydro_small, opex_fpv]
-
-# df_capex = pd.DataFrame(df_techs, columns = ['TECHNOLOGY'])
 df_opex = pd.DataFrame(df_techs, columns = ['TECHNOLOGY'])
-
-# df_capex = df_capex.reindex(columns = col_names)
 df_opex = df_opex.reindex(columns = col_names)
 
 def create_costs(row, costs):
@@ -307,15 +257,12 @@ def create_costs(row, costs):
     elif ('SOFPV' in row.iloc[0]):
         return costs[2].tolist()
 
-
-# values_capex = df_capex[col_names].apply(lambda row: create_costs(row, capexes), axis = 1)
 values_opex = df_opex[col_names].apply(lambda row: create_costs(row, opexes), axis = 1)
 
 for i in range(len(values_opex)):
-    # df_capex.iloc[i,1:] = values_capex[i]
     df_opex.iloc[i,1:] = values_opex[i]
 
-
+# Capex for hydro (following Carlino et al)
 capacity_values = [0.1, 1, 10, 500, 11000]
 cost_values = [3744.4, 3256, 2836, 2446, 2054.5]
 new_cap_values = df_hydro['Capacity (MW)'].tolist()
@@ -681,7 +628,7 @@ sheet_names = ['TECHNOLOGY', 'TECHS_HYD', 'TECHS_FPV', 'AvailabilityFactor', 'Ca
 # 'TotalAnnualMaxCapacity',
 # 'TotalAnnualMaxCapacityInvestment',
 
-writer = pd.ExcelWriter('Parameters_hybrid_plants.xlsx')
+writer = pd.ExcelWriter(filename_out)
 
 for i,dfr in enumerate(df_list):
     if sheet_names[i] in ['TECHS_HYD', 'TECHS_FPV']:
