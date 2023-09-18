@@ -9,7 +9,6 @@ import pandas as pd
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-import sys
 
 # Goal: obtain quantification of results
 # - How many reservoirs are built out of the planned list (after 2023)? Total number and number per country
@@ -17,11 +16,11 @@ import sys
 # - Save all these info in an excel
 
 
-def create_pie_charts(filename, title, scenario, writer, code):
+def create_pie_charts(filename, title, scenario, writer, file, code):
     df = pd.read_csv(filename)
     df = df.iloc[:,1:] #drop useless column
     columns = df.columns[1:]
-    if title == 'Generation' and code != 'SS':
+    if title == 'Generation' and file == 'Aggregate' and code != 'SS':
         df['power_trade'] = [v if v>0 else 0 for v in df['power_trade']]
     df['tot'] = df.iloc[:,1:].sum(axis=1)
     df.loc['tot'] = df.sum()
@@ -30,26 +29,40 @@ def create_pie_charts(filename, title, scenario, writer, code):
     df.to_excel(writer, sheet_name = code + '- ' + title, index=False)
 
     # Plot pie charts of mix for every decade (2030,2040,2050,2060,2070)
-    df['y'][:-1] = years
-    df=df.set_index('y')
+    df = df.set_index('y')
     idx = df.columns.get_loc(f'{columns[0]} - Percentage')
     df = df.iloc[:,idx:]
     df_t = df.transpose()
     
-    for y in [2030,2040,2050,2060,2070]:
-        plot = plt.figure()
-        df = df_t.loc[:,y]
-        plot = df.plot.pie(autopct=lambda p: '{:.1f}%'.format(round(p)) if p > 0 else '', 
-                                colors=[colors_dict[p] for p in df.index],
-                                title = title + ' mixes' + ' - ' + code + ' - '+ scenario,
-                                figsize=(10,10))
-        plot.figure.savefig(f'results/piecharts/{title} - {code}_{y}.png')
-        plt.close()
+    years_to_plot = [2023,2030,2040,2050,2060,2070]
+    years = [col for col in df_t.columns if col in years_to_plot] 
+    df_sel = df_t.loc[:,years]
+    labels = [label[:-13] for label in df_sel.index]
     
+    fig, axes = plt.subplots(2,3, figsize=(20,15))
+    if file != 'Aggregate':
+        for ax, col in zip(axes.flatten(), df_sel.columns):
+            ax.pie(df_sel[col], autopct='%.0f')
+            ax.set(ylabel='', title=col, aspect='equal')
+    else:
+        for ax, col in zip(axes.flatten(), df_sel.columns):
+            ax.pie(df_sel[col], autopct='%.0f', colors=[colors_dict[p] for p in df_sel.index])
+            ax.set(ylabel='', title=col, aspect='equal')
+    
+    plt.subplots_adjust(wspace=0.01,
+                        hspace=0.1)        
+    fig.suptitle(title + ' mixes' + ' - ' + file + ' - ' + code + ' - '+ scenario)
+    axes.flatten()[0].legend(bbox_to_anchor=(0, 0.7), labels=labels)
+    fig.savefig(f'results/piecharts/{code}/{title} - {file} - {code}.png', bbox_inches='tight')
+    plt.close()
 
 
-scenario = "TEMBA_Refer_ENB_RCP85_dry"
+scenario = "TEMBA_Refer_ENB"
 os.makedirs(r'results/piecharts', exist_ok=True)
+folder_names = ['EAPP', 'EG', 'ET', 'SD', 'SS']
+for name in folder_names:
+    os.makedirs(f'results/piecharts/{name}', exist_ok=True)
+    
 
 
 # Load files
@@ -71,21 +84,6 @@ nplants_SS = len(built_plants.iloc[np.where(built_plants['t'].str.startswith('SS
 # Calculate capacity amounts and percentages for each country and year
 country_codes = ['EG', 'ET', 'SD', 'SS']
 years = np.arange(2015,2071,1)
-
-colors_dict = {
-    "Coal - Percentage":"darkgrey",
-    "Oil - Percentage" : "grey",
-    "Gas - Percentage" : "darkorange",
-    "Hydro - Percentage" : "lightblue",
-    "Solar CSP - Percentage" : "yellow",
-    "Solar PV - Percentage" : "gold",
-    "Solar FPV - Percentage" : "lightgreen",
-    "Wind - Percentage" : "blue",
-    "Biomass - Percentage" : "brown",
-    "Geothermal - Percentage" : "beige", 
-    "power_trade - Percentage" : "pink",
-    }
-
 writer = pd.ExcelWriter(r'results/Mixes_percentages.xlsx')
 
 # Save hydro plants values and lists                                                                                       
@@ -100,33 +98,45 @@ hydro_plants_mod = [plant[2:] for plant in hydro_plants_list['t']]
 hydro_plants_names = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(hydro_plants_mod))[0],:2]
 built_plants_mod = [plant[2:] for plant in built_plants['t']]
 built_plants_names = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(built_plants_mod))[0],:2]
-
 built_plants_names.to_excel(writer, sheet_name = 'List of built HP plants', index=False)
 
+# Create pie charts
+colors_dict = {
+    "Coal - Percentage":"darkgrey",
+    "Oil - Percentage" : "grey",
+    "Gas - Percentage" : "darkorange",
+    "Hydro - Percentage" : "lightblue",
+    "Solar CSP - Percentage" : "yellow",
+    "Solar PV - Percentage" : "gold",
+    "Solar FPV - Percentage" : "lightgreen",
+    "Wind - Percentage" : "blue",
+    "Biomass - Percentage" : "brown",
+    "Geothermal - Percentage" : "beige", 
+    "power_trade - Percentage" : "pink",
+    }
+
+tech_codes_df['tech_name'] = [name + ' - Percentage' for name in tech_codes_df['tech_name']]
+
+files = ['Aggregate', 'Detail fossil', 'Detail solar', 'Detail hydro']
+
+for file in files:
+    capacity_filename = f'results/export_{scenario}/powerpool/EAPP/EAPP-Power Generation Capacity ({file})-{scenario}.csv'
+    create_pie_charts(capacity_filename, 'Capacity', scenario, writer, file, code='EAPP')
+    generation_filename =   f'results/export_{scenario}/powerpool/EAPP/EAPP-Power Generation ({file})-{scenario}.csv'
+    create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code='EAPP')
 
 for code in country_codes:
-    # Capacity:
-    capacity_filename = f'results/export_{scenario}/country/{code}/{code}-Power Generation Capacity (Aggregate)-{scenario}.csv'
-    create_pie_charts(capacity_filename, 'Capacity', scenario, writer, code)
-    
-    # Generation:
-    generation_filename = f'results/export_{scenario}/country/{code}/{code}-Power Generation (Aggregate)-{scenario}.csv'
-    create_pie_charts(generation_filename, 'Generation', scenario, writer, code)
+    for file in files:
+        # Capacity:
+        capacity_filename = f'results/export_{scenario}/country/{code}/{code}-Power Generation Capacity ({file})-{scenario}.csv'
+        create_pie_charts(capacity_filename, 'Capacity', scenario, writer, file, code)
+        
+        # Generation:
+        generation_filename = f'results/export_{scenario}/country/{code}/{code}-Power Generation ({file})-{scenario}.csv'
+        create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code)
     
     
 writer.close()
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
