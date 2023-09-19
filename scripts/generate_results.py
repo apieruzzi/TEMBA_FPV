@@ -964,11 +964,11 @@ with tempfile.TemporaryDirectory() as temp:
                                 color=[color_dict[x]
                                         for x in total_gen_df.columns if x != 'y'],
                                 title=tk+"-" +
-                                "Power Generation (Aggregate)"+"-" + scenario,
+                                "Power Generation (Aggregate)",
                                 showlegend=True,
                                 asFigure=True)
         fig.update_xaxes(range=[first_year, last_year])
-        title = (tk+"-"+"Power Generation (Aggregate)"+"-" + scenario)
+        title = (tk+"-"+"Power Generation (Aggregate)")
         pio.write_image(fig, os.path.join(homedir, '{}.png'.format(title)),
                         scale=1, width=1500, height=1000)
         fig.show()
@@ -976,7 +976,7 @@ with tempfile.TemporaryDirectory() as temp:
         # total_cap_df=total_cap_df.drop('gas_trade',axis=1)
 
         total_gen_df.to_csv(os.path.join(
-            homedir, tk + "- Power Generation (Aggregate)"+"-"+scenario+".csv"))
+            homedir, tk + "-Power Generation (Aggregate)"+"-"+scenario+".csv"))
         total_cap_df.to_csv(os.path.join(
             homedir, tk + "-capacity"+"-"+scenario+".csv"))
 

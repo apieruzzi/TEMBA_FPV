@@ -18,10 +18,13 @@ files_to_keep = ['Annual Emissions', 'New power generation capacity (Aggregate)'
                  'New power generation capacity (Detail solar)',
                  'Power Generation (Aggregate)','Power Generation (Detail hydro)',
                  'Power Generation (Detail solar)','Power Generation (Detail trades)', 
+                 'Power Generation (Detail fpv)', 
                  'Power Generation Capacity (Aggregate)', 
-                 'Power Generation Capacity (Detail hydro)'
+                 'Power Generation Capacity (Detail hydro)',
                  'Power Generation Capacity (Detail solar)', 
-                 'Water consumption aggregated']
+                 'Power Generation Capacity (Detail fpv)', 
+                 'Water consumption aggregated', 
+                 'Water Consumption']
 
 for code in codes:
     

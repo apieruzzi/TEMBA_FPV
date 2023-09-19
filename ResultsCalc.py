@@ -19,7 +19,13 @@ import colorcet as cc
 
 
 def create_pie_charts(filename, title, scenario, writer, file, code):
-    df = pd.read_csv(filename)
+    
+    try:
+        df = pd.read_csv(filename)
+    except FileNotFoundError as fi:
+        print(fi)
+        return
+    
     df = df.iloc[:,1:] #drop useless column
     columns = df.columns[1:]
     if title == 'Generation' and file == 'Aggregate' and code != 'SS':
@@ -28,6 +34,7 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     df.loc['tot'] = df.sum()
     for col in columns:
         df[f'{col} - Percentage'] = df[f'{col}'] / df['tot']
+    df = df.fillna(int(0))
     df.to_excel(writer, sheet_name = code + '- ' + title, index=False)
     
     # Calculate max total capacity and generation and save them to df
@@ -50,31 +57,32 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     years_to_plot = [2023,2030,2040,2050,2060,2070]
     years = [col for col in df_t.columns if col in years_to_plot] 
     df_sel = df_t.loc[:,years]
-    labels = [label[:-13] for label in df_sel.index]
+    df_sel = df_sel.loc[:, (df_sel != 0).any(axis=0)]
     
+    labels = [label[:-13] for label in df_sel.index]
     fig, axes = plt.subplots(2,3, figsize=(20,15))
     if file != 'Aggregate':
-        for ax, col in zip(axes.flatten(), df_sel.columns):
-            ax.pie(df_sel[col],
-                   autopct=lambda p: '{:.1f}%'.format(round(p)) if p > 0 else '', 
-                   colors=[colors_dict_detail[p] for p in df_sel.index])
-            ax.set(ylabel='', title=col, aspect='equal')
+        colors_dict = colors_dict_detail
     else:
-        for ax, col in zip(axes.flatten(), df_sel.columns):
-            ax.pie(df_sel[col], 
-                   autopct=lambda p: '{:.1f}%'.format(round(p)) if p > 0 else '', 
-                   colors=[colors_dict[p] for p in df_sel.index])
-            ax.set(ylabel='', title=col, aspect='equal')
+        colors_dict = colors_dict_agg
     
-    plt.subplots_adjust(wspace=0.01,
-                        hspace=0.1)        
+    for ax in axes.flatten():
+        ax.set_axis_off()
+    for col, ax in zip(df_sel.columns,axes.flatten()):
+        ax.pie(df_sel[col],
+               autopct=lambda p: '{:.1f}%'.format(round(p)) if p > 0 else '', 
+               colors=[colors_dict[p] for p in df_sel.index])
+        ax.set(ylabel='', title=col, aspect='equal')
+        ax.set_axis_on()
+
+    plt.subplots_adjust(wspace=0.01, hspace=0.1)        
     fig.suptitle(title + ' mixes' + ' - ' + file + ' - ' + code + ' - '+ scenario)
     axes.flatten()[0].legend(bbox_to_anchor=(0, 0.7), labels=labels)
     fig.savefig(f'results/piecharts/{code}/{title} - {file} - {code}.png', bbox_inches='tight')
     plt.close()
 
 
-scenario = "TEMBA_Refer_ENB_RCP60_dry"
+scenario = "TEMBA_1.5_ENB"
 os.makedirs(r'results/piecharts', exist_ok=True)
 folder_names = ['EAPP', 'EG', 'ET', 'SD', 'SS']
 for name in folder_names:
@@ -118,7 +126,7 @@ built_plants_names = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin
 built_plants_names.to_excel(writer, sheet_name = 'List of built HP plants', index=False)
 
 # Create pie charts
-colors_dict = {
+colors_dict_agg = {
     "Coal - Percentage":"darkgrey",
     "Oil - Percentage" : "grey",
     "Gas - Percentage" : "darkorange",
@@ -137,8 +145,9 @@ file_prodtechs = r'input_data/power_tech.csv'
 prodtechs_df = pd.read_csv(file_prodtechs)
 prod_techs_codes_df = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(prodtechs_df['power_tech']))]
 names_list = [name + ' - Percentage' for name in  prod_techs_codes_df['tech_name']]
+names_list.append('Solar FPV - Percentage')
 
-palette = sns.color_palette(cc.glasbey, n_colors=len(prod_techs_codes_df))
+palette = sns.color_palette(cc.glasbey, n_colors=len(names_list))
 palette = palette.as_hex()
 colors_dict_detail = dict(zip(names_list, palette))
 
@@ -147,7 +156,7 @@ tech_codes_df['tech_name'] = [name + ' - Percentage' for name in tech_codes_df['
 df_comb = pd.DataFrame(columns=['MaxCapacity', 'YearC', 'MaxGeneration', 'YearG'], 
                        index=['EAPP', 'EG', 'ET', 'SD', 'SS'])
 
-files = ['Aggregate', 'Detail fossil', 'Detail solar', 'Detail hydro']
+files = ['Aggregate', 'Detail solar', 'Detail hydro', 'Detail fpv']
 
 for file in files:
     capacity_filename = f'results/export_{scenario}/powerpool/EAPP/EAPP-Power Generation Capacity ({file})-{scenario}.csv'
