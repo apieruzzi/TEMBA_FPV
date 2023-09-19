@@ -9,6 +9,8 @@ import pandas as pd
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import seaborn as sns
+import colorcet as cc
 
 # Goal: obtain quantification of results
 # - How many reservoirs are built out of the planned list (after 2023)? Total number and number per country
@@ -27,6 +29,17 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     for col in columns:
         df[f'{col} - Percentage'] = df[f'{col}'] / df['tot']
     df.to_excel(writer, sheet_name = code + '- ' + title, index=False)
+    
+    # Calculate max total capacity and generation and save them to df
+    max_value = np.max(df['tot'].iloc[:-1])
+    max_year = np.argmax(df['tot'].iloc[:-1]) + 2015
+    if title == 'Capacity':
+        df_comb.loc[code]['MaxCapacity'] = max_value
+        df_comb.loc[code]['YearC'] = max_year
+    elif title == 'Generation':
+        df_comb.loc[code]['MaxGeneration'] = max_value
+        df_comb.loc[code]['YearG'] = max_year
+   
 
     # Plot pie charts of mix for every decade (2030,2040,2050,2060,2070)
     df = df.set_index('y')
@@ -42,11 +55,15 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     fig, axes = plt.subplots(2,3, figsize=(20,15))
     if file != 'Aggregate':
         for ax, col in zip(axes.flatten(), df_sel.columns):
-            ax.pie(df_sel[col], autopct='%.0f')
+            ax.pie(df_sel[col],
+                   autopct=lambda p: '{:.1f}%'.format(round(p)) if p > 0 else '', 
+                   colors=[colors_dict_detail[p] for p in df_sel.index])
             ax.set(ylabel='', title=col, aspect='equal')
     else:
         for ax, col in zip(axes.flatten(), df_sel.columns):
-            ax.pie(df_sel[col], autopct='%.0f', colors=[colors_dict[p] for p in df_sel.index])
+            ax.pie(df_sel[col], 
+                   autopct=lambda p: '{:.1f}%'.format(round(p)) if p > 0 else '', 
+                   colors=[colors_dict[p] for p in df_sel.index])
             ax.set(ylabel='', title=col, aspect='equal')
     
     plt.subplots_adjust(wspace=0.01,
@@ -57,7 +74,7 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     plt.close()
 
 
-scenario = "TEMBA_Refer_ENB"
+scenario = "TEMBA_Refer_ENB_RCP60_dry"
 os.makedirs(r'results/piecharts', exist_ok=True)
 folder_names = ['EAPP', 'EG', 'ET', 'SD', 'SS']
 for name in folder_names:
@@ -113,9 +130,22 @@ colors_dict = {
     "Biomass - Percentage" : "brown",
     "Geothermal - Percentage" : "beige", 
     "power_trade - Percentage" : "pink",
+    "Nuclear - Percentage" : "cyan"
     }
 
+file_prodtechs = r'input_data/power_tech.csv'
+prodtechs_df = pd.read_csv(file_prodtechs)
+prod_techs_codes_df = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(prodtechs_df['power_tech']))]
+names_list = [name + ' - Percentage' for name in  prod_techs_codes_df['tech_name']]
+
+palette = sns.color_palette(cc.glasbey, n_colors=len(prod_techs_codes_df))
+palette = palette.as_hex()
+colors_dict_detail = dict(zip(names_list, palette))
+
 tech_codes_df['tech_name'] = [name + ' - Percentage' for name in tech_codes_df['tech_name']]
+
+df_comb = pd.DataFrame(columns=['MaxCapacity', 'YearC', 'MaxGeneration', 'YearG'], 
+                       index=['EAPP', 'EG', 'ET', 'SD', 'SS'])
 
 files = ['Aggregate', 'Detail fossil', 'Detail solar', 'Detail hydro']
 
@@ -135,7 +165,9 @@ for code in country_codes:
         generation_filename = f'results/export_{scenario}/country/{code}/{code}-Power Generation ({file})-{scenario}.csv'
         create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code)
     
-    
+
+df_comb.to_excel(writer, sheet_name='Max values')
+
 writer.close()
 
 
