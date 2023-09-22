@@ -35,18 +35,34 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     for col in columns:
         df[f'{col} - Percentage'] = df[f'{col}'] / df['tot']
     df = df.fillna(int(0))
-    df.to_excel(writer, sheet_name = code + '- ' + title, index=False)
     
+    # Save to excel only hydro values
+    if file == 'Detail hydro':
+        df.to_excel(writer, sheet_name = code + '- ' + title + '_' + file[7:], index=False)
     # Calculate max total capacity and generation and save them to df
-    max_value = np.max(df['tot'].iloc[:-1])
-    max_year = np.argmax(df['tot'].iloc[:-1]) + 2015
-    if title == 'Capacity':
-        df_comb.loc[code]['MaxCapacity'] = max_value
-        df_comb.loc[code]['YearC'] = max_year
-    elif title == 'Generation':
-        df_comb.loc[code]['MaxGeneration'] = max_value
-        df_comb.loc[code]['YearG'] = max_year
-   
+        max_value = np.max(df['tot'].iloc[:-1])
+        max_year = np.argmax(df['tot'].iloc[:-1]) + df['y'].loc[0]
+        if title == 'Capacity':
+            df_comb_hydro.loc[code]['MaxCapacity'] = max_value
+            df_comb_hydro.loc[code]['YearC'] = max_year
+        elif title == 'Generation':
+            df_comb_hydro.loc[code]['MaxGeneration'] = max_value
+            df_comb_hydro.loc[code]['YearG'] = max_year
+            df_comb_hydro.loc[code]['TotalGeneration'] = df['tot'].iloc[-1]     
+    
+    # Save to excel the FPV values
+    if file == 'Detail fpv':
+        df.to_excel(writer, sheet_name = code + '- ' + title + '_' + file[7:], index=False)
+    # Calculate max total capacity and generation and save them to df
+        max_value = np.max(df['tot'].iloc[:-1])
+        max_year = np.argmax(df['tot'].iloc[:-1]) + df['y'].loc[0]
+        if title == 'Capacity':
+            df_comb_fpv.loc[code]['MaxCapacity'] = max_value
+            df_comb_fpv.loc[code]['YearC'] = max_year
+        elif title == 'Generation':
+            df_comb_fpv.loc[code]['MaxGeneration'] = max_value
+            df_comb_fpv.loc[code]['YearG'] = max_year
+            df_comb_fpv.loc[code]['TotalGeneration'] = df['tot'].iloc[-1]   
 
     # Plot pie charts of mix for every decade (2030,2040,2050,2060,2070)
     df = df.set_index('y')
@@ -82,7 +98,7 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     plt.close()
 
 
-scenario = "TEMBA_1.5_ENB"
+scenario = "TEMBA_Refer_ENB"
 os.makedirs(r'results/piecharts', exist_ok=True)
 folder_names = ['EAPP', 'EG', 'ET', 'SD', 'SS']
 for name in folder_names:
@@ -109,7 +125,7 @@ nplants_SS = len(built_plants.iloc[np.where(built_plants['t'].str.startswith('SS
 # Calculate capacity amounts and percentages for each country and year
 country_codes = ['EG', 'ET', 'SD', 'SS']
 years = np.arange(2015,2071,1)
-writer = pd.ExcelWriter(r'results/Mixes_percentages.xlsx')
+writer = pd.ExcelWriter(f'results/Mixes_percentages_{scenario}.xlsx')
 
 # Save hydro plants values and lists                                                                                       
 data = [['Total planned plants',nplants_tot], ['Total built plants', nplants_tot_built],
@@ -153,8 +169,9 @@ colors_dict_detail = dict(zip(names_list, palette))
 
 tech_codes_df['tech_name'] = [name + ' - Percentage' for name in tech_codes_df['tech_name']]
 
-df_comb = pd.DataFrame(columns=['MaxCapacity', 'YearC', 'MaxGeneration', 'YearG'], 
+df_comb_hydro = pd.DataFrame(columns=['MaxCapacity', 'YearC', 'MaxGeneration', 'YearG', 'TotalGeneration'], 
                        index=['EAPP', 'EG', 'ET', 'SD', 'SS'])
+df_comb_fpv = df_comb_hydro.copy()
 
 files = ['Aggregate', 'Detail solar', 'Detail hydro', 'Detail fpv']
 
@@ -174,8 +191,16 @@ for code in country_codes:
         generation_filename = f'results/export_{scenario}/country/{code}/{code}-Power Generation ({file})-{scenario}.csv'
         create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code)
     
+# Calculate cumulative water consumption
+wc_filename = f'results/export_{scenario}/powerpool/EAPP/EAPP-Water Consumption-{scenario}.csv'
+wc_df = pd.read_csv(wc_filename)
+wc_df['tot'] = wc_df.iloc[:,2:].sum(axis=1)
+wc_tot = wc_df['tot'].sum()
+df_wc = pd.DataFrame(data = [wc_tot], columns=['Total Water Consumption'])
+df_wc.to_excel(writer, sheet_name='TotalWaterConsumption', index=False)
 
-df_comb.to_excel(writer, sheet_name='Max values')
+df_comb_hydro.to_excel(writer, sheet_name='Max values_hydro')
+df_comb_fpv.to_excel(writer, sheet_name='Max values_fpv')
 
 writer.close()
 

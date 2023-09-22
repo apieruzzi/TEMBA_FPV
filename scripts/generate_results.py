@@ -298,7 +298,7 @@ with tempfile.TemporaryDirectory() as temp:
                                             t_include_solar, 
                                             color_dict_solar, 
                                             add_title='solar')
-        cap_new_df_fpv = detailed_power_chart(cc,'TotalCapacityAnnual', 
+        cap_new_df_fpv = detailed_power_chart(cc,'NewCapacity', 
                                             t_include_fpv, 
                                             color_dict_solar, 
                                             add_title='fpv')

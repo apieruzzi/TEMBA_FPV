@@ -16,6 +16,8 @@ codes = ['EAPP', 'EG', 'ET', 'SD', 'SS']
 
 files_to_keep = ['Annual Emissions', 'New power generation capacity (Aggregate)',
                  'New power generation capacity (Detail solar)',
+                 'New power generation capacity (Detail fpv)',
+                 'New power generation capacity (Detail hydro)',
                  'Power Generation (Aggregate)','Power Generation (Detail hydro)',
                  'Power Generation (Detail solar)','Power Generation (Detail trades)', 
                  'Power Generation (Detail fpv)', 
