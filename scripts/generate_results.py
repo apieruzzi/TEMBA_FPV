@@ -26,8 +26,8 @@ import cufflinks
 import tempfile
 
 
-cufflinks.go_offline()
-cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
+# cufflinks.go_offline()
+# cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
 
 picklefile = sys.argv[1]
 scenario = sys.argv[2]
@@ -1238,7 +1238,7 @@ with tempfile.TemporaryDirectory() as temp:
     # this block will create individual country folders and paste (all country specific csv and png files)
     # files from the home directory to the path mentioned below
 
-    resultpath = os.path.join(destination_folder, 'country')
+    resultpath = os.path.join(destination_folder, 'barcharts')
     files = os.listdir(homedir)
     for country in country_code['Country code']:
         dest1 = os.path.join(resultpath, country)
@@ -1251,7 +1251,7 @@ with tempfile.TemporaryDirectory() as temp:
     # this block will create individual Power pool folders and paste (all country specific csv and png files)
     # files from the home directory to the path mentioned below
     power_p = ['EAPP']
-    resultpath = os.path.join(destination_folder, 'powerpool')
+    resultpath = os.path.join(destination_folder, 'barcharts')
     files = os.listdir(homedir)
     for en in power_p:
         dest2 = os.path.join(resultpath, en)
