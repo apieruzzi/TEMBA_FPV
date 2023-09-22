@@ -15,10 +15,11 @@ import pandas as pd
 def main(input_workbook, output_file):
     """Read the xlsx file
     """
-    csv_from_excel(input_workbook, output_file)
+    scenario = input_workbook[11:-5]
+    csv_from_excel(input_workbook, scenario, output_file)
 
 
-def csv_from_excel(input_workbook, output_file):
+def csv_from_excel(input_workbook, scenario, output_file):
     """Read the workbook and
     """
     xl = pd.ExcelFile(input_workbook)
@@ -28,14 +29,15 @@ def csv_from_excel(input_workbook, output_file):
     # sheetNames = workBook.sheet_names()  # I read all the sheets in the xlsx file
     # I modify the names of the sheets since some do not match with the actual ones
     modifiedSheetNames = modifyNames(sheetNames)
+    
+    os.makedirs(f"CSVFiles_{scenario}", exist_ok=True)  # creates the csv folder
+    
     # Create all the csv files in a new folder called CSVFiles
     for i in range(len(sheetNames)):
         df = pd.read_excel(input_workbook, sheet_name = sheetNames[i], header=None)
-        # sh = workBook.sheet_by_name(sheetNames[i])  # all the sheet names
-        os.makedirs("CSVFiles", exist_ok=True)  # creates the csv folder
 
         # Open the sheet name in the xlsx file and write it in csv format
-        with open('CSVfiles/' + modifiedSheetNames[i] + '.csv', 'w', newline='') as your_csv_file:
+        with open(f'CSVFiles_{scenario}/' + modifiedSheetNames[i] + '.csv', 'w', newline='') as your_csv_file:
             wr = csv.writer(your_csv_file, quoting=csv.QUOTE_ALL)
 
             # for rownum in range(sh.nrows):  # reads each row in the csv file
@@ -53,7 +55,7 @@ def csv_from_excel(input_workbook, output_file):
                     wr.writerow(df.loc[rownum,:].values)
 
     # I create a txt file - string that contains the csv files
-    fileOutput = parseCSVFilesAndConvert(modifiedSheetNames)
+    fileOutput = parseCSVFilesAndConvert(scenario, modifiedSheetNames)
     with open(output_file, "w") as text_file:
         text_file.write(fileOutput)
         text_file.write("end;\n")
@@ -63,7 +65,7 @@ def csv_from_excel(input_workbook, output_file):
 
 
 # for loop pou trexei ola ta sheet name kai paragei to format se csv
-def parseCSVFilesAndConvert(sheetNames):
+def parseCSVFilesAndConvert(scenario, sheetNames):
     result = ''
     for i in range(len(sheetNames)):
         # 8 #all the     parameters thad do not have variables
@@ -71,7 +73,7 @@ def parseCSVFilesAndConvert(sheetNames):
                               'REGION', 'FUEL', 'TIMESLICE', 'TECHNOLOGY', 'TECHS_HYD',
                               'TECHS_FPV', 'YEAR']):
             result += 'set ' + sheetNames[i] + ' := '
-            with open('CSVFiles/' + sheetNames[i] + '.csv', newline='') as csvfile:
+            with open(f'CSVFiles_{scenario}/' + sheetNames[i] + '.csv', newline='') as csvfile:
                 reader = csv.reader(csvfile)
                 for row in reader:
                     result += " ".join(row) + " "
@@ -85,28 +87,28 @@ def parseCSVFilesAndConvert(sheetNames):
                                 'TotalTechnologyAnnualActivityLowerLimit']):
             result += 'param ' + sheetNames[i] + ' default 0 := '
             result += '\n[REGION, *, *]:\n'
-            result += insert_table(sheetNames[i])
+            result += insert_table(scenario, sheetNames[i])
         # 24 #all the parameters that have one variable
         elif (sheetNames[i] in ['TotalAnnualMaxCapacityInvestment']):
             result += 'param ' + sheetNames[i] + ' default 99999 := '
             result += '\n[REGION, *, *]:\n'
-            result += insert_table(sheetNames[i])
+            result += insert_table(scenario, sheetNames[i])
         elif (sheetNames[i] in ['AvailabilityFactor']):
             result += 'param ' + sheetNames[i] + ' default 1 := '
             result += '\n[REGION, *, *]:\n'
-            result += insert_table(sheetNames[i])
+            result += insert_table(scenario, sheetNames[i])
         elif (sheetNames[i] in ['TotalAnnualMaxCapacity',
                                 'TotalTechnologyAnnualActivityUpperLimit']):
             result += 'param ' + sheetNames[i] + ' default 9999999 := '
             result += '\n[REGION, *, *]:\n'
-            result += insert_table(sheetNames[i])
+            result += insert_table(scenario, sheetNames[i])
         elif (sheetNames[i] in ['AnnualEmissionLimit']):
             result += 'param ' + sheetNames[i] + ' default 99999 := '
             result += '\n[REGION, *, *]:\n'
-            result += insert_table(sheetNames[i])
+            result += insert_table(scenario, sheetNames[i])
         elif (sheetNames[i] in ['YearSplit']):
             result += 'param ' + sheetNames[i] + ' default 0 :\n'
-            result += insert_table(sheetNames[i])
+            result += insert_table(scenario, sheetNames[i])
         elif (sheetNames[i] in ['EmissionsPenalty', 'REMinProductionTarget',
                                 'RETagFuel', 'RETagTechnology',
                                 'ReserveMargin', 'ReserveMarginTagFuel',
@@ -115,20 +117,20 @@ def parseCSVFilesAndConvert(sheetNames):
         # 3 #all the parameters that have 2 variables
         elif (sheetNames[i] in ['SpecifiedDemandProfile']):
             result += 'param ' + sheetNames[i] + ' default 0 := \n'
-            result += insert_two_variables(sheetNames, i)
+            result += insert_two_variables(scenario, sheetNames, i)
         # 3 #all the parameters that have 2 variables
         elif (sheetNames[i] in ['VariableCost']):
             result += 'param ' + sheetNames[i] + ' default 9999999 := \n'
-            result += insert_two_variables(sheetNames, i)
+            result += insert_two_variables(scenario, sheetNames, i)
         # 3 #all the parameters that have 2 variables
         elif (sheetNames[i] in ['CapacityFactor']):
             result += 'param ' + sheetNames[i] + ' default 1 := \n'
-            result += insert_two_variables(sheetNames, i)
+            result += insert_two_variables(scenario, sheetNames, i)
         # 4 #all the parameters that have 3     variables
         elif (sheetNames[i] in ['EmissionActivityRatio', 'InputActivityRatio',
                                 'OutputActivityRatio']):
             result += 'param ' + sheetNames[i] + ' default 0 := \n'
-            with open('CSVFiles/' + sheetNames[i] + '.csv', newline='') as csvfile:
+            with open(f'CSVFiles_{scenario}/' + sheetNames[i] + '.csv', newline='') as csvfile:
                 reader = csv.reader(csvfile)
                 newRow = next(reader)
                 newRow.pop(0)
@@ -147,14 +149,14 @@ def parseCSVFilesAndConvert(sheetNames):
         # 8 #all the parameters that do not have variables
         elif (sheetNames[i] in ['TotalTechnologyModelPeriodActivityUpperLimit']):
             result += 'param ' + sheetNames[i] + ' default 9999999 : \n'
-            result += insert_no_variables(sheetNames, i)
+            result += insert_no_variables(scenario, sheetNames, i)
         elif (sheetNames[i] in ['CapacityToActivityUnit']):
             result += 'param ' + sheetNames[i] + ' default 1 : \n'
-            result += insert_no_variables(sheetNames, i)
+            result += insert_no_variables(scenario, sheetNames, i)
         # 8 #all the parameters that do not have variables
         elif (sheetNames[i] in ['TotalTechnologyAnnualActivityLowerLimit']):
             result += 'param ' + sheetNames[i] + ' default 0 := \n'
-            result += insert_no_variables(sheetNames, i)
+            result += insert_no_variables(scenario, sheetNames, i)
         # 8 #all the parameters that do not have variables
         elif (sheetNames[i] in ['ModelPeriodEmissionLimit']):
             result += 'param ' + sheetNames[i] + ' default 999999 := ;\n'
@@ -172,18 +174,18 @@ def parseCSVFilesAndConvert(sheetNames):
         # 8 #all the parameters that do not have variables
         elif (sheetNames[i] in ['OperationalLife']):
             result += 'param ' + sheetNames[i] + ' default 1 : \n'
-            result += insert_no_variables(sheetNames, i)
+            result += insert_no_variables(scenario, sheetNames, i)
         elif (sheetNames[i] in ['DiscountRate']):  # default value
-            with open('CSVFiles/' + sheetNames[i] + '.csv', newline='') as csvfile:
+            with open(f'CSVFiles_{scenario}/' + sheetNames[i] + '.csv', newline='') as csvfile:
                 reader = csv.reader(csvfile)
                 for row in reader:
                     result += 'param ' + sheetNames[i] + ' default 0.1 := ;\n'
     return result
 
 
-def insert_no_variables(sheetNames, i):
+def insert_no_variables(scenario, sheetNames, i):
     result = ""
-    with open('CSVFiles/' + sheetNames[i] + '.csv', newline='') as csvfile:
+    with open(f'CSVFiles_{scenario}/' + sheetNames[i] + '.csv', newline='') as csvfile:
         reader = csv.reader(csvfile)
         next(reader)
         firstColumn = []
@@ -199,9 +201,9 @@ def insert_no_variables(sheetNames, i):
     return result
 
 
-def insert_two_variables(sheetNames, i):
+def insert_two_variables(scenario, sheetNames, i):
     result = ""
-    with open('CSVFiles/' + sheetNames[i] + '.csv', newline='') as csvfile:
+    with open(f'CSVFiles_{scenario}/' + sheetNames[i] + '.csv', newline='') as csvfile:
         reader = csv.reader(csvfile)
         newRow = next(reader)
         newRow.pop(0)
@@ -218,9 +220,9 @@ def insert_two_variables(sheetNames, i):
     return result
 
 
-def insert_table(name):
+def insert_table(scenario, name):
     result = ""
-    with open('CSVFiles/' + name + '.csv', newline='') as csvfile:
+    with open(f'CSVFiles_{scenario}/' + name + '.csv', newline='') as csvfile:
         reader = csv.reader(csvfile)
         newRow = next(reader)
         newRow.pop(0)  # removes the first element of the row
@@ -256,8 +258,9 @@ def modifyNames(sheetNames):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        msg = "Usage: python {} <workbook_filename> <output_filepath>"
+        msg = "Usage: python {} <workbook_filename> <model_run> <output_filepath>"
         print(msg.format(sys.argv[0]))
+        print(len(sys.argv))
         sys.exit(1)
     else:
         try:
