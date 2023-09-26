@@ -6,12 +6,23 @@ Created on Mon Sep 18 11:51:56 2023
 """
 
 import os
+import sys
+from distutils.dir_util import copy_tree
 
+
+input_file_dummy = sys.argv[1]
+scenario = sys.argv[2]
+
+print(scenario)
+
+# Copy results to the scenario comparison folder 
+path = 'results/export_{scenario}'
+os.makedirs("results/ScenarioComparison", exist_ok=True)
+copy_tree(path, "results/ScenarioComparison")
 
 # Barcharts
-folder_dest = r'barcharts_dest'
-folder = r'barcharts'
-scenario = 'RCP85'
+
+folder = r'results/ScenarioComparison/barcharts'
 codes = ['EAPP', 'EG', 'ET', 'SD', 'SS']
 
 files_to_keep = ['Annual Emissions', 'New power generation capacity (Aggregate)',
@@ -43,15 +54,14 @@ for code in codes:
     for filename in files:        
         filepath = os.path.join(folder, code, filename)
         filename_new = filename[3:-4] + '_' + scenario + '.png'
-        filepath_new = os.path.join(folder_dest, code, filename_new)
+        filepath_new = os.path.join(folder, code, filename_new)
         os.rename(filepath,filepath_new)
         
         
         
     
 # Piecharts
-folder_dest = r'piecharts_dest'
-folder = r'piecharts'
+folder = r'results/ScenarioComparison/piecharts'
 codes = ['EAPP', 'EG', 'ET', 'SD', 'SS']
 
 files_to_keep = ['Capacity - Aggregate', 'Capacity - Detail solar',
@@ -74,7 +84,7 @@ for code in codes:
     for filename in files:        
         filepath = os.path.join(folder, code, filename)
         filename_new = filename[:-4] + '_' + scenario + '.png'
-        filepath_new = os.path.join(folder_dest, code, filename_new)
+        filepath_new = os.path.join(folder, code, filename_new)
         os.rename(filepath,filepath_new) 
         
 

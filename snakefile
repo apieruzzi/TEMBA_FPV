@@ -1,8 +1,10 @@
-MODELRUNS = ["TEMBA_Refer", "TEMBA_1.5", "TEMBA_2.0"]
+MODELRUNS = ["TEMBA_2.0_ENB"]
 
 rule all:
     # input: ["results/{model_run}.pickle".format(model_run=model_run) for model_run in MODELRUNS]
-    input: ["results/export_{model_run}".format(model_run=model_run) for model_run in MODELRUNS]
+      input: 
+             ["results/export_{model_run}/barcharts".format(model_run=model_run) for model_run in MODELRUNS],
+	     ["results/export_{model_run}/piecharts".format(model_run=model_run) for model_run in MODELRUNS]
 
 rule generate_model_file:
     input: 
@@ -68,8 +70,20 @@ rule generate_results:
     params:
         scenario="{model_run}"
     output: 
-        folder=directory("results/export_{model_run}")
+        folder=directory("results/export_{model_run}/barcharts")
     conda:
         "envs/results.yaml"
     shell:
-        "python scripts/generate_results.py {input.pickle} {params.scenario} {output.folder}"
+        "mkdir {output.folder} && python scripts/generate_results.py {input.pickle} {params.scenario} {output.folder}"
+
+rule create_piecharts:
+    input: 
+        file="results/{model_run}.sol"
+    params:
+        scenario="{model_run}"
+    output: 
+        folder=directory("results/export_{model_run}/piecharts")
+    conda:
+        "envs/results.yaml"
+    shell:
+        "mkdir {output.folder} && python ResultsCalc.py {input.file} {params.scenario} {output.folder}"
