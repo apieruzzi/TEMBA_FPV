@@ -11,6 +11,9 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 import colorcet as cc
+import sys
+import tempfile
+import shutil
 
 # Goal: obtain quantification of results
 # - How many reservoirs are built out of the planned list (after 2023)? Total number and number per country
@@ -62,7 +65,22 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
         elif title == 'Generation':
             df_comb_fpv.loc[code]['MaxGeneration'] = max_value
             df_comb_fpv.loc[code]['YearG'] = max_year
-            df_comb_fpv.loc[code]['TotalGeneration'] = df['tot'].iloc[-1]   
+            df_comb_fpv.loc[code]['TotalGeneration'] = df['tot'].iloc[-1]  
+    
+    if file == 'Aggregate' and code != 'SS':
+        max_share = np.max(df['Solar FPV - Percentage'].iloc[:-1])
+        max_year = np.argmax(df['tot'].iloc[:-1]) + df['y'].loc[0]
+        if title == 'Capacity':
+            df_comb_fpv.loc[code]['MaxCapacityShare'] = max_share
+            df_comb_fpv.loc[code]['YearCS'] = max_year
+            first_non_zero = df['Solar FPV'].to_numpy().nonzero()[0][0] + df['y'].loc[0]
+            df_comb_fpv.loc[code]['Onset'] = first_non_zero
+        elif title == 'Generation':
+            df_comb_fpv.loc[code]['MaxGenerationShare'] = max_share
+            df_comb_fpv.loc[code]['YearGS'] = max_year
+            df_comb_fpv.loc[code]['TotalGeneration'] = df['tot'].iloc[-1]  
+            
+            
 
     # Plot pie charts of mix for every decade (2030,2040,2050,2060,2070)
     df = df.set_index('y')
@@ -94,116 +112,142 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     plt.subplots_adjust(wspace=0.01, hspace=0.1)        
     fig.suptitle(title + ' mixes' + ' - ' + file + ' - ' + code + ' - '+ scenario)
     axes.flatten()[0].legend(bbox_to_anchor=(0, 0.7), labels=labels)
-    fig.savefig(f'results/piecharts/{code}/{title} - {file} - {code}.png', bbox_inches='tight')
+    fig.savefig(os.path.join(homedir, f'{code} - {title} - {file}.png'), bbox_inches='tight')
     plt.close()
 
+input_file_dummy = sys.argv[1]
+scenario = sys.argv[2]
+destination_folder = sys.argv[3]
 
-scenario = "TEMBA_Refer_ENB"
-os.makedirs(r'results/piecharts', exist_ok=True)
-folder_names = ['EAPP', 'EG', 'ET', 'SD', 'SS']
-for name in folder_names:
-    os.makedirs(f'results/piecharts/{name}', exist_ok=True)
+# scenario = 'TEMBA_2.0_ENB'
+# destination_folder = 'results/export_{scenario}'
+
+with tempfile.TemporaryDirectory() as temp:
+
+    global homedir
+    homedir = temp
+
+    print("Using temporary directory {}".format(homedir))
+
+    # Load files
+    hydro_plants_filename = r'input_data/planned_hydro_plants.csv' #Doesnt have ror plants 
+    tech_codes_filename = r'input_data/techcodes.csv'
+    new_capacity_filename = f'results/{scenario}/NewCapacity.csv'
     
-
-
-# Load files
-hydro_plants_filename = r'input_data/planned_hydro_plants.csv' #Doesnt have ror plants 
-tech_codes_filename = r'input_data/techcodes.csv'
-new_capacity_filename = f'results/{scenario}/NewCapacity.csv'
-
-# Calculate amount of HP plants that are built:
-hydro_plants_list = pd.read_csv(hydro_plants_filename, header=None)
-hydro_plants_list = hydro_plants_list.rename(columns={0:'t'})
-new_capacity_df = pd.read_csv(new_capacity_filename)
-built_plants = hydro_plants_list.iloc[np.where(hydro_plants_list['t'].isin(new_capacity_df['t']))]
-nplants_tot = len(hydro_plants_list)
-nplants_tot_built = len(built_plants)
-nplants_ET = len(built_plants.iloc[np.where(built_plants['t'].str.startswith('ET'))])
-nplants_SD = len(built_plants.iloc[np.where(built_plants['t'].str.startswith('SD'))])
-nplants_SS = len(built_plants.iloc[np.where(built_plants['t'].str.startswith('SS'))])
-
-# Calculate capacity amounts and percentages for each country and year
-country_codes = ['EG', 'ET', 'SD', 'SS']
-years = np.arange(2015,2071,1)
-writer = pd.ExcelWriter(f'results/Mixes_percentages_{scenario}.xlsx')
-
-# Save hydro plants values and lists                                                                                       
-data = [['Total planned plants',nplants_tot], ['Total built plants', nplants_tot_built],
-        ['Total built plants ET', nplants_ET], ['Total built plants SD', nplants_SD],
-        ['Total built plants SS', nplants_SS]]
-df_plants = pd.DataFrame(data)
-df_plants.to_excel(writer, sheet_name = 'Metrics of built HP plants', index=False, header = None)
-
-tech_codes_df = pd.read_csv(tech_codes_filename)
-hydro_plants_mod = [plant[2:] for plant in hydro_plants_list['t']]
-hydro_plants_names = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(hydro_plants_mod))[0],:2]
-built_plants_mod = [plant[2:] for plant in built_plants['t']]
-built_plants_names = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(built_plants_mod))[0],:2]
-built_plants_names.to_excel(writer, sheet_name = 'List of built HP plants', index=False)
-
-# Create pie charts
-colors_dict_agg = {
-    "Coal - Percentage":"darkgrey",
-    "Oil - Percentage" : "grey",
-    "Gas - Percentage" : "darkorange",
-    "Hydro - Percentage" : "lightblue",
-    "Solar CSP - Percentage" : "yellow",
-    "Solar PV - Percentage" : "gold",
-    "Solar FPV - Percentage" : "lightgreen",
-    "Wind - Percentage" : "blue",
-    "Biomass - Percentage" : "brown",
-    "Geothermal - Percentage" : "beige", 
-    "power_trade - Percentage" : "pink",
-    "Nuclear - Percentage" : "cyan"
-    }
-
-file_prodtechs = r'input_data/power_tech.csv'
-prodtechs_df = pd.read_csv(file_prodtechs)
-prod_techs_codes_df = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(prodtechs_df['power_tech']))]
-names_list = [name + ' - Percentage' for name in  prod_techs_codes_df['tech_name']]
-names_list.append('Solar FPV - Percentage')
-
-palette = sns.color_palette(cc.glasbey, n_colors=len(names_list))
-palette = palette.as_hex()
-colors_dict_detail = dict(zip(names_list, palette))
-
-tech_codes_df['tech_name'] = [name + ' - Percentage' for name in tech_codes_df['tech_name']]
-
-df_comb_hydro = pd.DataFrame(columns=['MaxCapacity', 'YearC', 'MaxGeneration', 'YearG', 'TotalGeneration'], 
-                       index=['EAPP', 'EG', 'ET', 'SD', 'SS'])
-df_comb_fpv = df_comb_hydro.copy()
-
-files = ['Aggregate', 'Detail solar', 'Detail hydro', 'Detail fpv']
-
-for file in files:
-    capacity_filename = f'results/export_{scenario}/powerpool/EAPP/EAPP-Power Generation Capacity ({file})-{scenario}.csv'
-    create_pie_charts(capacity_filename, 'Capacity', scenario, writer, file, code='EAPP')
-    generation_filename =   f'results/export_{scenario}/powerpool/EAPP/EAPP-Power Generation ({file})-{scenario}.csv'
-    create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code='EAPP')
-
-for code in country_codes:
+    # Calculate amount of HP plants that are built:
+    hydro_plants_list = pd.read_csv(hydro_plants_filename, header=None)
+    hydro_plants_list = hydro_plants_list.rename(columns={0:'t'})
+    new_capacity_df = pd.read_csv(new_capacity_filename)
+    built_plants = new_capacity_df[['t','y']].iloc[np.where(new_capacity_df['t'].isin(hydro_plants_list['t']))]
+    nplants_tot = len(hydro_plants_list)
+    nplants_tot_built = len(built_plants)
+    nplants_ET = len(built_plants.iloc[np.where(built_plants['t'].str.startswith('ET'))])
+    nplants_SD = len(built_plants.iloc[np.where(built_plants['t'].str.startswith('SD'))])
+    nplants_SS = len(built_plants.iloc[np.where(built_plants['t'].str.startswith('SS'))])
+    
+    # Calculate capacity amounts and percentages for each country and year
+    country_codes = ['EG', 'ET', 'SD', 'SS']
+    years = np.arange(2015,2071,1)
+    writer = pd.ExcelWriter(f'results/export_{scenario}/Mixes_percentages_{scenario}.xlsx')
+    
+    # Save hydro plants values and lists                                                                                       
+    data = [['Total planned plants',nplants_tot], ['Total built plants', nplants_tot_built],
+            ['Total built plants ET', nplants_ET], ['Total built plants SD', nplants_SD],
+            ['Total built plants SS', nplants_SS]]
+    df_plants = pd.DataFrame(data)
+    df_plants.to_excel(writer, sheet_name = 'Metrics of built HP plants', index=False, header = None)
+    
+    tech_codes_df = pd.read_csv(tech_codes_filename)
+    hydro_plants_mod = [plant[2:] for plant in hydro_plants_list['t']]
+    hydro_plants_names = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(hydro_plants_mod))[0],:2]
+    built_plants_mod = [plant[2:] for plant in built_plants['t']]
+    built_plants_names = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(built_plants_mod))[0],:2]
+    built_plants = built_plants.reset_index(drop=True)
+    built_plants_names = built_plants_names.reset_index(drop=True)
+    built_plants_names['Year'] = built_plants['y']
+    built_plants_names.to_excel(writer, sheet_name = 'List of built HP plants', index=False)
+     
+    # Create pie charts
+    colors_dict_agg = {
+        "Coal - Percentage":"darkgrey",
+        "Oil - Percentage" : "grey",
+        "Gas - Percentage" : "darkorange",
+        "Hydro - Percentage" : "lightblue",
+        "Solar CSP - Percentage" : "yellow",
+        "Solar PV - Percentage" : "gold",
+        "Solar FPV - Percentage" : "lightgreen",
+        "Wind - Percentage" : "blue",
+        "Biomass - Percentage" : "brown",
+        "Geothermal - Percentage" : "beige", 
+        "power_trade - Percentage" : "pink",
+        "Nuclear - Percentage" : "cyan"
+        }
+    
+    file_prodtechs = r'input_data/power_tech.csv'
+    prodtechs_df = pd.read_csv(file_prodtechs)
+    prod_techs_codes_df = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(prodtechs_df['power_tech']))]
+    names_list = [name + ' - Percentage' for name in  prod_techs_codes_df['tech_name']]
+    names_list.append('Solar FPV - Percentage')
+    
+    palette = sns.color_palette(cc.glasbey, n_colors=len(names_list))
+    palette = palette.as_hex()
+    colors_dict_detail = dict(zip(names_list, palette))
+    
+    tech_codes_df['tech_name'] = [name + ' - Percentage' for name in tech_codes_df['tech_name']]
+    
+    df_comb_hydro = pd.DataFrame(columns=['MaxCapacity', 'YearC', 'MaxGeneration', 'YearG', 'TotalGeneration'], 
+                           index=['EAPP', 'EG', 'ET', 'SD', 'SS'])
+    df_comb_fpv = pd.DataFrame(columns=['MaxCapacity', 'YearC', 'MaxGeneration', 
+                                        'YearG', 'TotalGeneration', 
+                                        'MaxCapacityShare', 'YearCS',
+                                        'MaxGenerationShare', 'YearGS', 'Onset'], 
+                           index=['EAPP', 'EG', 'ET', 'SD', 'SS'])
+    
+    files = ['Aggregate', 'Detail solar', 'Detail hydro', 'Detail fpv']
+    
     for file in files:
-        # Capacity:
-        capacity_filename = f'results/export_{scenario}/country/{code}/{code}-Power Generation Capacity ({file})-{scenario}.csv'
-        create_pie_charts(capacity_filename, 'Capacity', scenario, writer, file, code)
-        
-        # Generation:
-        generation_filename = f'results/export_{scenario}/country/{code}/{code}-Power Generation ({file})-{scenario}.csv'
-        create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code)
+        capacity_filename = f'results/export_{scenario}/barcharts/EAPP/EAPP-Power Generation Capacity ({file})-{scenario}.csv'
+        create_pie_charts(capacity_filename, 'Capacity', scenario, writer, file, code='EAPP')
+        generation_filename =   f'results/export_{scenario}/barcharts/EAPP/EAPP-Power Generation ({file})-{scenario}.csv'
+        create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code='EAPP')
     
-# Calculate cumulative water consumption
-wc_filename = f'results/export_{scenario}/powerpool/EAPP/EAPP-Water Consumption-{scenario}.csv'
-wc_df = pd.read_csv(wc_filename)
-wc_df['tot'] = wc_df.iloc[:,2:].sum(axis=1)
-wc_tot = wc_df['tot'].sum()
-df_wc = pd.DataFrame(data = [wc_tot], columns=['Total Water Consumption'])
-df_wc.to_excel(writer, sheet_name='TotalWaterConsumption', index=False)
-
-df_comb_hydro.to_excel(writer, sheet_name='Max values_hydro')
-df_comb_fpv.to_excel(writer, sheet_name='Max values_fpv')
-
-writer.close()
-
+    for code in country_codes:
+        for file in files:
+            # Capacity:
+            capacity_filename = f'results/export_{scenario}/barcharts/{code}/{code}-Power Generation Capacity ({file})-{scenario}.csv'
+            create_pie_charts(capacity_filename, 'Capacity', scenario, writer, file, code)
+            
+            # Generation:
+            generation_filename = f'results/export_{scenario}/barcharts/{code}/{code}-Power Generation ({file})-{scenario}.csv'
+            create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code)
+        
+    # Calculate cumulative water consumption
+    wc_filename = f'results/export_{scenario}/barcharts/EAPP/EAPP-Water Consumption-{scenario}.csv'
+    wc_df = pd.read_csv(wc_filename)
+    wc_df['tot'] = wc_df.iloc[:,2:].sum(axis=1)
+    wc_tot = wc_df['tot'].sum()
+    df_wc = pd.DataFrame(data = [wc_tot], columns=['Total Water Consumption'])
+    df_wc.to_excel(writer, sheet_name='TotalWaterConsumption', index=False)
+    
+    df_comb_hydro.to_excel(writer, sheet_name='Max values_hydro')
+    df_comb_fpv.to_excel(writer, sheet_name='Max values_fpv')
+    
+    writer.close()
+    
+    
+    # Move files:    
+    os.makedirs(os.path.join(destination_folder), exist_ok=True)
+    folder_names = ['EAPP', 'EG', 'ET', 'SD', 'SS']
+        
+    resultpath = os.path.join(destination_folder)
+    files = os.listdir(homedir)
+    for name in folder_names:
+        dest1 = os.path.join(resultpath, name)
+        os.makedirs(dest1, exist_ok=True)
+        for f in files:
+            if (f.startswith(name)):
+                filepath = os.path.join(homedir, f)
+                shutil.move(filepath, dest1)
 
 
 

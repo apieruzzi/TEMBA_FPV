@@ -1,11 +1,12 @@
-MODELRUNS = ["TEMBA_2.0_ENB"]
+MODELRUNS = ["TEMBA_1.5_ENB", "TEMBA_2.0_ENB"]
 
 rule all:
     # input: ["results/{model_run}.pickle".format(model_run=model_run) for model_run in MODELRUNS]
       input: 
              ["results/export_{model_run}/barcharts".format(model_run=model_run) for model_run in MODELRUNS],
-	     ["results/export_{model_run}/piecharts".format(model_run=model_run) for model_run in MODELRUNS]
-
+	     ["results/export_{model_run}/piecharts".format(model_run=model_run) for model_run in MODELRUNS], 
+	     ["results/ScenarioComparison/Mixes_percentages_{model_run}.xlsx".format(model_run=model_run) for model_run in MODELRUNS],
+	     ["results/ScenarioComparison/AggregatedExcels/ValuesFPV.xlsx"]
 rule generate_model_file:
     input: 
         "input_data/{model_run}.xlsx"
@@ -78,7 +79,7 @@ rule generate_results:
 
 rule create_piecharts:
     input: 
-        file="results/{model_run}.sol"
+        rules.generate_results.output
     params:
         scenario="{model_run}"
     output: 
@@ -86,4 +87,24 @@ rule create_piecharts:
     conda:
         "envs/results.yaml"
     shell:
-        "mkdir {output.folder} && python ResultsCalc.py {input.file} {params.scenario} {output.folder}"
+        "mkdir {output.folder} && python ResultsCalc.py {input} {params.scenario} {output.folder}"
+
+rule create_comparison_folder:
+    input: 
+        rules.create_piecharts.output
+    params:
+        scenario="{model_run}"
+    output: 
+        "results/ScenarioComparison/Mixes_percentages_{model_run}.xlsx"
+    shell:
+        "python rename_files.py {input} {params.scenario} {output}"
+
+rule create_comparison_excels:
+    input: 
+        "results/ScenarioComparison/Mixes_percentages_TEMBA_1.5_ENB.xlsx"
+    params:
+        "results/ScenarioComparison"
+    output: 
+        "results/ScenarioComparison/AggregatedExcels/ValuesFPV.xlsx"
+    shell:
+        "python create_excels.py {input} {params} {output}"
