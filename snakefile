@@ -1,4 +1,4 @@
-MODELRUNS = ["TEMBA_1.5_ENB", "TEMBA_2.0_ENB"]
+MODELRUNS = ["TEMBA_1.5_ENB", "TEMBA_1.5_ENB_RCP26_dry", "TEMBA_1.5_ENB_RCP26_wet", "TEMBA_1.5_ENB_RCP60_dry", "TEMBA_1.5_ENB_RCP60_wet", "TEMBA_2.0_ENB", "TEMBA_2.0_ENB_RCP60_dry", "TEMBA_2.0_ENB_RCP60_wet", "TEMBA_2.0_ENB_RCP85_dry", "TEMBA_2.0_ENB_RCP85_wet", "TEMBA_Refer_ENB", "TEMBA_Refer_ENB_RCP26_dry", "TEMBA_Refer_ENB_RCP26_wet", "TEMBA_Refer_ENB_RCP60_dry", "TEMBA_Refer_ENB_RCP60_wet", "TEMBA_Refer_ENB_RCP85_dry", "TEMBA_Refer_ENB_RCP85_wet"]
 
 rule all:
     # input: ["results/{model_run}.pickle".format(model_run=model_run) for model_run in MODELRUNS]
@@ -41,7 +41,8 @@ rule generate_lp_file:
 
 rule solve_lp:
     input: 
-        "output_data/{model_run}.lp.gz"
+        expand("output_data/{model_run}.lp.gz",model_run=MODELRUNS),
+	file="output_data/{model_run}.lp.gz"
     output: 
         protected("output_data/{model_run}.sol")
     log: 
@@ -49,7 +50,7 @@ rule solve_lp:
     threads: 
         2
     shell:
-        "gurobi_cl NumericFocus=1 Method=2 Threads={threads} ResultFile={output} ResultFile=output_data/infeasible.ilp LogFile={log} {input}"
+        "gurobi_cl NumericFocus=1 Method=2 Threads={threads} ResultFile={output} ResultFile=output_data/infeasible.ilp LogFile={log} {input.file}"
 
 rule remove_zero_values:
     input: "output_data/{model_run}.sol"
@@ -101,7 +102,7 @@ rule create_comparison_folder:
 
 rule create_comparison_excels:
     input: 
-        "results/ScenarioComparison/Mixes_percentages_TEMBA_1.5_ENB.xlsx"
+        "results/ScenarioComparison/Mixes_percentages_TEMBA_Refer_ENB.xlsx"
     params:
         "results/ScenarioComparison"
     output: 

@@ -30,8 +30,8 @@ country_codes = ['EG', 'ET', 'SD', 'SS']
 
 
 # Read file
-filename = r'Data/CombinedHydroSolar_RCP85_dry.csv'
-filename_out = 'Parameters_hybrid_plants_RCP85_dry.xlsx'
+filename = r'Data/CombinedHydroSolar_RCP85_wet.csv'
+filename_out = 'Parameters_hybrid_plants_RCP85_wet.xlsx'
 df = pd.read_csv(filename)
 df = df.fillna(0)
 

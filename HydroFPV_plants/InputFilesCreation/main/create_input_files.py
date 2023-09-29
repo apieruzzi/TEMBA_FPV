@@ -14,7 +14,7 @@ import os
 # Import existing input file
 
 filenames = ["TEMBA_Refer_ENB.xlsx", "TEMBA_1.5_ENB.xlsx", "TEMBA_2.0_ENB.xlsx"]
-hydrological_regime = 'RCP85_dry'
+hydrological_regime = 'RCP85_wet'
 
 
 sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 
@@ -30,7 +30,7 @@ first_year = 2015
 years = np.arange(first_year,2071)
 
 # Import disaggregated plant file
-filename_plants = 'Parameters_hybrid_plants_RCP85_dry.xlsx'
+filename_plants = f'Parameters_hybrid_plants_{hydrological_regime}.xlsx'
 folder = r'Created Files'
 
 
