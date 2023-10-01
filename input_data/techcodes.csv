@@ -53,14 +53,14 @@ SOC2P00X,CSP (with storage),lavender
 SOC1P00X,CSP (without storage),dimgrey
 EL00TDTX,Distribution technology (Distribution to final electricity demand),grey13
 EGELJOBP00,Egypt - Jordan Historic EL trade link,yellow
-EGELSABP00,Egypt - Saudi Arabia Planned EL trade link,beige
+EGELSABP00,Egypt - Saudi Arabia Planned EL trade link,green
 EGELSDBP00,Egypt - Sudan Historic and Planned EL trade link,tomato
 EGNGTUBP00,Egypt - Turkey Historic and Planned NG trade link,polarorange
 ETHANOLX,Ethanol production,honeydew
-ETELDJBP00,Ethiopia - Djibouti EL existing trade link,yellow
-ETNGDJBP00,Ethiopia - Djibouti NG planned trade link,yellow
-ETELKEBP00,Ethiopia - Kenya EL planned trade link,tomato
-ETELSDBP00,Ethiopia - Sudan EL existing trade link,yellow
+ETELDJBP00,Ethiopia - Djibouti EL existing trade link,blue
+ETNGDJBP00,Ethiopia - Djibouti NG planned trade link,pink
+ETELKEBP00,Ethiopia - Kenya EL planned trade link,orange
+ETELSDBP00,Ethiopia - Sudan EL existing trade link,purple
 FW00P00X,Firewood process (non-power sector),indianred
 GASAGG,Gas,orange
 gas_trade,gas_trade,polarpurple

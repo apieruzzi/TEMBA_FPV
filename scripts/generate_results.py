@@ -38,7 +38,7 @@ destination_folder = sys.argv[3]
 # destination_folder = 'results/export_REF_FPV'
 # homedir = r'C:\Users\Alessandro Pieruzzi\Documents\Thesis\TEMBA_FPV\debugging\debugplots'
 
-first_year = 2022
+first_year = 2015
 last_year = 2070
 
 
@@ -325,10 +325,9 @@ with tempfile.TemporaryDirectory() as temp:
         # ********************************************************************
         # Power generation (Detailed)
         gen_df = all_params['ProductionByTechnologyAnnual'].copy() # Get power production from the file
-        gen_df_export = gen_df[(gen_df['f'].str[2:6] == 'EL01') & (
-            gen_df['f'].str[0:2] != cc)].copy() # Get all the techs that produce ele01 and are not in the country
-        gen_df_export = gen_df_export[gen_df_export['t'].str[6:10] == 'BP00'].copy(
-        ) # Get trade links 
+        gen_df_export = gen_df[((gen_df['f'].str[2:6] == 'EL01') & (gen_df['f'].str[0:2] != cc))
+                               | ((gen_df['f'].str[2:6] == 'DUEL') & (gen_df['f'].str[0:2] == cc))].copy() # Get all the techs that produce ele01 and are not in the country
+        gen_df_export = gen_df_export[gen_df_export['t'].str[6:10] == 'BP00'].copy() # Get trade links 
         gen_df_export = gen_df_export[(gen_df_export['t'].str[0:2] == cc) | (
             gen_df_export['t'].str[4:6] == cc)] # Get trade links that contain the selected country
         gen_df_export['value'] = gen_df_export['value'].astype(float)*-1 # Put negative the production values
@@ -746,7 +745,7 @@ with tempfile.TemporaryDirectory() as temp:
         #                      xTitle='Year',
         #                      yTitle="Petajoules (PJ)",
         #                      color=[color_dict[x] for x in gen_agg_df.columns if x != 'y'],
-        #                      title=cc+"-"+"Power Generation (Aggregate)")
+        #                      title=cc+"-"+"Power Generation (Aggregate)+"-"+scenario")
             gen_agg_df['Total'] = gen_agg_df['Coal']+gen_agg_df['Oil']+gen_agg_df['Gas']+gen_agg_df['Hydro']+gen_agg_df['Nuclear']+gen_agg_df['Solar CSP'] + \
                 gen_agg_df['Solar PV']+gen_agg_df['Wind']+gen_agg_df['Biomass'] + \
                 gen_agg_df['Geothermal']+gen_agg_df['Backstop'] + \
@@ -964,14 +963,14 @@ with tempfile.TemporaryDirectory() as temp:
                                 color=[color_dict[x]
                                         for x in total_gen_df.columns if x != 'y'],
                                 title=tk+"-" +
-                                "Power Generation (Aggregate)",
+                                "Power Generation (Aggregate)"+"-"+scenario,
                                 showlegend=True,
                                 asFigure=True)
         fig.update_xaxes(range=[first_year, last_year])
-        title = (tk+"-"+"Power Generation (Aggregate)")
+        title = (tk+"-"+"Power Generation (Aggregate)"+"-"+scenario)
         pio.write_image(fig, os.path.join(homedir, '{}.png'.format(title)),
                         scale=1, width=1500, height=1000)
-        fig.show()
+        # fig.show()
         # total_cap_df['y']=years
         # total_cap_df=total_cap_df.drop('gas_trade',axis=1)
 
@@ -1238,7 +1237,7 @@ with tempfile.TemporaryDirectory() as temp:
     # this block will create individual country folders and paste (all country specific csv and png files)
     # files from the home directory to the path mentioned below
 
-    resultpath = os.path.join(destination_folder, 'barcharts')
+    resultpath = os.path.join(destination_folder)
     files = os.listdir(homedir)
     for country in country_code['Country code']:
         dest1 = os.path.join(resultpath, country)
@@ -1251,7 +1250,7 @@ with tempfile.TemporaryDirectory() as temp:
     # this block will create individual Power pool folders and paste (all country specific csv and png files)
     # files from the home directory to the path mentioned below
     power_p = ['EAPP']
-    resultpath = os.path.join(destination_folder, 'barcharts')
+    resultpath = os.path.join(destination_folder)
     files = os.listdir(homedir)
     for en in power_p:
         dest2 = os.path.join(resultpath, en)

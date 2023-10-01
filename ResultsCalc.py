@@ -173,12 +173,12 @@ with tempfile.TemporaryDirectory() as temp:
         "Oil - Percentage" : "grey",
         "Gas - Percentage" : "darkorange",
         "Hydro - Percentage" : "lightblue",
-        "Solar CSP - Percentage" : "yellow",
-        "Solar PV - Percentage" : "gold",
-        "Solar FPV - Percentage" : "lightgreen",
+        "Solar CSP - Percentage" : "red",
+        "Solar PV - Percentage" : "yellow",
+        "Solar FPV - Percentage" : "green",
         "Wind - Percentage" : "blue",
-        "Biomass - Percentage" : "brown",
-        "Geothermal - Percentage" : "beige", 
+        "Biomass - Percentage" : "lightgreen",
+        "Geothermal - Percentage" : "brown", 
         "power_trade - Percentage" : "pink",
         "Nuclear - Percentage" : "cyan"
         }

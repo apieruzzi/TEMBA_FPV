@@ -89,15 +89,16 @@ for x, filename in enumerate(filenames):
         
         
         # Fix EGELSA date and biomass residual capacity
-        if sheet_names[i] == ['TotalAnnualMaxCapacityInvestmen'] \
-        or sheet_names[i] == ['TotalAnnualMinCapacityInvestmen']:
-            df[df['TECHNOLOGY']=='EGELSABP00'].loc[:,2015:] = 0
-            df[df['TECHNOLOGY']=='EGELSABP00'].loc[:,2024] = 3
+        if sheet_names[i] == 'TotalAnnualMaxCapacityInvestmen' \
+        or sheet_names[i] == 'TotalAnnualMinCapacityInvestmen':
+            df.loc[df['TECHNOLOGY']=='EGELSABP00',2015:] = 0
+            df.loc[df['TECHNOLOGY']=='EGELSABP00',2024] = 1.5
+            df.loc[df['TECHNOLOGY']=='EGELSABP00',2025] = 3
     
-        if sheet_names[i] == ['ResidualCapacity'] \
-        or sheet_names[i] == ['TotalAnnualMaxCapacityInvestmen'] \
-        or sheet_names[i] == ['TotalAnnualMinCapacityInvestmen']:
-            df[df['TECHNOLOGY'].str.contains('EGBM')].loc[:,2015:2023] = 0
+        if sheet_names[i] == 'ResidualCapacity' \
+        or sheet_names[i] == 'TotalAnnualMaxCapacityInvestmen' \
+        or sheet_names[i] == 'TotalAnnualMinCapacityInvestmen':
+            df.loc[df['TECHNOLOGY'].str.contains('EGBM'),2015:2023] = 0
         
         # Fix technology header
         if sheet_names[i] == 'TECHNOLOGY':

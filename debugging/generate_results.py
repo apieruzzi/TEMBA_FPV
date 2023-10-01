@@ -323,10 +323,9 @@ with tempfile.TemporaryDirectory() as temp:
         # ********************************************************************
         # Power generation (Detailed)
         gen_df = all_params['ProductionByTechnologyAnnual'].copy() # Get power production from the file
-        gen_df_export = gen_df[(gen_df['f'].str[2:6] == 'EL01') & (
-            gen_df['f'].str[0:2] != cc)].copy() # Get all the techs that produce ele01 and are not in the country
-        gen_df_export = gen_df_export[gen_df_export['t'].str[6:10] == 'BP00'].copy(
-        ) # Get trade links 
+        gen_df_export = gen_df[((gen_df['f'].str[2:6] == 'EL01') & (gen_df['f'].str[0:2] != cc))
+                               | ((gen_df['f'].str[2:6] == 'DUEL') & (gen_df['f'].str[0:2] == cc))].copy() # Get all the techs that produce ele01 and are not in the country
+        gen_df_export = gen_df_export[gen_df_export['t'].str[6:10] == 'BP00'].copy() # Get trade links 
         gen_df_export = gen_df_export[(gen_df_export['t'].str[0:2] == cc) | (
             gen_df_export['t'].str[4:6] == cc)] # Get trade links that contain the selected country
         gen_df_export['value'] = gen_df_export['value'].astype(float)*-1 # Put negative the production values
