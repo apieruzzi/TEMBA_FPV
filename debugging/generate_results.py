@@ -353,7 +353,7 @@ with tempfile.TemporaryDirectory() as temp:
                 pass
         gen_df = gen_df.reindex(sorted(gen_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
-        # df_plot(gen_df,'Petajoules (PJ)',cc+"-"+'Power Generation (Detail)', barmode='relative')
+        gen_df = gen_df.iloc[np.where(gen_df['y']>first_year)]
         
         # Power generation (trades only):
         cols = [col for col in gen_df.columns if 'trade' in col]
@@ -412,6 +412,7 @@ with tempfile.TemporaryDirectory() as temp:
             'y').reset_index()
         wat_w_df = wat_w_df.reindex(sorted(wat_w_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        wat_w_df = wat_w_df.iloc[np.where(wat_w_df['y']>first_year)]
         #wat_w_df['y'] = years
         # wat_w_df=wat_w_df[wat_w_df['y']>2022]
         #df_plot(wat_w_df,'Million cubic metres (Mm^3)',cc+"-"+'Water Withdrawal')
@@ -442,6 +443,7 @@ with tempfile.TemporaryDirectory() as temp:
             'y').reset_index()
         wat_o_df = wat_o_df.reindex(sorted(wat_o_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        wat_o_df = wat_o_df.iloc[np.where(wat_o_df['y']>first_year)]
         #wat_o_df['y'] = years
         # wat_o_df=wat_o_df[wat_o_df['y']>2022]
         #df_plot(wat_o_df,'Million cubic metres (Mm^3)',cc+"-"+'Water output')
@@ -550,6 +552,7 @@ with tempfile.TemporaryDirectory() as temp:
                                         aggfunc='sum').reset_index().fillna(0)
         gas_df = gas_df.reindex(sorted(gas_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        gas_df = gas_df.iloc[np.where(gas_df['y']>first_year)]
         gas_df = gas_df.loc[:, (gas_df != 0).any(axis=0)]
 
         for each in gas_df.columns:
@@ -591,6 +594,7 @@ with tempfile.TemporaryDirectory() as temp:
                                         aggfunc='sum').reset_index().fillna(0)
         cru_r_df = cru_r_df.reindex(sorted(cru_r_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        cru_r_df = cru_r_df.iloc[np.where(cru_r_df['y']>first_year)]
         #cru_r_df['y'] = years
         # cru_r_df=cru_r_df[cru_r_df['y']>2022]
         df_plot(cru_r_df, 'Petajoules (PJ)', cc + '-' +
@@ -606,6 +610,7 @@ with tempfile.TemporaryDirectory() as temp:
                                         aggfunc='sum').reset_index().fillna(0)
         cru_df = cru_df.reindex(sorted(cru_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        cru_df = cru_df.iloc[np.where(cru_df['y']>first_year)]
         cru_df = cru_df.loc[:, (cru_df != 0).any(axis=0)]
 
         if len(cru_df.columns) == 1:
@@ -642,6 +647,7 @@ with tempfile.TemporaryDirectory() as temp:
                                     aggfunc='sum').reset_index().fillna(0)
         coal_df = coal_df.reindex(sorted(coal_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        coal_df = coal_df.iloc[np.where(coal_df['y']>first_year)]
         #coal_df['y'] = years
         # coal_df=coal_df[coal_df['y']>2022]
         df_plot(coal_df, 'Petajoules (PJ)', cc+'-'+'Coal production by technology')
@@ -655,6 +661,7 @@ with tempfile.TemporaryDirectory() as temp:
                                     aggfunc='sum').reset_index().fillna(0)
         biom_df = biom_df.reindex(sorted(biom_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        biom_df = biom_df.iloc[np.where(biom_df['y']>first_year)]
         #biom_df['y'] = years
         # biom_df=biom_df[biom_df['y']>2022]
         df_plot(biom_df, 'Petajoules (PJ)', cc+'-' +
@@ -673,6 +680,7 @@ with tempfile.TemporaryDirectory() as temp:
                                         aggfunc='sum').reset_index().fillna(0)
         hfo_df = hfo_df.reindex(sorted(hfo_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        hfo_df = hfo_df.iloc[np.where(hfo_df['y']>first_year)]
         #hfo_df['y'] = years
         # hfo_df=hfo_df[hfo_df['y']>2022]
         df_plot(hfo_df, 'Petajoules (PJ)', cc+'-'+'HFO production by technology')
@@ -686,6 +694,7 @@ with tempfile.TemporaryDirectory() as temp:
                                         aggfunc='sum').reset_index().fillna(0)
         lfo_df = lfo_df.reindex(sorted(lfo_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        lfo_df = lfo_df.iloc[np.where(lfo_df['y']>first_year)]
         #lfo_df['y'] = years
         # lfo_df=lfo_df[lfo_df['y']>2022]
         df_plot(lfo_df, 'Petajoules (PJ)', cc+'-'+'LFO production by technology')
@@ -725,6 +734,7 @@ with tempfile.TemporaryDirectory() as temp:
                     pass
             gen_df = gen_df.reindex(sorted(gen_df.columns), axis=1).set_index(
                 'y').reset_index().rename(columns=det_col)
+            gen_df = gen_df.iloc[np.where(gen_df['y']>first_year)]
             #gen_df['y'] = years
             # gen_df=gen_df[gen_df['y']>2022]
             #df_plot(gen_df,'Petajoules (PJ)',cc+"-"+'Power Generation (Detail)')
@@ -876,6 +886,7 @@ with tempfile.TemporaryDirectory() as temp:
                     pass
             gen_df = gen_df.reindex(sorted(gen_df.columns), axis=1).set_index(
                 'y').reset_index().rename(columns=det_col)
+            gen_df = gen_df.iloc[np.where(gen_df['y']>first_year)]
             
             
             gen_df_hydro = detailed_power_chart(cc,'ProductionByTechnologyAnnual',
@@ -966,7 +977,7 @@ with tempfile.TemporaryDirectory() as temp:
                                 showlegend=True,
                                 asFigure=True)
         fig.update_xaxes(range=[first_year, last_year])
-        title = (tk+"-"+"Power Generation (Aggregate)"+"-"+scenario)
+        title = (tk+"-"+"Power Generation (Aggregate)")
         pio.write_image(fig, os.path.join(homedir, '{}.png'.format(title)),
                         scale=1, width=1500, height=1000)
         # fig.show()
@@ -974,9 +985,9 @@ with tempfile.TemporaryDirectory() as temp:
         # total_cap_df=total_cap_df.drop('gas_trade',axis=1)
 
         total_gen_df.to_csv(os.path.join(
-            homedir, tk + "-Power Generation (Aggregate)"+"-"+scenario+".csv"))
+            homedir, tk + "-Power Generation (Aggregate).csv"))
         total_cap_df.to_csv(os.path.join(
-            homedir, tk + "-capacity"+"-"+scenario+".csv"))
+            homedir, tk + "-capacity"+"-"+".csv"))
 
     # %% [markdown]
     # # In the follwoing block, the water consumption and withdrawal graphs for all the powerpools and TEMBA will be plotted and CSV files generated for each
@@ -1008,6 +1019,7 @@ with tempfile.TemporaryDirectory() as temp:
                                             aggfunc='sum').reset_index().fillna(0)
             wat_w_df = wat_w_df.reindex(sorted(wat_w_df.columns), axis=1).set_index(
                 'y').reset_index().rename(columns=det_col)
+            wat_w_df = wat_w_df.iloc[np.where(wat_w_df['y']>first_year)]
             #wat_w_df['y'] = years
             # wat_w_df=wat_w_df[wat_w_df['y']>2022]
             #df_plot(wat_w_df,'Million cubic metres (Mm^3)',cc+"-"+'Water Withdrawal')
@@ -1036,6 +1048,7 @@ with tempfile.TemporaryDirectory() as temp:
                                             aggfunc='sum').reset_index().fillna(0)
             wat_o_df = wat_o_df.reindex(sorted(wat_o_df.columns), axis=1).set_index(
                 'y').reset_index().rename(columns=det_col)
+            wat_o_df = wat_o_df.iloc[np.where(wat_o_df['y']>first_year)]
             #wat_o_df['y'] = years
             # wat_o_df=wat_o_df[wat_o_df['y']>2022]
             #df_plot(wat_o_df,'Million cubic metres (Mm^3)',cc+"-"+'Water output')
@@ -1139,6 +1152,7 @@ with tempfile.TemporaryDirectory() as temp:
                 'y').reset_index().rename(columns=det_col)
             total_hfo_df = total_hfo_df.set_index('y').add(
                 hfo_df.set_index('y'), fill_value=0).reset_index()
+            total_hfo_df = total_hfo_df.iloc[np.where(total_hfo_df['y']>first_year)]
             #hfo_df['y'] = years
             # hfo_df=hfo_df[hfo_df['y']>2022]
             # Light Fuel Oil overview
@@ -1154,6 +1168,7 @@ with tempfile.TemporaryDirectory() as temp:
             #df_plot(lfo_df,'Petajoules (PJ)',cc+"-"+'LFO production by technology')
             total_lfo_df = total_lfo_df.set_index('y').add(
                 lfo_df.set_index('y'), fill_value=0).reset_index()
+            total_lfo_df = total_lfo_df.iloc[np.where(total_lfo_df['y']>first_year)]
             #lfo_df['y'] = years
             # lfo_df=lfo_df[lfo_df['y']>2022]
         total_hfo_df['y'] = years
@@ -1196,6 +1211,8 @@ with tempfile.TemporaryDirectory() as temp:
                 coal_df['y'] = years
             total_coal_df = total_coal_df.set_index('y').add(
                 coal_df.set_index('y'), fill_value=0).reset_index()
+            total_coal_df = total_coal_df.iloc[np.where(total_coal_df['y']>first_year)]
+            
             # total_coal_df=coal_df+total_coal_df
             #coal_df['y'] = years
             # coal_df=coal_df[coal_df['y']>2022]
@@ -1212,6 +1229,7 @@ with tempfile.TemporaryDirectory() as temp:
                 'y').reset_index().rename(columns=det_col)
             total_biom_df = total_biom_df.set_index('y').add(
                 biom_df.set_index('y'), fill_value=0).reset_index()
+            total_biom_df = total_biom_df.iloc[np.where(total_biom_df['y']>first_year)]
             #biom_df['y'] = years
             # biom_df=biom_df[biom_df['y']>2022]
         total_coal_df['y'] = years
