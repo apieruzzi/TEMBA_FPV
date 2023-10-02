@@ -22,12 +22,9 @@ import pandas as pd
 import numpy as np
 import pickle
 import plotly.io as pio
-import cufflinks
 import tempfile
 
 
-cufflinks.go_offline()
-cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
 
 # picklefile = sys.argv[1]
 # scenario = sys.argv[2]
@@ -118,14 +115,14 @@ with tempfile.TemporaryDirectory() as temp:
     t_include_hydro = [i for i in t_include if i.startswith('HYD')]
     t_include_solar = [i for i in t_include if i.startswith('SO')]
     t_include_fpv = [i for i in t_include if i.startswith('SOFPV')]
-    t_include_fossil = [i for i in t_include if (i.startswith('CO')|
-                                                 i.startswith('HF')|
-                                                 i.startswith('LF')|
-                                                 i.startswith('NG')|
-                                                 i.startswith('CR'))]
-    colorcode_fossil = colorcode[colorcode['tech_code'].isin(t_include_fossil)].drop('tech_code', axis=1)
-    color_dict_fossil = dict(
-        [(a, b) for a, b in zip(colorcode_fossil.tech_name, colorcode_fossil.colour)])
+    # t_include_fossil = [i for i in t_include if (i.startswith('CO')|
+    #                                              i.startswith('HF')|
+    #                                              i.startswith('LF')|
+    #                                              i.startswith('NG')|
+    #                                              i.startswith('CR'))]
+    # colorcode_fossil = colorcode[colorcode['tech_code'].isin(t_include_fossil)].drop('tech_code', axis=1)
+    # color_dict_fossil = dict(
+    #     [(a, b) for a, b in zip(colorcode_fossil.tech_name, colorcode_fossil.colour)])
     
     # Country code list
     country_code = pd.read_csv(url3, sep=',', encoding="ISO-8859-1")
@@ -144,6 +141,7 @@ with tempfile.TemporaryDirectory() as temp:
             aggfunc='sum').reset_index().fillna(0)
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        df = df.iloc[np.where(df['y']>first_year)] 
         df['y'] = years
         # df=df[df['y']>2022]
         return df
@@ -186,6 +184,7 @@ with tempfile.TemporaryDirectory() as temp:
                             aggfunc='sum').reset_index().fillna(0)
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        df = df.iloc[np.where(df['y']>first_year)] 
         df['y'] = years
         # df=df[df['y']>2022]
         return df
@@ -200,6 +199,7 @@ with tempfile.TemporaryDirectory() as temp:
                             aggfunc='sum').reset_index().fillna(0)
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        df = df.iloc[np.where(df['y']>first_year)] 
         df['y'] = years
         # df=df[df['y']>2022]
         return df
@@ -219,6 +219,7 @@ with tempfile.TemporaryDirectory() as temp:
         # Rename the columns and reindex:
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        df = df.iloc[np.where(df['y']>first_year)] 
         
         if t_include == t_include_solar:
             tech_names = [det_col[t] for t in t_include_fpv]
@@ -261,10 +262,10 @@ with tempfile.TemporaryDirectory() as temp:
                                             t_include_fpv, 
                                             color_dict_solar, 
                                             add_title='fpv')
-        cap_df_fossil = detailed_power_chart(cc,'TotalCapacityAnnual', 
-                                            t_include_fossil, 
-                                            color_dict_fossil, 
-                                            add_title='fossil')
+        # cap_df_fossil = detailed_power_chart(cc,'TotalCapacityAnnual', 
+        #                                     t_include_fossil, 
+        #                                     color_dict_fossil, 
+        #                                     add_title='fossil')
 
         # Power capacity (Aggregated)
         cap_agg_df = pd.DataFrame(columns=agg_pow_col) #create empty dataframe
@@ -287,7 +288,7 @@ with tempfile.TemporaryDirectory() as temp:
         
         # *********************************************************************
         # New power capacity (Detailed):
-        cap_new_df = detailed_power_chart(cc,'NewCapacity')
+        cap_new_df = detailed_power_chart(cc,'NewCapacity', plotting=False)
         cap_new_df_hydro = detailed_power_chart(cc,'NewCapacity',
                                             t_include_hydro, 
                                             color_dict_hydro, 
@@ -296,14 +297,14 @@ with tempfile.TemporaryDirectory() as temp:
                                             t_include_solar, 
                                             color_dict_solar, 
                                             add_title='solar')
-        cap_new_df_fpv = detailed_power_chart(cc,'TotalCapacityAnnual', 
+        cap_new_df_fpv = detailed_power_chart(cc,'NewCapacity', 
                                             t_include_fpv, 
                                             color_dict_solar, 
                                             add_title='fpv')
-        cap_new_df_fossil = detailed_power_chart(cc,'NewCapacity', 
-                                            t_include_fossil, 
-                                            color_dict_fossil, 
-                                            add_title='fossil')
+        # cap_new_df_fossil = detailed_power_chart(cc,'NewCapacity', 
+        #                                     t_include_fossil, 
+        #                                     color_dict_fossil, 
+        #                                     add_title='fossil')
         # New power capacity (Aggregated)
         cap_new_agg_df = pd.DataFrame(columns=agg_pow_col)
         cap_new_agg_df.insert(0, 'y', cap_new_df['y'])
@@ -374,10 +375,10 @@ with tempfile.TemporaryDirectory() as temp:
                                             t_include_fpv, 
                                             color_dict_solar, 
                                             add_title='fpv')
-        gen_df_fossil = detailed_power_chart(cc,'ProductionByTechnologyAnnual',
-                                            t_include_fossil, 
-                                            color_dict_fossil, 
-                                            add_title='fossil')
+        # gen_df_fossil = detailed_power_chart(cc,'ProductionByTechnologyAnnual',
+        #                                     t_include_fossil, 
+        #                                     color_dict_fossil, 
+        #                                     add_title='fossil')
 
         # Power generation (Aggregated)
         gen_agg_df = pd.DataFrame(columns=agg_pow_col)
@@ -743,7 +744,7 @@ with tempfile.TemporaryDirectory() as temp:
         #                      xTitle='Year',
         #                      yTitle="Petajoules (PJ)",
         #                      color=[color_dict[x] for x in gen_agg_df.columns if x != 'y'],
-        #                      title=cc+"-"+"Power Generation (Aggregate)")
+        #                      title=cc+"-"+"Power Generation (Aggregate)+"-"+scenario")
             gen_agg_df['Total'] = gen_agg_df['Coal']+gen_agg_df['Oil']+gen_agg_df['Gas']+gen_agg_df['Hydro']+gen_agg_df['Nuclear']+gen_agg_df['Solar CSP'] + \
                 gen_agg_df['Solar PV']+gen_agg_df['Wind']+gen_agg_df['Biomass'] + \
                 gen_agg_df['Geothermal']+gen_agg_df['Backstop'] + \
@@ -775,32 +776,32 @@ with tempfile.TemporaryDirectory() as temp:
         cols_solar.insert(0,'y')
         cols_fpv = [det_col[t] for t in t_include_fpv]
         cols_fpv.insert(0,'y')
-        cols_fossil = list(colorcode_fossil['tech_name'])
-        cols_fossil.insert(0,'y')
+        # cols_fossil = list(colorcode_fossil['tech_name'])
+        # cols_fossil.insert(0,'y')
         
         total_gen_df = pd.DataFrame(np.zeros(shape=(56, 15)), columns=['y', 'Coal', 'Oil', 'Gas', 'Hydro', 'Nuclear', 'Solar CSP', 'Solar PV', 'Solar FPV',
                                                                     'Wind', 'Biomass', 'Geothermal', 'Backstop', 'power_trade', 'gas_trade'], dtype='float64')
         total_gen_df_hydro = pd.DataFrame(np.zeros(shape=(56, len(cols_hydro))), columns=cols_hydro, dtype='float64')
         total_gen_df_solar = pd.DataFrame(np.zeros(shape=(56, len(cols_solar))), columns=cols_solar, dtype='float64')
         total_gen_df_fpv = pd.DataFrame(np.zeros(shape=(56, len(cols_fpv))), columns=cols_fpv, dtype='float64')
-        total_gen_df_fossil = pd.DataFrame(np.zeros(shape=(56, len(cols_fossil))), columns=cols_fossil, dtype='float64')
+        # total_gen_df_fossil = pd.DataFrame(np.zeros(shape=(56, len(cols_fossil))), columns=cols_fossil, dtype='float64')
         total_gen_df['y'] = years
         total_gen_df_hydro['y'] = years
         total_gen_df_solar['y'] = years
         total_gen_df_fpv['y'] = years
-        total_gen_df_fossil['y'] = years
+        # total_gen_df_fossil['y'] = years
         
         total_cap_df = pd.DataFrame(np.zeros(shape=(56, 15)), columns=['y', 'Coal', 'Oil', 'Gas', 'Hydro', 'Nuclear', 'Solar CSP', 'Solar PV','Solar FPV',
                                                                     'Wind', 'Biomass', 'Geothermal', 'Backstop', 'power_trade', 'gas_trade'], dtype='float64')
         total_cap_df_hydro = pd.DataFrame(np.zeros(shape=(56, len(cols_hydro))), columns=cols_hydro, dtype='float64')
         total_cap_df_solar = pd.DataFrame(np.zeros(shape=(56, len(cols_solar))), columns=cols_solar, dtype='float64')
         total_cap_df_fpv = pd.DataFrame(np.zeros(shape=(56, len(cols_fpv))), columns=cols_fpv, dtype='float64')
-        total_cap_df_fossil = pd.DataFrame(np.zeros(shape=(56, len(cols_fossil))), columns=cols_fossil, dtype='float64')
+        # total_cap_df_fossil = pd.DataFrame(np.zeros(shape=(56, len(cols_fossil))), columns=cols_fossil, dtype='float64')
         total_cap_df['y'] = years
         total_cap_df_hydro['y'] = years
         total_cap_df_solar['y'] = years
         total_cap_df_fpv['y'] = years
-        total_cap_df_fossil['y'] = years
+        # total_cap_df_fossil['y'] = years
         
         # for loop for each country inside a powerpool
         for cc in pp_def[tk]:
@@ -816,9 +817,9 @@ with tempfile.TemporaryDirectory() as temp:
             cap_df_fpv = detailed_power_chart(cc,'TotalCapacityAnnual',
                                                 t_include_fpv, color_dict_solar, 
                                                 add_title='fpv', plotting=False)
-            cap_df_fossil = detailed_power_chart(cc,'TotalCapacityAnnual',
-                                                t_include_fossil, color_dict_fossil, 
-                                                add_title='fossil', plotting=False)
+            # cap_df_fossil = detailed_power_chart(cc,'TotalCapacityAnnual',
+            #                                     t_include_fossil, color_dict_fossil, 
+            #                                     add_title='fossil', plotting=False)
             # Aggregate it per technology type
             cap_agg_df = pd.DataFrame(columns=agg_pow_col)
             cap_agg_df.insert(0, 'y', cap_df['y'])
@@ -840,8 +841,8 @@ with tempfile.TemporaryDirectory() as temp:
                 total_cap_df_solar.set_index('y'), fill_value=0).reset_index()
             total_cap_df_fpv = cap_df_fpv.set_index('y').add(
                 total_cap_df_fpv.set_index('y'), fill_value=0).reset_index()
-            total_cap_df_fossil = cap_df_fossil.set_index('y').add(
-                total_cap_df_fossil.set_index('y'), fill_value=0).reset_index()
+            # total_cap_df_fossil = cap_df_fossil.set_index('y').add(
+            #     total_cap_df_fossil.set_index('y'), fill_value=0).reset_index()
 
 
             # Power generation
@@ -892,11 +893,11 @@ with tempfile.TemporaryDirectory() as temp:
                                                 color_dict_solar, 
                                                 add_title='fpv', 
                                                 plotting=False)
-            gen_df_fossil = detailed_power_chart(cc,'ProductionByTechnologyAnnual',
-                                                t_include_fossil, 
-                                                color_dict_fossil, 
-                                                add_title='fossil', 
-                                                plotting=False)
+            # gen_df_fossil = detailed_power_chart(cc,'ProductionByTechnologyAnnual',
+            #                                     t_include_fossil, 
+            #                                     color_dict_fossil, 
+            #                                     add_title='fossil', 
+            #                                     plotting=False)
             
             # Aggregate it by technology type
             gen_agg_df = pd.DataFrame(columns=agg_pow_col)
@@ -917,20 +918,20 @@ with tempfile.TemporaryDirectory() as temp:
                 total_gen_df_solar.set_index('y'), fill_value=0).reset_index()
             total_gen_df_fpv = gen_df_fpv.set_index('y').add(
                 total_gen_df_fpv.set_index('y'), fill_value=0).reset_index()
-            total_gen_df_fossil = gen_df_fossil.set_index('y').add(
-                total_gen_df_fossil.set_index('y'), fill_value=0).reset_index()
+            # total_gen_df_fossil = gen_df_fossil.set_index('y').add(
+            #     total_gen_df_fossil.set_index('y'), fill_value=0).reset_index()
             
         # Drop columns with only zeros
         total_cap_df = total_cap_df.loc[:, (total_cap_df != 0).any(axis=0)]
         total_cap_df_hydro = total_cap_df_hydro.loc[:, (total_cap_df_hydro != 0).any(axis=0)]
         total_cap_df_solar = total_cap_df_solar.loc[:, (total_cap_df_solar != 0).any(axis=0)]
         total_cap_df_fpv = total_cap_df_fpv.loc[:, (total_cap_df_fpv != 0).any(axis=0)]
-        total_cap_df_fossil = total_cap_df_fossil.loc[:, (total_cap_df_fossil != 0).any(axis=0)]
+        # total_cap_df_fossil = total_cap_df_fossil.loc[:, (total_cap_df_fossil != 0).any(axis=0)]
         total_gen_df = total_gen_df.loc[:, (total_gen_df != 0).any(axis=0)]
         total_gen_df_hydro = total_gen_df_hydro.loc[:, (total_gen_df_hydro != 0).any(axis=0)]
         total_gen_df_solar = total_gen_df_solar.loc[:, (total_gen_df_solar != 0).any(axis=0)]
         total_gen_df_fpv = total_gen_df_fpv.loc[:, (total_gen_df_fpv != 0).any(axis=0)]
-        total_gen_df_fossil = total_gen_df_fossil.loc[:, (total_gen_df_fossil != 0).any(axis=0)]
+        # total_gen_df_fossil = total_gen_df_fossil.loc[:, (total_gen_df_fossil != 0).any(axis=0)]
 
         # Plot
         df_plot(total_cap_df, 'Gigawatts (GW)', tk + "-" +
@@ -941,16 +942,16 @@ with tempfile.TemporaryDirectory() as temp:
                 'Power Generation Capacity (Detail solar)', color_dict=color_dict_solar_pp) 
         df_plot(total_cap_df_fpv, 'Gigawatts (GW)', tk + "-" +
                 'Power Generation Capacity (Detail fpv)', color_dict=color_dict_solar_pp) 
-        df_plot(total_cap_df_fossil, 'Gigawatts (GW)', tk + "-" +
-                'Power Generation Capacity (Detail fossil)', color_dict=color_dict_fossil) 
+        # df_plot(total_cap_df_fossil, 'Gigawatts (GW)', tk + "-" +
+        #         'Power Generation Capacity (Detail fossil)', color_dict=color_dict_fossil) 
         df_plot(total_gen_df_hydro, "Petajoules (PJ)", tk + "-" +
                 'Power Generation (Detail hydro)', color_dict=color_dict_hydro_pp) 
         df_plot(total_gen_df_solar, "Petajoules (PJ)", tk + "-" +
                 'Power Generation (Detail solar)', color_dict=color_dict_solar_pp) 
         df_plot(total_gen_df_fpv, "Petajoules (PJ)", tk + "-" +
                 'Power Generation (Detail fpv)', color_dict=color_dict_solar_pp) 
-        df_plot(total_gen_df_fossil, "Petajoules (PJ)", tk + "-" +
-                'Power Generation (Detail fossil)', color_dict=color_dict_fossil) 
+        # df_plot(total_gen_df_fossil, "Petajoules (PJ)", tk + "-" +
+        #         'Power Generation (Detail fossil)', color_dict=color_dict_fossil) 
         
         
         fig = total_gen_df.iplot(x='y',
@@ -961,19 +962,19 @@ with tempfile.TemporaryDirectory() as temp:
                                 color=[color_dict[x]
                                         for x in total_gen_df.columns if x != 'y'],
                                 title=tk+"-" +
-                                "Power Generation (Aggregate)"+"-" + scenario,
+                                "Power Generation (Aggregate)"+"-"+scenario,
                                 showlegend=True,
                                 asFigure=True)
         fig.update_xaxes(range=[first_year, last_year])
-        title = (tk+"-"+"Power Generation (Aggregate)"+"-" + scenario)
+        title = (tk+"-"+"Power Generation (Aggregate)"+"-"+scenario)
         pio.write_image(fig, os.path.join(homedir, '{}.png'.format(title)),
                         scale=1, width=1500, height=1000)
-        fig.show()
+        # fig.show()
         # total_cap_df['y']=years
         # total_cap_df=total_cap_df.drop('gas_trade',axis=1)
 
         total_gen_df.to_csv(os.path.join(
-            homedir, tk + "- Power Generation (Aggregate)"+"-"+scenario+".csv"))
+            homedir, tk + "-Power Generation (Aggregate)"+"-"+scenario+".csv"))
         total_cap_df.to_csv(os.path.join(
             homedir, tk + "-capacity"+"-"+scenario+".csv"))
 
@@ -1235,7 +1236,7 @@ with tempfile.TemporaryDirectory() as temp:
     # this block will create individual country folders and paste (all country specific csv and png files)
     # files from the home directory to the path mentioned below
 
-    resultpath = os.path.join(destination_folder, 'country')
+    resultpath = os.path.join(destination_folder)
     files = os.listdir(homedir)
     for country in country_code['Country code']:
         dest1 = os.path.join(resultpath, country)
@@ -1248,7 +1249,7 @@ with tempfile.TemporaryDirectory() as temp:
     # this block will create individual Power pool folders and paste (all country specific csv and png files)
     # files from the home directory to the path mentioned below
     power_p = ['EAPP']
-    resultpath = os.path.join(destination_folder, 'powerpool')
+    resultpath = os.path.join(destination_folder)
     files = os.listdir(homedir)
     for en in power_p:
         dest2 = os.path.join(resultpath, en)
@@ -1257,4 +1258,5 @@ with tempfile.TemporaryDirectory() as temp:
             if (f.startswith(en)):
                 filepath = os.path.join(homedir, f)
                 shutil.move(filepath, dest2)
+
 

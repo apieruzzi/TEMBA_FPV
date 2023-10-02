@@ -146,6 +146,7 @@ with tempfile.TemporaryDirectory() as temp:
             aggfunc='sum').reset_index().fillna(0)
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        df = df.iloc[np.where(df['y']>first_year)] 
         df['y'] = years
         # df=df[df['y']>2022]
         return df
@@ -188,6 +189,7 @@ with tempfile.TemporaryDirectory() as temp:
                             aggfunc='sum').reset_index().fillna(0)
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        df = df.iloc[np.where(df['y']>first_year)] 
         df['y'] = years
         # df=df[df['y']>2022]
         return df
@@ -202,6 +204,7 @@ with tempfile.TemporaryDirectory() as temp:
                             aggfunc='sum').reset_index().fillna(0)
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        df = df.iloc[np.where(df['y']>first_year)] 
         df['y'] = years
         # df=df[df['y']>2022]
         return df
@@ -221,6 +224,7 @@ with tempfile.TemporaryDirectory() as temp:
         # Rename the columns and reindex:
         df = df.reindex(sorted(df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
+        df = df.iloc[np.where(df['y']>first_year)] 
         
         if t_include == t_include_solar:
             tech_names = [det_col[t] for t in t_include_fpv]
