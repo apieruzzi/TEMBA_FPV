@@ -8,6 +8,8 @@ Created on Tue May 16 11:18:57 2023
 import pandas as pd
 import numpy as np 
 import os
+import scipy.interpolate
+import matplotlib.pyplot as plt
 
 
 # folder = r'E:\TUDELFT\THESIS\OSeMOSYS\TEMBA 2.1_ENB\input_data'
@@ -100,6 +102,51 @@ for x, filename in enumerate(filenames):
         or sheet_names[i] == 'TotalAnnualMinCapacityInvestmen':
             df.loc[df['TECHNOLOGY'].str.contains('EGBM'),2015:2023] = 0
         
+        # Fix EGELSD residual capacity and max capacities
+        if sheet_names[i] == 'ResidualCapacity':
+            df.loc[df['TECHNOLOGY']=='EGELSDBP00',2015:] = 0.2
+        elif sheet_names[i] == 'TotalAnnualMaxCapacity':
+            df.loc[df['TECHNOLOGY']=='EGELSDBP00',2015:] = 0.3
+        elif sheet_names[i] == 'TotalAnnualMaxCapacityInvestmen':
+            df.loc[df['TECHNOLOGY']=='EGELSDBP00',2015:] = 0
+            df.loc[df['TECHNOLOGY']=='EGELSDBP00',2023] = 0.1
+
+
+        # Fix wind and solar costs
+        capex_temba = pd.read_csv('Data/capital_cost_curves_TEMBA.csv', index_col='TECH')
+        capex_irena = pd.read_csv('Data/capital_cost_curves_irena.csv', index_col='TECH')
+        solar_capex_irena = capex_irena.loc['SOL'].to_numpy().astype(float).T.flatten()
+        solar_capex_temba = capex_temba.loc['SOL'].to_numpy().astype(float).T.flatten()
+        wind_capex_irena = capex_irena.loc['WIND'].to_numpy().astype(float).T.flatten()
+        wind_capex_temba = capex_temba.loc['WIND'].to_numpy().astype(float).T.flatten()
+        years_points = np.arange(2015,2045,5)
+        years = np.arange(2015,2071,1)
+
+        def create_new_capex(temba,irena):
+            # Interpolate irena up to 2045
+            interp_lin = scipy.interpolate.interp1d(years_points, irena)
+            new_cost_values = interp_lin(years[0:26]) 
+            # Extrapolate using temba linear behaviour
+            m = (temba[-1]-temba[26])/(years[-1]-years[26])
+            new_cost_values = np.concatenate([new_cost_values,new_cost_values[-1]+m*np.arange(1,31,1)])
+            # plt.figure()
+            # plt.plot(years,temba)
+            # plt.plot(years,new_cost_values)
+            # plt.plot(years_points,irena)
+            return new_cost_values
+        
+        capex_wind = create_new_capex(wind_capex_temba,wind_capex_irena)
+        capex_solar = create_new_capex(solar_capex_temba,solar_capex_irena)
+        
+        if sheet_names[i] == 'CapitalCost':          
+            df.loc[df['TECHNOLOGY'].str.contains('WINDP00X'),2015:] = capex_wind
+            df.loc[df['TECHNOLOGY'].str.contains('SOU1P03X'),2015:] = capex_solar
+            
+        if sheet_names[i] == 'FixedCost':
+            df.loc[df['TECHNOLOGY'].str.contains('WINDP00X'),2015:] = capex_wind * 0.04
+            df.loc[df['TECHNOLOGY'].str.contains('SOU1P03X'),2015:] = capex_solar * 0.01
+            
+        
         # Fix technology header
         if sheet_names[i] == 'TECHNOLOGY':
             df = df.rename(columns = {list(df)[0]: 'TECHNOLOGY'})
@@ -111,6 +158,7 @@ for x, filename in enumerate(filenames):
         
     
     writer.close()
+    print('Created file ', filename)
 
 
 

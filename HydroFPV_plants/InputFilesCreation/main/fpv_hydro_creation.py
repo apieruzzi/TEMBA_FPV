@@ -9,34 +9,26 @@ Created on Fri Jun  9 11:56:35 2023
 # in separate sheets
 
 import pandas as pd
-import os
 import numpy as np
 import scipy.interpolate
-import matplotlib.pyplot as plt
 
 folder = r'Data'
+FPV_switch = 'Yes'
 
-
-# Create tech codes
-# loc_codes = ['HA', 'A1', 'A2', 'RN', 'UM', 'KA', 'BA', 'CY', 'LT', 'MR', 
-             # 'RO', 'SE', 'JA', 'DA', 'SH', 'KJ', 'DG', 'MG', 'SB', 'ES', 
-             # 'NH', 'NA', 'T1', 'T2']
-# loc_codes = ['AE', 'AW', 'AN', 'A1', 'A2', 'BR', 'BA', 'BB', 'CY', 'DG', 
-#              'DL', 'FC', 'GB', 'GJ', 'HA', 'JA', 'JB', 'KB', 'KR', 'KS', 
-#              'LT', 'LD', 'LS', 'MR', 'MG', 'RN', 'RS', 'SB', 'SN', 'SH', 
-#              'S2', 'TM', 'T1', 'T2', 'UA', 'UD', 'UM', 'WA', 'BD', 'ES', 
-#              'FL', 'FS', 'LK', 'NH', 'NA', 'SL', 'SR', 'T1', 'T2']
 country_codes = ['EG', 'ET', 'SD', 'SS']
 scenarios = ['ref','RCP26_dry', 'RCP26_wet', 
-              'RCP60_dry', 'RCP60_wet', 
-              'RCP85_dry', 'RCP85_wet',]
-
+            'RCP60_dry', 'RCP60_wet', 
+            'RCP85_dry', 'RCP85_wet',]
+ 
 
 for s,scenario in enumerate(scenarios):
     df_list = []
     # Read file
     filename = f'Data/CombinedHydroSolar_{scenario}.csv'
-    filename_out = f'Parameters_hybrid_plants_{scenario}.xlsx'
+    if FPV_switch == 'No':
+        filename_out = f'Parameters_hybrid_plants_{scenario}_NoFPV.xlsx'
+    else:
+        filename_out = f'Parameters_hybrid_plants_{scenario}.xlsx'
     df = pd.read_csv(filename)
     df = df.fillna(0)
     
@@ -237,15 +229,31 @@ for s,scenario in enumerate(scenarios):
     fpv_gpv = 1.08 # FPV capex are 8% more than GPV capex
     op_cap_fpv = 0.025 # opex are 2.5% of capex for FPV 
     
-    timeslices_old = np.arange(2015,2045,5)
-    timeslices_new = np.arange(2015,2041,1)
     
     # Read data
-    capex_temba = pd.read_csv('Data/capital_cost_curves_TEMBA.csv').to_numpy().astype(float).T.flatten()
+    capex_temba = pd.read_csv('Data/capital_cost_curves_TEMBA.csv', index_col='TECH')
+    capex_irena = pd.read_csv('Data/capital_cost_curves_irena.csv', index_col='TECH')
+    solar_capex_irena = capex_irena.loc['SOL'].to_numpy().astype(float).T.flatten()
+    solar_capex_temba = capex_temba.loc['SOL'].to_numpy().astype(float).T.flatten()
+    years_points = np.arange(2015,2045,5)
+    years = np.arange(2015,2071,1)
+
+    def create_new_capex(temba,irena):
+        # Interpolate irena up to 2045
+        interp_lin = scipy.interpolate.interp1d(years_points, irena)
+        new_cost_values = interp_lin(years[0:26]) 
+        # Extrapolate using temba linear behaviour
+        m = (temba[-1]-temba[26])/(years[-1]-years[26])
+        new_cost_values = np.concatenate([new_cost_values,new_cost_values[-1]+m*np.arange(1,31,1)])
+        return new_cost_values
+    
+    capex_solar = create_new_capex(solar_capex_temba,solar_capex_irena)
     
     # Calculate costs for FPV
-    capex_fpv = capex_temba * fpv_gpv
+    capex_fpv = capex_solar * fpv_gpv
     opex_fpv = capex_fpv * op_cap_fpv
+    
+    # Calculate costs for hydro
     opex_hydro_large = 55 * np.ones(56)
     opex_hydro_small = 65 * np.ones(56)
     
@@ -649,6 +657,11 @@ for s,scenario in enumerate(scenarios):
     writer = pd.ExcelWriter(filename_out)
     
     for i,dfr in enumerate(df_list):
+        if FPV_switch == 'No':
+            if isinstance(dfr,pd.Series):
+                dfr = dfr.iloc[np.where(~dfr.iloc[:].str.contains('FPV'))[0]]
+            else:
+                dfr = dfr.iloc[np.where(~dfr.iloc[:,0].str.contains('FPV'))[0]]
         if sheet_names[i] in ['TECHS_HYD', 'TECHS_FPV']:
             dfr.to_excel(writer, sheet_name = sheet_names[i], index=False, header=False)
         else:

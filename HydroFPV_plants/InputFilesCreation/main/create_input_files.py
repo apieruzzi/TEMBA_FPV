@@ -31,17 +31,23 @@ years = np.arange(first_year,2071)
 scenarios = ['ref','RCP26_dry', 'RCP26_wet', 
               'RCP60_dry', 'RCP60_wet', 
               'RCP85_dry', 'RCP85_wet',]
-
+FPV_switch='No'
 
 for s,scenario in enumerate(scenarios):
 
     # Import disaggregated plant file
     filename_plants = f'Parameters_hybrid_plants_{scenario}.xlsx'
+    if FPV_switch == 'No':
+        filename_plants = f'Parameters_hybrid_plants_{scenario}_NoFPV.xlsx'
     folder = r'Created Files'
     
-    
     for x, filename in enumerate(filenames):
-        writer = pd.ExcelWriter(os.path.join(folder,filenames[x][0:-9]+'_'+ scenario +'.xlsx'))
+        if FPV_switch=='No':
+            name = os.path.join(folder,filenames[x][0:-9]+'_'+ scenario + 'NoFPV'+'.xlsx')
+            writer = pd.ExcelWriter(name)
+        else:
+            name = os.path.join(folder,filenames[x][0:-9]+'_'+ scenario +'.xlsx')
+            writer = pd.ExcelWriter(name)
         xl = pd.ExcelFile(filename)
         sheet_names = xl.sheet_names
         
@@ -215,6 +221,7 @@ for s,scenario in enumerate(scenarios):
                 df.to_excel(writer, sheet_name = sheet_names[i], index=False)
         
         writer.close()
+        print('Created file ', name)
 
 
 
