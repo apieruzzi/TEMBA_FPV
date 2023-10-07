@@ -1,4 +1,4 @@
-MODELRUNS = ["TEMBA_1.5_RCP26_dryNoFPV", "TEMBA_1.5_RCP26_wetNoFPV", "TEMBA_1.5_RCP60_dryNoFPV", "TEMBA_1.5_RCP60_wetNoFPV", "TEMBA_1.5_refNoFPV", "TEMBA_2.0_RCP60_dryNoFPV", "TEMBA_2.0_RCP60_wetNoFPV", "TEMBA_2.0_RCP85_dryNoFPV", "TEMBA_2.0_RCP85_wetNoFPV", "TEMBA_2.0_refNoFPV", "TEMBA_Refer_RCP26_dryNoFPV", "TEMBA_Refer_RCP26_wetNoFPV", "TEMBA_Refer_RCP60_dryNoFPV", "TEMBA_Refer_RCP60_wetNoFPV", "TEMBA_Refer_RCP85_dryNoFPV", "TEMBA_Refer_RCP85_wetNoFPV", "TEMBA_Refer_refNoFPV"]
+MODELRUNS = ["TEMBA_Refer_ref"]
 
 rule all:
     # input: ["results/{model_run}.pickle".format(model_run=model_run) for model_run in MODELRUNS]
@@ -68,8 +68,7 @@ rule generate_pickle:
 
 rule generate_results:
     input: 
-        expand("results/{model_run}.pickle", model_run=MODELRUNS),
-	pickle="results/{model_run}.pickle"
+        pickle="results/{model_run}.pickle"
     params:
         scenario="{model_run}"
     output: 

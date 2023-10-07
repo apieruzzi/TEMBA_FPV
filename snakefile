@@ -1,7 +1,6 @@
-MODELRUNS = ["TEMBA_Refer_ref"]
+MODELRUNS = ["TEMBA_ENB_EXT_High", "TEMBA_ENB_EXT_Low", "TEMBA_ENB_RCP26_dry", "TEMBA_ENB_RCP26_wet", "TEMBA_ENB_RCP60_dry", "TEMBA_ENB_RCP60_wet", "TEMBA_ENB_ref"]
 
 rule all:
-    # input: ["results/{model_run}.pickle".format(model_run=model_run) for model_run in MODELRUNS]
       input: 
              ["results/export_{model_run}/barcharts".format(model_run=model_run) for model_run in MODELRUNS],
 	     ["results/export_{model_run}/piecharts".format(model_run=model_run) for model_run in MODELRUNS], 

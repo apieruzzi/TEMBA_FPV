@@ -16,6 +16,8 @@ import os
 filenames = ["TEMBA_Refer_ENB.xlsx"]
 # , "TEMBA_1.5_ENB.xlsx", "TEMBA_2.0_ENB.xlsx"]
 
+filename_out = 'TEMBA_ENB'
+
 sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 
                        'CapacityOfOneTechnologyUnit', 'CapacityToActivityUnit',
                        'CapitalCost', 'EmissionActivityRatio', 'FixedCost', 
@@ -29,29 +31,45 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-scenarios = ['ref']
-             # ,'RCP26_dry', 'RCP26_wet', 
-             #  'RCP60_dry', 'RCP60_wet', 
-             #  'RCP85_dry', 'RCP85_wet',]
-FPV_switch='Yes'
-land_tax_switch = 'Yes'
-carbon_tax_switch = 'No'
+scenarios = ['ref',
+             'RCP26_dry', 'RCP26_wet', 
+             'RCP60_dry', 'RCP60_wet',
+             'EXT_High', 'EXT_Low']
+
+FPV_switch = 'No'
 
 for s,scenario in enumerate(scenarios):
 
     # Import disaggregated plant file
-    filename_plants = f'Parameters_hybrid_plants_{scenario}.xlsx'
-    if FPV_switch == 'No':
-        filename_plants = f'Parameters_hybrid_plants_{scenario}_NoFPV.xlsx'
+    if scenario in ['ref','RCP26_dry', 'RCP26_wet', 'RCP60_dry', 'RCP60_wet']:
+        if FPV_switch == 'No':
+            filename_plants = f'Parameters_hybrid_plants_{scenario}_NoFPV.xlsx'
+        else:
+            filename_plants = f'Parameters_hybrid_plants_{scenario}.xlsx'
+    else:
+        filename_plants = f'Parameters_hybrid_plants_ref.xlsx'
+    
     folder = r'Created Files'
     
+    if scenario == 'EXT_High':
+        land_tax_switch = 'High'
+    elif scenario == 'EXT_Low':
+        land_tax_switch = 'Low'
+    else:
+        land_tax_switch = 'No'
+    carbon_tax_switch = land_tax_switch
+    
     for x, filename in enumerate(filenames):
-        if FPV_switch=='No':
-            name = os.path.join(folder,filenames[x][0:-9]+'_'+ scenario + 'NoFPV'+'.xlsx')
-            writer = pd.ExcelWriter(name)
+        if land_tax_switch == 'No' and FPV_switch =='No':
+            name = os.path.join(folder,filename_out +'_'+ scenario + 'NoFPV'+'.xlsx')
+        elif land_tax_switch == 'High' and FPV_switch == 'No':
+            name = os.path.join(folder,filename_out +'_'+ scenario + 'NoFPV_EXT_High'+'.xlsx')
+        elif land_tax_switch == 'Low' and FPV_switch == 'No':
+            name = os.path.join(folder,filename_out +'_'+ scenario + 'NoFPV_EXT_Low'+'.xlsx')
         else:
-            name = os.path.join(folder,filenames[x][0:-9]+'_'+ scenario +'.xlsx')
-            writer = pd.ExcelWriter(name)
+            name = os.path.join(folder,filename_out + '_'+ scenario +'.xlsx')
+
+        writer = pd.ExcelWriter(name)
         xl = pd.ExcelFile(filename)
         sheet_names = xl.sheet_names
         
@@ -176,11 +194,12 @@ for s,scenario in enumerate(scenarios):
                     df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SSSOFPV')]
                     
                     # And land use activity ratio
+                    planned_hyds = pd.read_excel(filename_plants, sheet_name='TECHS_HYD', header=None)
                     new_df = tech_list.iloc[np.where(tech_list.str.contains('SOU1P03X') |
                                                       tech_list.str.contains('WINDP00X') |
-                                                      tech_list.str.contains('HYD') |
-                                                      tech_list.str.contains('SOC'))]
-                    new_df = pd.DataFrame(new_df)
+                                                      tech_list.str.contains('SOC'))].tolist()
+                    new_df = new_df + planned_hyds[0].tolist()
+                    new_df = pd.DataFrame(new_df, columns=['TECHNOLOGY'])
                     new_df['EMISSION'] = ['LAND'] * len(new_df)
                     new_df['MODEOFOPERATION'] = np.ones(len(new_df)).tolist()
                     new_df[2015] = np.zeros(len(new_df))
@@ -260,6 +279,7 @@ for s,scenario in enumerate(scenarios):
                     df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SDHYDMS')]
                     df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SSHYDMS')]
                 
+                
                 # Don't save the header for the techs sheet
                 if sheet_names[i] == 'TECHNOLOGY':
                     df_comb.to_excel(writer, sheet_name = sheet_names[i], index=False, header=False)
@@ -269,11 +289,22 @@ for s,scenario in enumerate(scenarios):
             
             else:   
                 
-                if carbon_tax_switch == 'Yes':
+                # Add new emissions
+                if sheet_names[i] == 'EMISSION':
+                    cc = ['EG', 'ET', 'SD', 'SS']
+                    for code in cc:
+                        df.loc[len(df)] = code + 'LAND'
+                
+                if carbon_tax_switch != 'No':
                     # Add carbon tax
-                    value_init = 25
-                    increase = value_init * 0.01
-                    value_fin = value_init + 56 * value_init * 0.01
+                    if carbon_tax_switch == 'Low':
+                        value_init = 25
+                        increase = value_init * 0.01
+                        value_fin = value_init + 56 * value_init * 0.01
+                    elif carbon_tax_switch == 'High':
+                        value_init = 50
+                        increase = value_init * 0.05
+                        value_fin = value_init + 56 * value_init * 0.05
                     carbon_tax = np.arange(value_init,value_fin,increase)
                     if sheet_names[i] == 'EmissionsPenalty':
                         df.loc[df['EMISSION'].str.contains('CO2'),2015:] = carbon_tax
@@ -281,30 +312,33 @@ for s,scenario in enumerate(scenarios):
                         carbon_tax_list[0:0] = ['SSCO2']
                         df.loc[len(df)] = carbon_tax_list
                 
-                if land_tax_switch == 'Yes':
+                if land_tax_switch != 'No':
                     # Add land tax 
-                    value_init = 4
-                    increase = value_init * 0.01
-                    value_fin = value_init + 56 * value_init * 0.01
+                    if carbon_tax_switch == 'Low':
+                        value_init = 0.77
+                        increase = value_init * 0.01
+                        value_fin = value_init + 56 * value_init * 0.01
+                    elif carbon_tax_switch == 'High':
+                        value_init = 4
+                        increase = value_init * 0.05
+                        value_fin = value_init + 56 * value_init * 0.05
                     land_tax = np.linspace(value_init,value_fin,56)
-                    
-                    if sheet_names[i] == 'EMISSION':
-                        cc = ['EG', 'ET', 'SD', 'SS']
-                        for code in cc:
-                            df.loc[len(df)] = code + 'LAND'
-                    
+
                     if sheet_names[i] == 'EmissionsPenalty':
                         cc = ['EG', 'ET', 'SD', 'SS']
                         for code in cc:
                             df.loc[len(df)] = [code + 'LAND'] + land_tax.tolist()
 
-
+                # Remove REN emission limits
+                if sheet_names[i] == 'AnnualEmissionLimit':
+                    df.loc[:, 2015:] = 99999
                 
                 # Remove generic hydro techs for all countries but Ethiopia
                 if 'TECHNOLOGY' in df.columns:  
                     df = df[~df['TECHNOLOGY'].str.contains('EGHYD')]
                     df = df[~df['TECHNOLOGY'].str.contains('SDHYD')]
                     df = df[~df['TECHNOLOGY'].str.contains('SSHYD')]
+                
                 df.to_excel(writer, sheet_name = sheet_names[i], index=False)
         
         writer.close()

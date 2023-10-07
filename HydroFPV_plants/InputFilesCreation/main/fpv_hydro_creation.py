@@ -16,10 +16,8 @@ folder = r'Data'
 FPV_switch = 'Yes'
 
 country_codes = ['EG', 'ET', 'SD', 'SS']
-scenarios = ['ref']
-            #  ,'RCP26_dry', 'RCP26_wet', 
-            # 'RCP60_dry', 'RCP60_wet', 
-            # 'RCP85_dry', 'RCP85_wet',]
+scenarios = ['ref','RCP26_dry', 'RCP26_wet', 
+            'RCP60_dry', 'RCP60_wet']
  
 
 for s,scenario in enumerate(scenarios):

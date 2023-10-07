@@ -2791,7 +2791,7 @@ Set parameter LogFile to value "gurobi.log"
 Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
 Using license file /home/apieruzzi/gurobi.lic
 
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 16:05:36 2023
+Gurobi 10.0.1 (linux64, gurobi_cl) logging started Sat Oct  7 10:49:51 2023
 
 Set parameter WLSAccessID
 Set parameter WLSSecret
@@ -2800,7 +2800,7 @@ Set parameter LogFile to value "gurobi.log"
 Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
 Using license file /home/apieruzzi/gurobi.lic
 
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 16:09:10 2023
+Gurobi 10.0.1 (linux64, gurobi_cl) logging started Sat Oct  7 11:04:50 2023
 
 Set parameter WLSAccessID
 Set parameter WLSSecret
@@ -2809,7 +2809,7 @@ Set parameter LogFile to value "gurobi.log"
 Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
 Using license file /home/apieruzzi/gurobi.lic
 
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 16:25:58 2023
+Gurobi 10.0.1 (linux64, gurobi_cl) logging started Sat Oct  7 11:26:07 2023
 
 Set parameter WLSAccessID
 Set parameter WLSSecret
@@ -2818,7 +2818,7 @@ Set parameter LogFile to value "gurobi.log"
 Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
 Using license file /home/apieruzzi/gurobi.lic
 
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 16:52:18 2023
+Gurobi 10.0.1 (linux64, gurobi_cl) logging started Sat Oct  7 12:02:36 2023
 
 Set parameter WLSAccessID
 Set parameter WLSSecret
@@ -2827,7 +2827,7 @@ Set parameter LogFile to value "gurobi.log"
 Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
 Using license file /home/apieruzzi/gurobi.lic
 
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:15:42 2023
+Gurobi 10.0.1 (linux64, gurobi_cl) logging started Sat Oct  7 12:44:35 2023
 
 Set parameter WLSAccessID
 Set parameter WLSSecret
@@ -2836,124 +2836,7 @@ Set parameter LogFile to value "gurobi.log"
 Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
 Using license file /home/apieruzzi/gurobi.lic
 
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:19:16 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:20:32 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:24:28 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:25:14 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:26:18 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:39:57 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:40:08 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:45:13 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 17:48:20 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 18:03:29 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 18:42:45 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 18:56:16 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Fri Oct  6 19:03:08 2023
-
-Set parameter WLSAccessID
-Set parameter WLSSecret
-Set parameter LicenseID to value 2380096
-Set parameter LogFile to value "gurobi.log"
-Academic license - for non-commercial use only - registered to a.e.pieruzzi@student.tudelft.nl
-Using license file /home/apieruzzi/gurobi.lic
-
-Gurobi 10.0.1 (linux64, gurobi_cl) logging started Sat Oct  7 09:28:33 2023
+Gurobi 10.0.1 (linux64, gurobi_cl) logging started Sat Oct  7 14:05:43 2023
 
 Set parameter WLSAccessID
 Set parameter WLSSecret
