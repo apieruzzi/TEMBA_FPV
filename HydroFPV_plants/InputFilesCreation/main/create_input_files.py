@@ -13,7 +13,8 @@ import os
 
 # Import existing input file
 
-filenames = ["TEMBA_Refer_ENB.xlsx", "TEMBA_1.5_ENB.xlsx", "TEMBA_2.0_ENB.xlsx"]
+filenames = ["TEMBA_Refer_ENB.xlsx"]
+# , "TEMBA_1.5_ENB.xlsx", "TEMBA_2.0_ENB.xlsx"]
 
 sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor', 
                        'CapacityOfOneTechnologyUnit', 'CapacityToActivityUnit',
@@ -28,10 +29,13 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-scenarios = ['ref','RCP26_dry', 'RCP26_wet', 
-              'RCP60_dry', 'RCP60_wet', 
-              'RCP85_dry', 'RCP85_wet',]
-FPV_switch='No'
+scenarios = ['ref']
+             # ,'RCP26_dry', 'RCP26_wet', 
+             #  'RCP60_dry', 'RCP60_wet', 
+             #  'RCP85_dry', 'RCP85_wet',]
+FPV_switch='Yes'
+land_tax_switch = 'Yes'
+carbon_tax_switch = 'No'
 
 for s,scenario in enumerate(scenarios):
 
@@ -136,6 +140,10 @@ for s,scenario in enumerate(scenarios):
                     data = [minci_large, minci_med, minci_small]
                     df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
                 
+                # Get technology list
+                if sheet_names[i] == 'TECHNOLOGY':
+                    tech_list = df_comb['TECHNOLOGY']
+                
                 # Fix emission activity ratios
                 if sheet_names[i] == 'EmissionActivityRatio':
                     row_eg_hyd = df_comb.iloc[np.where(df_comb['TECHNOLOGY'] == 'EGHYDMS03X')]
@@ -166,6 +174,53 @@ for s,scenario in enumerate(scenarios):
                     df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('ETSOFPV')]
                     df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SSHYD')]
                     df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SSSOFPV')]
+                    
+                    # And land use activity ratio
+                    new_df = tech_list.iloc[np.where(tech_list.str.contains('SOU1P03X') |
+                                                      tech_list.str.contains('WINDP00X') |
+                                                      tech_list.str.contains('HYD') |
+                                                      tech_list.str.contains('SOC'))]
+                    new_df = pd.DataFrame(new_df)
+                    new_df['EMISSION'] = ['LAND'] * len(new_df)
+                    new_df['MODEOFOPERATION'] = np.ones(len(new_df)).tolist()
+                    new_df[2015] = np.zeros(len(new_df))
+                    new_df = new_df.reset_index(drop=True)
+                    years_cols = pd.concat([new_df[2015]]*55, axis=1,
+                                       ignore_index=True).rename(lambda x: 2016+x, axis=1)
+                    new_df = pd.concat([new_df,years_cols],axis=1)
+                    
+                    wind_value = (np.ones(56)*round(130/3.6,1)).tolist()
+                    solar_value = (np.ones(56)*round(2000/3.6,1)).tolist()
+                    csp_value = (np.ones(56)*round(1300/3.6,1)).tolist()
+                    hydro_value = (np.ones(56)*round(650/3.6,1)).tolist()
+                    
+                    def assign_emission(row):
+                        if 'EG' in row['TECHNOLOGY']:
+                            return 'EGLAND'
+                        if 'ET' in row['TECHNOLOGY']:
+                            return 'ETLAND'
+                        if 'SD' in row['TECHNOLOGY']:
+                            return 'SDLAND'
+                        if 'SS' in row['TECHNOLOGY']:
+                            return 'SSLAND'
+                    new_df.iloc[:,1] = new_df.apply(lambda row: assign_emission(row), axis=1)
+                    
+                    def assign_land_ratios(row):
+                        if 'WINDP00X' in row['TECHNOLOGY']:
+                            return pd.Series(wind_value)
+                        if 'SOU1P03X' in row['TECHNOLOGY']:
+                            return pd.Series(solar_value)
+                        if 'HYD'in row['TECHNOLOGY']:
+                            return pd.Series(hydro_value)
+                        if 'SOC'in row['TECHNOLOGY']:
+                            return pd.Series(csp_value)
+                        else:
+                            return row[3:]
+                    
+                    new_df.iloc[:,3:] = new_df.apply(lambda row: assign_land_ratios(row), axis=1)
+                    df_comb = pd.concat([df_comb,new_df], ignore_index=True)
+                    
+
                 
                 # Fix trade link costs
                 if sheet_names[i] == 'VariableCost':
@@ -197,7 +252,7 @@ for s,scenario in enumerate(scenarios):
                         else:
                             return row[2:]
                         
-                    df_comb.iloc[:,2:] = df_comb.apply(lambda row: add_row(row), axis=1)
+                    df_comb.iloc[:,2:] = df_comb.apply(lambda row: add_row(row), axis=1)                    
                     
                 # Remove generic hydro techs for all countries but Ethiopia
                 if 'TECHNOLOGY' in df_comb.columns: 
@@ -212,7 +267,39 @@ for s,scenario in enumerate(scenarios):
                     df_comb.to_excel(writer, sheet_name = sheet_names[i], index=False)
                 
             
-            else:            
+            else:   
+                
+                if carbon_tax_switch == 'Yes':
+                    # Add carbon tax
+                    value_init = 25
+                    increase = value_init * 0.01
+                    value_fin = value_init + 56 * value_init * 0.01
+                    carbon_tax = np.arange(value_init,value_fin,increase)
+                    if sheet_names[i] == 'EmissionsPenalty':
+                        df.loc[df['EMISSION'].str.contains('CO2'),2015:] = carbon_tax
+                        carbon_tax_list = carbon_tax.tolist()
+                        carbon_tax_list[0:0] = ['SSCO2']
+                        df.loc[len(df)] = carbon_tax_list
+                
+                if land_tax_switch == 'Yes':
+                    # Add land tax 
+                    value_init = 4
+                    increase = value_init * 0.01
+                    value_fin = value_init + 56 * value_init * 0.01
+                    land_tax = np.linspace(value_init,value_fin,56)
+                    
+                    if sheet_names[i] == 'EMISSION':
+                        cc = ['EG', 'ET', 'SD', 'SS']
+                        for code in cc:
+                            df.loc[len(df)] = code + 'LAND'
+                    
+                    if sheet_names[i] == 'EmissionsPenalty':
+                        cc = ['EG', 'ET', 'SD', 'SS']
+                        for code in cc:
+                            df.loc[len(df)] = [code + 'LAND'] + land_tax.tolist()
+
+
+                
                 # Remove generic hydro techs for all countries but Ethiopia
                 if 'TECHNOLOGY' in df.columns:  
                     df = df[~df['TECHNOLOGY'].str.contains('EGHYD')]

@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 # filenames =  ["TEMBA_Refer.xlsx", "TEMBA_1.5.xlsx", "TEMBA_2.0.xlsx"]
 
 
-prefixes = ["EG","ET","SD","SS", "ISNGEGBP00","LYELEGBP00"]
+prefixes = ["EG","ET","SD","SS", "ISNGEGBP00","LYELEGBP00", 'RSACO']
 carbon_removal_tech = pd.DataFrame(['DZLYC', 'MATNC', 'RSACO'],columns = ['CIFGA'])
 
 #  Data to add extra fuels for trade links that become external: 
@@ -27,7 +27,8 @@ data = [['ETELDJBP00','ETDUEL', 1 ], ['ETELKEBP00','ETDUEL', 1 ],
         ['ETNGDJBP00', 'ETDUNG',1], ['LYELEGBP00', 'EGDUEL', 2]]
 
 folder = r'Data'
-filenames = ["TEMBA_Refer.xlsx","TEMBA_1.5.xlsx", "TEMBA_2.0.xlsx"]
+filenames = ["TEMBA_Refer.xlsx"]
+# ,"TEMBA_1.5.xlsx", "TEMBA_2.0.xlsx"]
 
 
 for x, filename in enumerate(filenames):

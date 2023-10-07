@@ -89,7 +89,9 @@ def main(input_file : str, data_file : str, pickle_file : str, result_format='gu
             'AnnualEmissions':['r','e','y'],
             'UseByTechnologyAnnual':['r','t','f','y'],
             'z':['r','t','y'],
-            'v':['r','t','y']
+            'v':['r','t','y'],
+            'DiscountedTechnologyEmissionsPenalty':['r','t','y'],
+            'ModelPeriodEmissions' : ['r','e']
             }
 
     for each in params:

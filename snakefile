@@ -1,4 +1,4 @@
-MODELRUNS = ["TEMBA_1.5_RCP26_dry", "TEMBA_1.5_RCP26_wet", "TEMBA_1.5_RCP60_dry", "TEMBA_1.5_RCP60_wet", "TEMBA_1.5_ref", "TEMBA_2.0_RCP60_dry", "TEMBA_2.0_RCP60_wet", "TEMBA_2.0_RCP85_dry", "TEMBA_2.0_RCP85_wet", "TEMBA_2.0_ref", "TEMBA_Refer_RCP26_dry", "TEMBA_Refer_RCP26_wet", "TEMBA_Refer_RCP60_dry", "TEMBA_Refer_RCP60_wet", "TEMBA_Refer_RCP85_dry", "TEMBA_Refer_RCP85_wet", "TEMBA_Refer_ref"]
+MODELRUNS = ["TEMBA_Refer_ref"]
 
 rule all:
     # input: ["results/{model_run}.pickle".format(model_run=model_run) for model_run in MODELRUNS]
@@ -73,16 +73,15 @@ rule generate_results:
         scenario="{model_run}"
     output: 
         folder=directory("results/export_{model_run}/barcharts")
+    threads: 1
     conda:
         "envs/results.yaml"
-    threads: 
-        1
     shell:
         "mkdir {output.folder} && python scripts/generate_results.py {input.pickle} {params.scenario} {output.folder}"
 
 rule create_piecharts:
     input: 
-        rules.generate_results.output
+        expand("results/export_{model_run}/barcharts",model_run=MODELRUNS)
     params:
         scenario="{model_run}"
     output: 
@@ -94,22 +93,20 @@ rule create_piecharts:
 
 rule create_comparison_folder:
     input: 
-        expand("results/export_{model_run}/piecharts",model_run=MODELRUNS),
-	folder=rules.create_piecharts.output
+        expand("results/export_{model_run}/piecharts",model_run=MODELRUNS)
     params:
         scenario="{model_run}"
     output: 
-        "results/ScenarioComparison/Mixes_percentages_{model_run}.xlsx",
+        "results/ScenarioComparison/Mixes_percentages_{model_run}.xlsx"
     shell:
-        "mkdir results/ScenarioComparison && python rename_files.py {input.folder} {params.scenario} {output}"
+        "python rename_files.py {input} {params.scenario} {output}"
 
 rule create_comparison_excels:
     input: 
-        expand("results/ScenarioComparison/Mixes_percentages_{model_run}.xlsx",model_run=MODELRUNS),
-	folder="results/ScenarioComparison"
+        expand("results/ScenarioComparison/Mixes_percentages_{model_run}.xlsx",model_run=MODELRUNS)
     params:
         "results/ScenarioComparison"
     output: 
         "results/ScenarioComparison/AggregatedExcels/ValuesFPV.xlsx"
     shell:
-        "python create_excels.py {input.folder} {params} {output}"
+        "python create_excels.py {input} {params} {output}"

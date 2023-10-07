@@ -1,7 +1,7 @@
 run ubuntu as admin
 
 mamba activate snakemake
-cd /mnt/c/Users/Alessandro\ Pieruzzi/Documenti/Thesis/TEMBA\ 2.1_ENB_all_Tradelinks/
-snakemake -j
+cd /mnt/c/Users/Alessandro\ Pieruzzi/Documenti/Thesis/Run_ref_FPV_0610_ctmild
+snakemake -j 2
 
-When re running make sure to remove all outpu_data and CSVfiles 
+When re running make sure to remove all output_data and CSVfiles 

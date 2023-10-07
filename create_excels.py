@@ -11,7 +11,7 @@ import openpyxl
 import sys
 
 # folder = 'results/ScenarioComparison'
-folder = sys.argv[2]
+folder = 'results/ScenarioComparison'
 dest_folder = 'AggregatedExcels'
 
 inputfiles = os.listdir('input_data')

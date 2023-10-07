@@ -80,7 +80,7 @@ def parseCSVFilesAndConvert(scenario, sheetNames):
                 result += ";\n"
         # 24 #all the parameters     that have one variable
         elif (sheetNames[i] in ['AccumulatedAnnualDemand', 'CapacityOfOneTechnologyUnit','CapitalCost',
-                                'FixedCost', 'ResidualCapacity',
+                                'EmissionsPenalty','FixedCost', 'ResidualCapacity',
                                 'SpecifiedAnnualDemand',
                                 'TotalAnnualMinCapacity',
                                 'TotalAnnualMinCapacityInvestment',
@@ -109,7 +109,7 @@ def parseCSVFilesAndConvert(scenario, sheetNames):
         elif (sheetNames[i] in ['YearSplit']):
             result += 'param ' + sheetNames[i] + ' default 0 :\n'
             result += insert_table(scenario, sheetNames[i])
-        elif (sheetNames[i] in ['EmissionsPenalty', 'REMinProductionTarget',
+        elif (sheetNames[i] in ['REMinProductionTarget',
                                 'RETagFuel', 'RETagTechnology',
                                 'ReserveMargin', 'ReserveMarginTagFuel',
                                 'ReserveMarginTagTechnology', 'TradeRoute']):

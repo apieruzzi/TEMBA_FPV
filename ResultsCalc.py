@@ -116,8 +116,8 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     plt.close()
 
 input_file_dummy = sys.argv[1]
-scenario = sys.argv[2]
-destination_folder = sys.argv[3]
+scenario = sys.argv[-2]
+destination_folder = sys.argv[-1]
 
 # scenario = 'TEMBA_2.0_ENB'
 # destination_folder = 'results/export_{scenario}'
@@ -180,7 +180,8 @@ with tempfile.TemporaryDirectory() as temp:
         "Biomass - Percentage" : "lightgreen",
         "Geothermal - Percentage" : "brown", 
         "power_trade - Percentage" : "pink",
-        "Nuclear - Percentage" : "cyan"
+        "Nuclear - Percentage" : "cyan",
+	"Backstop - Percentage": "red"
         }
     
     file_prodtechs = r'input_data/power_tech.csv'
