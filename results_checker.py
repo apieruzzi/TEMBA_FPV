@@ -13,10 +13,10 @@ import os
 
 #Import all filenames
 
-PG_mod_EG_filename = r'debugging\results\export_TEMBA_Refer_refNoFPV\barcharts\EG\EG-Power Generation (Aggregate)-TEMBA_Refer_refNoFPV.csv'
-PG_mod_ET_filename = r'debugging\results\export_TEMBA_Refer_refNoFPV\barcharts\ET\ET-Power Generation (Aggregate)-TEMBA_Refer_refNoFPV.csv'
-PG_mod_SD_filename = r'debugging\results\export_TEMBA_Refer_refNoFPV\barcharts\SD\SD-Power Generation (Aggregate)-TEMBA_Refer_refNoFPV.csv'
-PG_mod_SS_filename = r'debugging\results\export_TEMBA_Refer_refNoFPV\barcharts\SS\SS-Power Generation (Aggregate)-TEMBA_Refer_refNoFPV.csv'
+PG_mod_EG_filename = r'debugging\results\export_REF_FPV\EG\EG-Power Generation (Aggregate)-REF_FPV.csv'
+PG_mod_ET_filename = r'debugging\results\export_REF_FPV\ET\ET-Power Generation (Aggregate)-REF_FPV.csv'
+PG_mod_SD_filename = r'debugging\results\export_REF_FPV\SD\SD-Power Generation (Aggregate)-REF_FPV.csv'
+PG_mod_SS_filename = r'debugging\results\export_REF_FPV\SS\SS-Power Generation (Aggregate)-REF_FPV.csv'
 
 PG_act_EG_filename = r'Literature\Data IEA\Electricity generation by source - Egypt (1).csv'
 PG_act_ET_filename = r'Literature\Data IEA\Electricity generation by source - Ethiopia (1).csv'

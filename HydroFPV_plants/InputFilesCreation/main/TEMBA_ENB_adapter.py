@@ -123,21 +123,24 @@ for x, filename in enumerate(filenames):
         years_points = np.arange(2015,2045,5)
         years = np.arange(2015,2071,1)
 
-        def create_new_capex(temba,irena):
+        def create_new_capex(temba,irena, tech):
             # Interpolate irena up to 2045
             interp_lin = scipy.interpolate.interp1d(years_points, irena)
             new_cost_values = interp_lin(years[0:26]) 
             # Extrapolate using temba linear behaviour
             m = (temba[-1]-temba[26])/(years[-1]-years[26])
             new_cost_values = np.concatenate([new_cost_values,new_cost_values[-1]+m*np.arange(1,31,1)])
-            # plt.figure()
-            # plt.plot(years,temba)
-            # plt.plot(years,new_cost_values)
-            # plt.plot(years_points,irena)
+            plt.figure()
+            plt.title(f'Cost projections for {tech}')
+            plt.plot(years,temba, label='TEMBA')
+            plt.plot(years,new_cost_values, label='combined')
+            plt.plot(years_points,irena, label='IRENA')
+            plt.xlabel('Year')
+            plt.ylabel('Cost (M$/GW)')
             return new_cost_values
         
-        capex_wind = create_new_capex(wind_capex_temba,wind_capex_irena)
-        capex_solar = create_new_capex(solar_capex_temba,solar_capex_irena)
+        capex_wind = create_new_capex(wind_capex_temba,wind_capex_irena, 'wind')
+        capex_solar = create_new_capex(solar_capex_temba,solar_capex_irena, 'solar')
         
         if sheet_names[i] == 'CapitalCost':          
             df.loc[df['TECHNOLOGY'].str.contains('WINDP00X'),2015:] = capex_wind

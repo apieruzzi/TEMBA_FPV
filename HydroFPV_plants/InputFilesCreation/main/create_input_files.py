@@ -31,24 +31,26 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-scenarios = ['ref',
-             'RCP26_dry', 'RCP26_wet', 
-             'RCP60_dry', 'RCP60_wet',
-             'EXT_High', 'EXT_Low']
+# scenarios = ['ref',
+#              'RCP26_dry', 'RCP26_wet', 
+#              'RCP60_dry', 'RCP60_wet',
+scenarios = ['EXT_High', 'EXT_Low']
 
 FPV_switch = 'No'
 
 for s,scenario in enumerate(scenarios):
 
     # Import disaggregated plant file
-    if scenario in ['ref','RCP26_dry', 'RCP26_wet', 'RCP60_dry', 'RCP60_wet']:
-        if FPV_switch == 'No':
+    if FPV_switch == 'No' and scenario in ['ref','RCP26_dry', 'RCP26_wet', 'RCP60_dry', 'RCP60_wet']:
             filename_plants = f'Parameters_hybrid_plants_{scenario}_NoFPV.xlsx'
-        else:
-            filename_plants = f'Parameters_hybrid_plants_{scenario}.xlsx'
-    else:
+    elif FPV_switch == 'Yes' and scenario in ['ref','RCP26_dry', 'RCP26_wet', 'RCP60_dry', 'RCP60_wet']:
+        filename_plants = f'Parameters_hybrid_plants_{scenario}.xlsx'
+    elif FPV_switch == 'No' and scenario not in ['ref','RCP26_dry', 'RCP26_wet', 'RCP60_dry', 'RCP60_wet']: 
+        filename_plants = 'Parameters_hybrid_plants_ref_NoFPV.xlsx'
+    elif FPV_switch == 'Yes' and scenario not in ['ref','RCP26_dry', 'RCP26_wet', 'RCP60_dry', 'RCP60_wet']: 
         filename_plants = f'Parameters_hybrid_plants_ref.xlsx'
     
+    print(filename_plants)
     folder = r'Created Files'
     
     if scenario == 'EXT_High':
@@ -60,12 +62,8 @@ for s,scenario in enumerate(scenarios):
     carbon_tax_switch = land_tax_switch
     
     for x, filename in enumerate(filenames):
-        if land_tax_switch == 'No' and FPV_switch =='No':
+        if FPV_switch =='No':
             name = os.path.join(folder,filename_out +'_'+ scenario + 'NoFPV'+'.xlsx')
-        elif land_tax_switch == 'High' and FPV_switch == 'No':
-            name = os.path.join(folder,filename_out +'_'+ scenario + 'NoFPV_EXT_High'+'.xlsx')
-        elif land_tax_switch == 'Low' and FPV_switch == 'No':
-            name = os.path.join(folder,filename_out +'_'+ scenario + 'NoFPV_EXT_Low'+'.xlsx')
         else:
             name = os.path.join(folder,filename_out + '_'+ scenario +'.xlsx')
 
