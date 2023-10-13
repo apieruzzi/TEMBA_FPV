@@ -20,7 +20,9 @@ def select_lines(df):
     return df
 
 df_in = select_lines(df_in).set_index('TECHNOLOGY')
+df_in = df_in.sort_values(by='TECHNOLOGY')
 df_out = select_lines(df_out).set_index('TECHNOLOGY')
+df_out = df_out.sort_values(by='TECHNOLOGY')
 df_diff = df_in-df_out
 
 df_in.to_excel(writer, sheet_name='InputActivityRatio')
