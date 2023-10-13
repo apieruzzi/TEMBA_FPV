@@ -67,7 +67,8 @@ rule generate_pickle:
 
 rule generate_results:
     input: 
-        pickle="results/{model_run}.pickle"
+        expand("results/{model_run}.pickle", model_run=MODELRUNS),
+	pickle="results/{model_run}.pickle"
     params:
         scenario="{model_run}"
     output: 

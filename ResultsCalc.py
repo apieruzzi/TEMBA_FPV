@@ -233,6 +233,13 @@ with tempfile.TemporaryDirectory() as temp:
     df_comb_hydro.to_excel(writer, sheet_name='Max values_hydro')
     df_comb_fpv.to_excel(writer, sheet_name='Max values_fpv')
     
+    # Read and save total costs
+    filename_cost = f'results/{scenario}.SOL'
+    cost_arr = np.genfromtxt(filename_cost, max_rows=2, comments=None)
+    cost = cost_arr[1][-1]
+    df = pd.DataFrame({scenario:[cost]}, index=['TotalCost'])
+    df.to_excel(writer, sheet_name='Total Costs')
+    
     writer.close()
     
     

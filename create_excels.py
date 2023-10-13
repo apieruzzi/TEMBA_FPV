@@ -108,6 +108,18 @@ for i, scenario in enumerate(scenario_list):
     df_onset = df_onset['Onset']
     df_onset.name = scenario
     df_onset.to_excel(writer_fpv, sheet_name='Onset', startrow=i*(len(df_onset)+1)+i)
+
+    # Add emission calculations
+    filename_emi = f'results/export_{scenario}/barcharts/EAPP/EAPP-Annual Emissions-{scenario}.csv'
+    df = pd.read_csv(filename_emi)
+    df.loc['tot'] = df.sum()
+    value = df.loc['tot'][-1]
+    df = pd.DataFrame({scenario:[value]}, index=['TotalEmissions'])
+    df.to_excel(writer_hyd, sheet_name='Emissions', startrow=i*(len(df)+1)+i)
+    
+    # Add total costs
+    df_cost = pd.read_excel(filename, sheet_name=sheet_names[-1])
+    df_cost.to_excel(writer_hyd, sheet_name='TotalCosts', index=False, startrow=i*(len(df_cost)+1)+i)
     
 writer_hyd.close()
 writer_fpv.close()

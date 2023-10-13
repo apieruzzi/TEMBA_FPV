@@ -31,12 +31,12 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-# scenarios = ['ref',
-#              'RCP26_dry', 'RCP26_wet', 
-#              'RCP60_dry', 'RCP60_wet',
-scenarios = ['EXT_High', 'EXT_Low']
+scenarios = ['ref',
+              'RCP26_dry', 'RCP26_wet', 
+              'RCP60_dry', 'RCP60_wet', 
+              'EXT_High', 'EXT_Low']
 
-FPV_switch = 'No'
+FPV_switch = 'Yes'
 
 for s,scenario in enumerate(scenarios):
 
@@ -48,7 +48,7 @@ for s,scenario in enumerate(scenarios):
     elif FPV_switch == 'No' and scenario not in ['ref','RCP26_dry', 'RCP26_wet', 'RCP60_dry', 'RCP60_wet']: 
         filename_plants = 'Parameters_hybrid_plants_ref_NoFPV.xlsx'
     elif FPV_switch == 'Yes' and scenario not in ['ref','RCP26_dry', 'RCP26_wet', 'RCP60_dry', 'RCP60_wet']: 
-        filename_plants = f'Parameters_hybrid_plants_ref.xlsx'
+        filename_plants = 'Parameters_hybrid_plants_ref.xlsx'
     
     print(filename_plants)
     folder = r'Created Files'
@@ -195,7 +195,11 @@ for s,scenario in enumerate(scenarios):
                     planned_hyds = pd.read_excel(filename_plants, sheet_name='TECHS_HYD', header=None)
                     new_df = tech_list.iloc[np.where(tech_list.str.contains('SOU1P03X') |
                                                       tech_list.str.contains('WINDP00X') |
-                                                      tech_list.str.contains('SOC'))].tolist()
+                                                      tech_list.str.contains('SOC') |
+                                                      tech_list.str.contains('NULWP04N') |
+                                                      tech_list.str.contains('GOCVP0') |
+                                                      tech_list.str.contains('NGCC') |
+                                                      tech_list.str.contains('COSC'))].tolist()
                     new_df = new_df + planned_hyds[0].tolist()
                     new_df = pd.DataFrame(new_df, columns=['TECHNOLOGY'])
                     new_df['EMISSION'] = ['LAND'] * len(new_df)
@@ -210,6 +214,10 @@ for s,scenario in enumerate(scenarios):
                     solar_value = (np.ones(56)*round(2000/3.6,1)).tolist()
                     csp_value = (np.ones(56)*round(1300/3.6,1)).tolist()
                     hydro_value = (np.ones(56)*round(650/3.6,1)).tolist()
+                    nuclear_value = (np.ones(56)*round(7.1/3.6,1)).tolist()
+                    geothermal_value = (np.ones(56)*round(45/3.6,1)).tolist()
+                    gas_value = (np.ones(56)*round(410/3.6,1)).tolist()
+                    coal_value = (np.ones(56)*round(1000/3.6,1)).tolist()
                     
                     def assign_emission(row):
                         if 'EG' in row['TECHNOLOGY']:
@@ -231,6 +239,14 @@ for s,scenario in enumerate(scenarios):
                             return pd.Series(hydro_value)
                         if 'SOC'in row['TECHNOLOGY']:
                             return pd.Series(csp_value)
+                        if 'NULWP04N' in row['TECHNOLOGY']:
+                            return pd.Series(nuclear_value)
+                        if 'GOCVP0'in row['TECHNOLOGY']:
+                            return pd.Series(geothermal_value)
+                        if 'NGCC'in row['TECHNOLOGY']:
+                            return pd.Series(gas_value)
+                        if 'COSC'in row['TECHNOLOGY']:
+                            return pd.Series(coal_value)
                         else:
                             return row[3:]
                     
