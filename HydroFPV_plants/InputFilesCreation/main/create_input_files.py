@@ -31,10 +31,13 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-scenarios = ['ref',
-              'RCP26_dry', 'RCP26_wet', 
-              'RCP60_dry', 'RCP60_wet', 
-              'EXT_High', 'EXT_Low']
+# scenarios = ['ref',
+#               'RCP26_dry', 'RCP26_wet', 
+#               'RCP60_dry', 'RCP60_wet', 
+#               'EXT_High', 'EXT_Low']
+# 'Carb_High', 'Carb_Low', 'Land_High', 'Land_Low', 
+             # 'EXT_High', 
+scenarios = ['Ext_Low']
 
 FPV_switch = 'Yes'
 
@@ -55,11 +58,23 @@ for s,scenario in enumerate(scenarios):
     
     if scenario == 'EXT_High':
         land_tax_switch = 'High'
+        carbon_tax_switch = 'High'
     elif scenario == 'EXT_Low':
         land_tax_switch = 'Low'
-    else:
+        carbon_tax_switch = 'High'
+    elif scenario == 'Carb_High':
         land_tax_switch = 'No'
-    carbon_tax_switch = land_tax_switch
+        carbon_tax_switch = 'High'
+    elif scenario == 'Carb_Low':
+        land_tax_switch = 'No'
+        carbon_tax_switch = 'Low'
+    elif scenario == 'Land_High':
+        land_tax_switch = 'High'
+        carbon_tax_switch = 'No'
+    elif scenario == 'Land_Low':
+        land_tax_switch = 'Low'
+        carbon_tax_switch = 'No'
+
     
     for x, filename in enumerate(filenames):
         if FPV_switch =='No':
@@ -199,7 +214,9 @@ for s,scenario in enumerate(scenarios):
                                                       tech_list.str.contains('NULWP04N') |
                                                       tech_list.str.contains('GOCVP0') |
                                                       tech_list.str.contains('NGCC') |
-                                                      tech_list.str.contains('COSC'))].tolist()
+                                                      tech_list.str.contains('COSC')|
+                                                      tech_list.str.contains('HF')|
+                                                      tech_list.str.contains('LF'))].tolist()
                     new_df = new_df + planned_hyds[0].tolist()
                     new_df = pd.DataFrame(new_df, columns=['TECHNOLOGY'])
                     new_df['EMISSION'] = ['LAND'] * len(new_df)
@@ -218,16 +235,29 @@ for s,scenario in enumerate(scenarios):
                     geothermal_value = (np.ones(56)*round(45/3.6,1)).tolist()
                     gas_value = (np.ones(56)*round(410/3.6,1)).tolist()
                     coal_value = (np.ones(56)*round(1000/3.6,1)).tolist()
+                    oil_value = gas_value
                     
                     def assign_emission(row):
-                        if 'EG' in row['TECHNOLOGY']:
-                            return 'EGLAND'
-                        if 'ET' in row['TECHNOLOGY']:
-                            return 'ETLAND'
-                        if 'SD' in row['TECHNOLOGY']:
-                            return 'SDLAND'
-                        if 'SS' in row['TECHNOLOGY']:
-                            return 'SSLAND'
+                        if 'WINDP00X' in row['TECHNOLOGY']:
+                            return 'LANDWND'
+                        if 'SOU1P03X' in row['TECHNOLOGY']:
+                            return 'LANDSOL'
+                        if 'HYD'in row['TECHNOLOGY']:
+                            return 'LANDHYD'
+                        if 'SOC'in row['TECHNOLOGY']:
+                            return 'LANDSOC'
+                        if 'NULWP04N' in row['TECHNOLOGY']:
+                            return 'LANDNUL'
+                        if 'GOCVP0'in row['TECHNOLOGY']:
+                            return 'LANDGT'
+                        if 'NGCC'in row['TECHNOLOGY']:
+                            return 'LANDGAS'
+                        if 'COSC'in row['TECHNOLOGY']:
+                            return 'LANDCOAL'
+                        if 'LF' in row['TECHNOLOGY'] or 'HF' in row['TECHNOLOGY']:
+                            return 'LANDOIL'
+                        else:
+                            return row[3:]
                     new_df.iloc[:,1] = new_df.apply(lambda row: assign_emission(row), axis=1)
                     
                     def assign_land_ratios(row):
@@ -247,6 +277,8 @@ for s,scenario in enumerate(scenarios):
                             return pd.Series(gas_value)
                         if 'COSC'in row['TECHNOLOGY']:
                             return pd.Series(coal_value)
+                        if 'LF' in row['TECHNOLOGY'] or 'HF' in row['TECHNOLOGY']:
+                            return pd.Series(oil_value)
                         else:
                             return row[3:]
                     
@@ -305,9 +337,10 @@ for s,scenario in enumerate(scenarios):
                 
                 # Add new emissions
                 if sheet_names[i] == 'EMISSION':
-                    cc = ['EG', 'ET', 'SD', 'SS']
-                    for code in cc:
-                        df.loc[len(df)] = code + 'LAND'
+                    codes = ['WND', 'SOL', 'HYD', 'SOC', 'NUL', 
+                          'GT', 'GAS', 'COAL', 'OIL']
+                    for code in codes:
+                        df.loc[len(df)] = 'LAND' + code
                 
                 if carbon_tax_switch != 'No':
                     # Add carbon tax
@@ -320,28 +353,46 @@ for s,scenario in enumerate(scenarios):
                         increase = value_init * 0.05
                         value_fin = value_init + 56 * value_init * 0.05
                     carbon_tax = np.arange(value_init,value_fin,increase)
+                    
                     if sheet_names[i] == 'EmissionsPenalty':
                         df.loc[df['EMISSION'].str.contains('CO2'),2015:] = carbon_tax
                         carbon_tax_list = carbon_tax.tolist()
                         carbon_tax_list[0:0] = ['SSCO2']
                         df.loc[len(df)] = carbon_tax_list
                 
+                    # if carbon_tax_switch == 'Low':
+                    #     value_init = 0.77
+                    #     increase = value_init * 0.01
+                    #     value_fin = value_init + 56 * value_init * 0.01
+                    # elif carbon_tax_switch == 'High':
+                    #     value_init = 4
+                    #     increase = value_init * 0.05
+                    #     value_fin = value_init + 56 * value_init * 0.05
+                    # land_tax = np.linspace(value_init,value_fin,56)
+                
                 if land_tax_switch != 'No':
+                    # Read values
+                    df_values = pd.read_excel(r'Data/LandValues.xlsx', sheet_name='Stats_ENB', index_col='Unnamed: 0')
                     # Add land tax 
-                    if carbon_tax_switch == 'Low':
-                        value_init = 0.77
-                        increase = value_init * 0.01
-                        value_fin = value_init + 56 * value_init * 0.01
-                    elif carbon_tax_switch == 'High':
-                        value_init = 4
-                        increase = value_init * 0.05
-                        value_fin = value_init + 56 * value_init * 0.05
-                    land_tax = np.linspace(value_init,value_fin,56)
-
                     if sheet_names[i] == 'EmissionsPenalty':
-                        cc = ['EG', 'ET', 'SD', 'SS']
-                        for code in cc:
-                            df.loc[len(df)] = [code + 'LAND'] + land_tax.tolist()
+                        codes_dict = {'OIL':'Oil',
+                                      'COAL':'Oil',
+                                      'GAS':'Gas', 
+                                      'WND':'Wind',
+                                      'SOL':'Solar',
+                                      'SOC':'Solar',
+                                      'HYD':'Hydro',
+                                      'GT':'Geothermal',
+                                      'NUL':'Nuclear'}
+                        codes = ['WND', 'SOL', 'HYD', 'SOC', 'NUL', 
+                              'GT', 'GAS', 'COAL', 'OIL']
+                        for code in codes:
+                            if land_tax_switch == 'Low':
+                                land_tax = np.ones(56) * df_values.loc['First quantile', codes_dict[code]] * 0.001
+                            elif land_tax_switch == 'High':
+                                land_tax = np.ones(56) * df_values.loc['Third quantile', codes_dict[code]] * 0.001    
+                            df.loc[len(df)] = ['LAND' + code] + land_tax.tolist()
+                    
 
                 # Remove REN emission limits
                 if sheet_names[i] == 'AnnualEmissionLimit':
