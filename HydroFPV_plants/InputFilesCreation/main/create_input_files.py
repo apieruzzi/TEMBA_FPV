@@ -35,9 +35,10 @@ years = np.arange(first_year,2071)
 #               'RCP26_dry', 'RCP26_wet', 
 #               'RCP60_dry', 'RCP60_wet', 
 #               'EXT_High', 'EXT_Low']
-# 'Carb_High', 'Carb_Low', 'Land_High', 'Land_Low', 
-             # 'EXT_High', 
-scenarios = ['Ext_Low']
+
+scenarios = ['ref', 'Carb_High', 'Carb_Low', 
+             'Land_High', 'Land_Low', 
+             'EXT_High', 'EXT_Low']
 
 FPV_switch = 'Yes'
 
@@ -61,7 +62,7 @@ for s,scenario in enumerate(scenarios):
         carbon_tax_switch = 'High'
     elif scenario == 'EXT_Low':
         land_tax_switch = 'Low'
-        carbon_tax_switch = 'High'
+        carbon_tax_switch = 'Low'
     elif scenario == 'Carb_High':
         land_tax_switch = 'No'
         carbon_tax_switch = 'High'
@@ -74,6 +75,9 @@ for s,scenario in enumerate(scenarios):
     elif scenario == 'Land_Low':
         land_tax_switch = 'Low'
         carbon_tax_switch = 'No'
+    else:
+        carbon_tax_switch = 'No'
+        land_tax_switch = 'No'
 
     
     for x, filename in enumerate(filenames):
@@ -207,83 +211,84 @@ for s,scenario in enumerate(scenarios):
                     df_comb = df_comb[~df_comb['TECHNOLOGY'].str.contains('SSSOFPV')]
                     
                     # And land use activity ratio
-                    planned_hyds = pd.read_excel(filename_plants, sheet_name='TECHS_HYD', header=None)
-                    new_df = tech_list.iloc[np.where(tech_list.str.contains('SOU1P03X') |
-                                                      tech_list.str.contains('WINDP00X') |
-                                                      tech_list.str.contains('SOC') |
-                                                      tech_list.str.contains('NULWP04N') |
-                                                      tech_list.str.contains('GOCVP0') |
-                                                      tech_list.str.contains('NGCC') |
-                                                      tech_list.str.contains('COSC')|
-                                                      tech_list.str.contains('HF')|
-                                                      tech_list.str.contains('LF'))].tolist()
-                    new_df = new_df + planned_hyds[0].tolist()
-                    new_df = pd.DataFrame(new_df, columns=['TECHNOLOGY'])
-                    new_df['EMISSION'] = ['LAND'] * len(new_df)
-                    new_df['MODEOFOPERATION'] = np.ones(len(new_df)).tolist()
-                    new_df[2015] = np.zeros(len(new_df))
-                    new_df = new_df.reset_index(drop=True)
-                    years_cols = pd.concat([new_df[2015]]*55, axis=1,
-                                       ignore_index=True).rename(lambda x: 2016+x, axis=1)
-                    new_df = pd.concat([new_df,years_cols],axis=1)
-                    
-                    wind_value = (np.ones(56)*round(130/3.6,1)).tolist()
-                    solar_value = (np.ones(56)*round(2000/3.6,1)).tolist()
-                    csp_value = (np.ones(56)*round(1300/3.6,1)).tolist()
-                    hydro_value = (np.ones(56)*round(650/3.6,1)).tolist()
-                    nuclear_value = (np.ones(56)*round(7.1/3.6,1)).tolist()
-                    geothermal_value = (np.ones(56)*round(45/3.6,1)).tolist()
-                    gas_value = (np.ones(56)*round(410/3.6,1)).tolist()
-                    coal_value = (np.ones(56)*round(1000/3.6,1)).tolist()
-                    oil_value = gas_value
-                    
-                    def assign_emission(row):
-                        if 'WINDP00X' in row['TECHNOLOGY']:
-                            return 'LANDWND'
-                        if 'SOU1P03X' in row['TECHNOLOGY']:
-                            return 'LANDSOL'
-                        if 'HYD'in row['TECHNOLOGY']:
-                            return 'LANDHYD'
-                        if 'SOC'in row['TECHNOLOGY']:
-                            return 'LANDSOC'
-                        if 'NULWP04N' in row['TECHNOLOGY']:
-                            return 'LANDNUL'
-                        if 'GOCVP0'in row['TECHNOLOGY']:
-                            return 'LANDGT'
-                        if 'NGCC'in row['TECHNOLOGY']:
-                            return 'LANDGAS'
-                        if 'COSC'in row['TECHNOLOGY']:
-                            return 'LANDCOAL'
-                        if 'LF' in row['TECHNOLOGY'] or 'HF' in row['TECHNOLOGY']:
-                            return 'LANDOIL'
-                        else:
-                            return row[3:]
-                    new_df.iloc[:,1] = new_df.apply(lambda row: assign_emission(row), axis=1)
-                    
-                    def assign_land_ratios(row):
-                        if 'WINDP00X' in row['TECHNOLOGY']:
-                            return pd.Series(wind_value)
-                        if 'SOU1P03X' in row['TECHNOLOGY']:
-                            return pd.Series(solar_value)
-                        if 'HYD'in row['TECHNOLOGY']:
-                            return pd.Series(hydro_value)
-                        if 'SOC'in row['TECHNOLOGY']:
-                            return pd.Series(csp_value)
-                        if 'NULWP04N' in row['TECHNOLOGY']:
-                            return pd.Series(nuclear_value)
-                        if 'GOCVP0'in row['TECHNOLOGY']:
-                            return pd.Series(geothermal_value)
-                        if 'NGCC'in row['TECHNOLOGY']:
-                            return pd.Series(gas_value)
-                        if 'COSC'in row['TECHNOLOGY']:
-                            return pd.Series(coal_value)
-                        if 'LF' in row['TECHNOLOGY'] or 'HF' in row['TECHNOLOGY']:
-                            return pd.Series(oil_value)
-                        else:
-                            return row[3:]
-                    
-                    new_df.iloc[:,3:] = new_df.apply(lambda row: assign_land_ratios(row), axis=1)
-                    df_comb = pd.concat([df_comb,new_df], ignore_index=True)
+                    if land_tax_switch != 'No':
+                        planned_hyds = pd.read_excel(filename_plants, sheet_name='TECHS_HYD', header=None)
+                        new_df = tech_list.iloc[np.where(tech_list.str.contains('SOU1P03X') |
+                                                          tech_list.str.contains('WINDP00X') |
+                                                          tech_list.str.contains('SOC') |
+                                                          tech_list.str.contains('NULWP04N') |
+                                                          tech_list.str.contains('GOCVP0') |
+                                                          tech_list.str.contains('NGCC') |
+                                                          tech_list.str.contains('COSC')|
+                                                          tech_list.str.contains('HF')|
+                                                          tech_list.str.contains('LF'))].tolist()
+                        new_df = new_df + planned_hyds[0].tolist()
+                        new_df = pd.DataFrame(new_df, columns=['TECHNOLOGY'])
+                        new_df['EMISSION'] = ['LAND'] * len(new_df)
+                        new_df['MODEOFOPERATION'] = np.ones(len(new_df)).tolist()
+                        new_df[2015] = np.zeros(len(new_df))
+                        new_df = new_df.reset_index(drop=True)
+                        years_cols = pd.concat([new_df[2015]]*55, axis=1,
+                                           ignore_index=True).rename(lambda x: 2016+x, axis=1)
+                        new_df = pd.concat([new_df,years_cols],axis=1)
+                        
+                        wind_value = (np.ones(56)*round(130/3.6,1)).tolist()
+                        solar_value = (np.ones(56)*round(2000/3.6,1)).tolist()
+                        csp_value = (np.ones(56)*round(1300/3.6,1)).tolist()
+                        hydro_value = (np.ones(56)*round(650/3.6,1)).tolist()
+                        nuclear_value = (np.ones(56)*round(7.1/3.6,1)).tolist()
+                        geothermal_value = (np.ones(56)*round(45/3.6,1)).tolist()
+                        gas_value = (np.ones(56)*round(410/3.6,1)).tolist()
+                        coal_value = (np.ones(56)*round(1000/3.6,1)).tolist()
+                        oil_value = gas_value
+                        
+                        def assign_emission(row):
+                            if 'WINDP00X' in row['TECHNOLOGY']:
+                                return 'LANDWND'
+                            if 'SOU1P03X' in row['TECHNOLOGY']:
+                                return 'LANDSOL'
+                            if 'HYD'in row['TECHNOLOGY']:
+                                return 'LANDHYD'
+                            if 'SOC'in row['TECHNOLOGY']:
+                                return 'LANDSOC'
+                            if 'NULWP04N' in row['TECHNOLOGY']:
+                                return 'LANDNUL'
+                            if 'GOCVP0'in row['TECHNOLOGY']:
+                                return 'LANDGT'
+                            if 'NGCC'in row['TECHNOLOGY']:
+                                return 'LANDGAS'
+                            if 'COSC'in row['TECHNOLOGY']:
+                                return 'LANDCOAL'
+                            if 'LF' in row['TECHNOLOGY'] or 'HF' in row['TECHNOLOGY']:
+                                return 'LANDOIL'
+                            else:
+                                return row[3:]
+                        new_df.iloc[:,1] = new_df.apply(lambda row: assign_emission(row), axis=1)
+                        
+                        def assign_land_ratios(row):
+                            if 'WINDP00X' in row['TECHNOLOGY']:
+                                return pd.Series(wind_value)
+                            if 'SOU1P03X' in row['TECHNOLOGY']:
+                                return pd.Series(solar_value)
+                            if 'HYD'in row['TECHNOLOGY']:
+                                return pd.Series(hydro_value)
+                            if 'SOC'in row['TECHNOLOGY']:
+                                return pd.Series(csp_value)
+                            if 'NULWP04N' in row['TECHNOLOGY']:
+                                return pd.Series(nuclear_value)
+                            if 'GOCVP0'in row['TECHNOLOGY']:
+                                return pd.Series(geothermal_value)
+                            if 'NGCC'in row['TECHNOLOGY']:
+                                return pd.Series(gas_value)
+                            if 'COSC'in row['TECHNOLOGY']:
+                                return pd.Series(coal_value)
+                            if 'LF' in row['TECHNOLOGY'] or 'HF' in row['TECHNOLOGY']:
+                                return pd.Series(oil_value)
+                            else:
+                                return row[3:]
+                        
+                        new_df.iloc[:,3:] = new_df.apply(lambda row: assign_land_ratios(row), axis=1)
+                        df_comb = pd.concat([df_comb,new_df], ignore_index=True)
                     
 
                 

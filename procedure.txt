@@ -1,7 +1,7 @@
 run ubuntu as admin
 
 mamba activate snakemake
-cd /mnt/c/Users/Alessandro\ Pieruzzi/Documenti/Thesis/Run_FPV_all_1210
+cd /mnt/c/Users/Alessandro\ Pieruzzi/Documenti/Thesis/Run_FPV_ext_1710_2
 snakemake -j 2
 
 When re running make sure to remove all output_data and CSVfiles 

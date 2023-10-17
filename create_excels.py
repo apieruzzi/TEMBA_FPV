@@ -21,7 +21,8 @@ sheet_names = ['Metrics of built HP plants',
                'List of built HP plants',
                'TotalWaterConsumption',
                'Max values_hydro',
-               'Max values_fpv']
+               'Max values_fpv', 
+               'Total Costs']
 
 dest_path = os.path.join(folder, dest_folder)
 os.makedirs(dest_path, exist_ok=True)

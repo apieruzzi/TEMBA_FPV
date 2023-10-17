@@ -103,7 +103,7 @@ def parseCSVFilesAndConvert(scenario, sheetNames):
             result += '\n[REGION, *, *]:\n'
             result += insert_table(scenario, sheetNames[i])
         elif (sheetNames[i] in ['AnnualEmissionLimit']):
-            result += 'param ' + sheetNames[i] + ' default 99999 := '
+            result += 'param ' + sheetNames[i] + ' default 9999999999 := '
             result += '\n[REGION, *, *]:\n'
             result += insert_table(scenario, sheetNames[i])
         elif (sheetNames[i] in ['YearSplit']):
@@ -159,7 +159,7 @@ def parseCSVFilesAndConvert(scenario, sheetNames):
             result += insert_no_variables(scenario, sheetNames, i)
         # 8 #all the parameters that do not have variables
         elif (sheetNames[i] in ['ModelPeriodEmissionLimit']):
-            result += 'param ' + sheetNames[i] + ' default 999999 := ;\n'
+            result += 'param ' + sheetNames[i] + ' default 9999999999 := ;\n'
         # 8 #all the   parameters   that do not have variables
         elif (sheetNames[i] in ['ModelPeriodExogenousEmission', 'AnnualExogenousEmission', 'OperationalLifeStorage']):
             result += 'param ' + sheetNames[i] + ' default 0 := ;\n'
