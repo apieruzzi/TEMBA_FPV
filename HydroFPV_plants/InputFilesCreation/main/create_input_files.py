@@ -36,9 +36,9 @@ years = np.arange(first_year,2071)
 #               'RCP60_dry', 'RCP60_wet', 
 #               'EXT_High', 'EXT_Low']
 
-scenarios = ['ref', 'Carb_High', 'Carb_Low', 
-             'Land_High', 'Land_Low', 
+scenarios = ['Land_High', 'Land_Low', 
              'EXT_High', 'EXT_Low']
+# 'ref', 'Carb_High', 'Carb_Low', 
 
 FPV_switch = 'Yes'
 
@@ -218,10 +218,10 @@ for s,scenario in enumerate(scenarios):
                                                           tech_list.str.contains('SOC') |
                                                           tech_list.str.contains('NULWP04N') |
                                                           tech_list.str.contains('GOCVP0') |
-                                                          tech_list.str.contains('NGCC') |
-                                                          tech_list.str.contains('COSC')|
-                                                          tech_list.str.contains('HF')|
-                                                          tech_list.str.contains('LF'))].tolist()
+                                                          (tech_list.str.contains('NGCC') & ~tech_list.str.contains('X')) |
+                                                          (tech_list.str.contains('COSC') & ~tech_list.str.contains('X')) |
+                                                          (tech_list.str.contains('HF') & ~tech_list.str.contains('X')) |
+                                                          (tech_list.str.contains('LF') & ~tech_list.str.contains('X')))].tolist()
                         new_df = new_df + planned_hyds[0].tolist()
                         new_df = pd.DataFrame(new_df, columns=['TECHNOLOGY'])
                         new_df['EMISSION'] = ['LAND'] * len(new_df)
