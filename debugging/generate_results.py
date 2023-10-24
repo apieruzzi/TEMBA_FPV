@@ -23,16 +23,20 @@ import numpy as np
 import pickle
 import plotly.io as pio
 import tempfile
+import cufflinks
+
+cufflinks.go_offline()
+cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
+
 
 
 
 # picklefile = sys.argv[1]
 # scenario = sys.argv[2]
 # destination_folder = sys.argv[3]
-
-picklefile = r'input_data/REF_FPV.pickle'
-scenario = 'REF_FPV'
-destination_folder = 'results/export_REF_FPV'
+scenario = 'TEMBA_ENB_ref'
+picklefile = f'input_data/{scenario}.pickle'
+destination_folder = f'results/export_{scenario}/barcharts'
 first_year = 2022
 last_year = 2070
 homedir = r'C:\Users\Alessandro Pieruzzi\Documents\Thesis\TEMBA_FPV\debugging\debugplots'
@@ -397,7 +401,7 @@ with tempfile.TemporaryDirectory() as temp:
     def water_chart(Country):
         cc = country_code[country_code['Country Name'] == Country]['Country code'].tolist()[
             0]
-        #print('The country code is:'+cc)
+
         # water withdrawal detailed
         wat_w_df = all_params['UseByTechnologyAnnual']
         wat_w_df = wat_w_df[wat_w_df['f'].str[:6] == cc+'WAT1'].copy()
@@ -409,14 +413,14 @@ with tempfile.TemporaryDirectory() as temp:
                                         values='value',
                                         aggfunc='sum').reset_index().fillna(0)
         wat_w_df_original = wat_w_df.reindex(sorted(wat_w_df.columns), axis=1).set_index(
-            'y').reset_index()
+            'y').reset_index() 
         wat_w_df = wat_w_df.reindex(sorted(wat_w_df.columns), axis=1).set_index(
             'y').reset_index().rename(columns=det_col)
         wat_w_df = wat_w_df.iloc[np.where(wat_w_df['y']>first_year)]
         #wat_w_df['y'] = years
         # wat_w_df=wat_w_df[wat_w_df['y']>2022]
         #df_plot(wat_w_df,'Million cubic metres (Mm^3)',cc+"-"+'Water Withdrawal')
-        ###
+
         # Water Withdrawal (Aggregated)
         watw_agg_df = pd.DataFrame(columns=agg_col)
         watw_agg_df.insert(0, 'y', wat_w_df['y'])
@@ -429,7 +433,7 @@ with tempfile.TemporaryDirectory() as temp:
 
         df_plot(watw_agg_df, 'Million cubic metres (Mm^3)',
                 cc+"-"+'Water Withdrawal')
-        ##
+
         # water output detailed
         wat_o_df = all_params['ProductionByTechnologyAnnual']
         wat_o_df = wat_o_df[wat_o_df['f'].str[:6] == cc+'WAT2'].copy()
@@ -447,7 +451,7 @@ with tempfile.TemporaryDirectory() as temp:
         #wat_o_df['y'] = years
         # wat_o_df=wat_o_df[wat_o_df['y']>2022]
         #df_plot(wat_o_df,'Million cubic metres (Mm^3)',cc+"-"+'Water output')
-        ###
+
         # Water consumption missing row additions
         for wd in wat_w_df.columns:
             for wc in wat_o_df.columns:
@@ -463,24 +467,24 @@ with tempfile.TemporaryDirectory() as temp:
                 else:
                     wat_o_df_original[wd] = 0
         
-        
-        #####
+
         # Water consumption (Detailed)
         wat_c_df = wat_w_df.set_index('y')-wat_o_df.set_index('y')
         wat_c_df = wat_c_df.fillna(0.00)
         wat_c_df.reset_index(inplace=True)
-        
+        # Names with original column names (tech codes)
         wat_c_df_original = wat_w_df_original.set_index('y')-wat_o_df_original.set_index('y')
         wat_c_df_original = wat_c_df_original.fillna(0.00)
         wat_c_df_original.reset_index(inplace=True)
-        wat_c_df_original['y']=years
+        wat_c_df_original['y'] = years
         wat_c_df_original = wat_c_df_original.set_index('y')
-        wat_c_df_original = wat_c_df_original[[col for col in wat_c_df_original.columns if col in t_include_hydro]]
-        wat_c_df_original.reset_index(inplace=True)
-        wat_c_df_hydro = wat_c_df_original.rename(columns=det_col)
-        # wat_c_df['y']=years
+        
+        # Detail hydro
+        wat_c_df_hydro = wat_c_df_original[[col for col in wat_c_df_original.columns if col in t_include_hydro]]
+        wat_c_df_hydro.reset_index(inplace=True)
+        wat_c_df_hydro = wat_c_df_hydro.rename(columns=det_col)
         df_plot(wat_c_df_hydro,'Million cubic metres (Mm^3)',cc+"-"+'Water consumption (Detail Hydro)', color_dict=color_dict_hydro)
-       
+        
         # Water consumption (Aggregate)
         watc_agg_df = pd.DataFrame(columns=agg_col)
         watc_agg_df.insert(0, 'y', wat_c_df['y'])
@@ -492,6 +496,26 @@ with tempfile.TemporaryDirectory() as temp:
                     watc_agg_df[each] = watc_agg_df[each].round(2)
         df_plot(watc_agg_df, 'Million cubic metres (Mm^3)',
                 cc+'-'+'Water consumption aggregated')
+        
+        # Water consumption (Aggregate no hydro)
+        agg_col_nohyd = agg_col.copy()
+        agg_col_nohyd.pop('Hydro', None)
+        watc_agg_df_nohyd = pd.DataFrame(columns=agg_col_nohyd)
+        watc_agg_df_nohyd.insert(0, 'y', wat_c_df['y'])
+        watc_agg_df_nohyd = watc_agg_df_nohyd.fillna(0.00)
+        for each in agg_col_nohyd:
+            for tech_exists in agg_col_nohyd[each]:
+                if tech_exists in wat_c_df.columns:
+                    watc_agg_df_nohyd[each] = watc_agg_df_nohyd[each] + wat_c_df[tech_exists]
+                    watc_agg_df_nohyd[each] = watc_agg_df_nohyd[each].round(2)
+        df_plot(watc_agg_df_nohyd, 'Million cubic metres (Mm^3)',
+                cc+'-'+'Water consumption aggregated no hydro')
+        
+        # Detail rest
+        wat_c_df_other = wat_c_df_original[[col for col in wat_c_df_original.columns if col not in t_include_hydro]]
+        wat_c_df_other.reset_index(inplace=True)
+        wat_c_df_other = wat_c_df_other.rename(columns=det_col)
+        df_plot(wat_c_df_other,'Million cubic metres (Mm^3)',cc+"-"+'Water consumption (Detail other)', color_dict=color_dict)
 
     def emissions_chart(Country):
         cc = country_code[country_code['Country Name'] == Country]['Country code'].tolist()[
@@ -774,8 +798,9 @@ with tempfile.TemporaryDirectory() as temp:
 
     # Dictionary for the powerpool classifications and countries
     pp_def = {'EAPP': ['ET', 'SD','EG', 'SS']}
-
-
+    
+    
+#%%
     # # In the follwoing block, the capacity and generation graphs for all the powerpools and 
     # TEMBA will be plotted and CSV files generated
     # first for loop to loop over the powerpools
@@ -989,10 +1014,8 @@ with tempfile.TemporaryDirectory() as temp:
         total_cap_df.to_csv(os.path.join(
             homedir, tk + "-capacity"+"-"+".csv"))
 
-    # %% [markdown]
+#%%
     # # In the follwoing block, the water consumption and withdrawal graphs for all the powerpools and TEMBA will be plotted and CSV files generated for each
-
-    # %%
     for tk in pp_def.keys():
         # The following lines are used for creating dummy
         # (empty) dataframes to print aggregated (powerpool/TEMBA) results as csv files
@@ -1006,8 +1029,17 @@ with tempfile.TemporaryDirectory() as temp:
                                                                         'Natural gas extraction', 'Uranium extraction', 'Transmission & Distribution', 'Backstop',
                                                                         'Biofuel and Biomass production'], dtype='float64')
         total_watw_df['y'] = years
+        total_watc_nohyd_df = pd.DataFrame(np.zeros(shape=(56, 19)), columns=['y', 'Coal', 'Oil', 'Gas', 'Hydro', 'Nuclear', 'Solar CSP', 'Solar PV',
+                                                                        'Wind', 'Geothermal', 'Biomass', 'Coal Production', 'Crude Oil production', 'Crude oil Refinery',
+                                                                        'Natural gas extraction', 'Uranium extraction', 'Transmission & Distribution', 'Backstop',
+                                                                        'Biofuel and Biomass production'], dtype='float64')
+        total_watc_nohyd_df['y'] = years
+        
+        total_watc_hydro = pd.DataFrame(np.zeros(shape=(56, len(cols_hydro))), columns=cols_hydro, dtype='float64')
+        total_watc_hydro['y'] = years
         ######
         for cc in pp_def[tk]:
+            # Water Withdrawal (Detailed)
             wat_w_df = all_params['UseByTechnologyAnnual']
             wat_w_df = wat_w_df[wat_w_df['f'].str[:6] == cc+'WAT1'].copy()
 
@@ -1023,7 +1055,7 @@ with tempfile.TemporaryDirectory() as temp:
             #wat_w_df['y'] = years
             # wat_w_df=wat_w_df[wat_w_df['y']>2022]
             #df_plot(wat_w_df,'Million cubic metres (Mm^3)',cc+"-"+'Water Withdrawal')
-            ###
+           
             # Water Withdrawal (Aggregated)
             watw_agg_df = pd.DataFrame(columns=agg_col)
             watw_agg_df.insert(0, 'y', wat_w_df['y'])
@@ -1036,7 +1068,7 @@ with tempfile.TemporaryDirectory() as temp:
                         watw_agg_df[each] = watw_agg_df[each].round(2)
             total_watw_df = total_watw_df.set_index('y').add(
                 watw_agg_df.set_index('y'), fill_value=0).reset_index()
-            ##
+            
             # water output detailed
             wat_o_df = all_params['ProductionByTechnologyAnnual']
             wat_o_df = wat_o_df[wat_o_df['f'].str[:6] == cc+'WAT2'].copy()
@@ -1060,13 +1092,16 @@ with tempfile.TemporaryDirectory() as temp:
                         pass
                     else:
                         wat_o_df[wd] = 0
-            #####
+            
             # Water consumption (Detailed)
             wat_c_df = wat_w_df.set_index('y')-wat_o_df.set_index('y')
             wat_c_df = wat_c_df.fillna(0.00)
             wat_c_df.reset_index(inplace=True)
-            # wat_c_df['y']=years
-            #df_plot(wat_c_df,'Million cubic metres (Mm^3)',cc+"-"+'Water consumption')
+            total_watc_hydro = total_watc_hydro.set_index('y').add(
+                wat_c_df.set_index('y'), fill_value=0).reset_index()
+            total_watc_hydro = total_watc_hydro[cols_hydro]
+
+            
             # Water consumption (Aggregate)
             watc_agg_df = pd.DataFrame(columns=agg_col)
             watc_agg_df.insert(0, 'y', wat_c_df['y'])
@@ -1079,22 +1114,33 @@ with tempfile.TemporaryDirectory() as temp:
                         watc_agg_df[each] = watc_agg_df[each].round(2)
             total_watc_df = total_watc_df.set_index('y').add(
                 watc_agg_df.set_index('y'), fill_value=0).reset_index()
+
+            # Water consumption (Aggregate no hydro)
+            col_nohyd = total_watc_df.columns
+            col_nohyd = col_nohyd.drop('Hydro')
+            total_watc_nohyd_df = total_watc_df[col_nohyd]
+            
         total_watw_df['y'] = years
         total_watc_df['y'] = years
+        total_watc_nohyd_df['y'] = years
+        total_watc_hydro['y'] = years
         total_watc_df['y'] = total_watc_df['y'].astype('float64')
+        total_watc_nohyd_df['y'] = total_watc_nohyd_df['y'].astype('float64')
+        total_watc_hydro['y'] = total_watc_hydro['y'].astype('float64')
         total_watw_df['y'] = total_watw_df['y'].astype('float64')
         total_watw_df = total_watw_df[total_watw_df['y'] <= last_year]
         total_watc_df = total_watc_df[total_watc_df['y'] <= last_year]
+        total_watc_nohyd_df = total_watc_nohyd_df[total_watc_nohyd_df['y'] <= last_year]
+        total_watc_hydro = total_watc_hydro[total_watc_hydro['y'] <= last_year]
+        
         df_plot(total_watw_df, 'Million cubic metres (Mm^3)',
                 tk+"-"+'Water Withdrawal')
         df_plot(total_watc_df, 'Million cubic metres (Mm^3)',
                 tk+"-"+'Water Consumption')
-        #df_plot(watw_agg_df,'Million cubic metres (Mm^3)',cc+'Water Withdrawal')
-        #df_plot(watc_agg_df,'Million cubic metres (Mm^3)',cc+'Water consumption aggregated')
-        total_watc_df.to_csv(os.path.join(
-            homedir, tk + "-" + scenario + "-wat consumption.csv"))
-        total_watw_df.to_csv(os.path.join(
-            homedir, tk + "-" + scenario + "-wat withdrawal.csv"))
+        df_plot(total_watc_nohyd_df, 'Million cubic metres (Mm^3)',
+                tk+"-"+'Water Consumption (No Hydro)')
+        df_plot(total_watc_hydro, 'Million cubic metres (Mm^3)',
+                tk+"-"+'Water Consumption (Detail Hydro)', color_dict=color_dict_hydro)
 
 
     # %%

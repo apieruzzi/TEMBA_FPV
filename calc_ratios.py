@@ -15,6 +15,11 @@ listf = os.listdir('input_data')
 listf = [file for file in listf if file.endswith('.xlsx') and not file.startswith('~')]
 countries = ['EG', 'ET', 'SD']
 
+# Get location codes and names
+df_names = pd.read_csv(r'input_data/CombinedHydroSolar_ref.csv')
+names = df_names['Unit Name']
+codes = df_names['loc_codes']
+names_dict = dict(zip(codes,names))
 
 def calc_df(file,country):
     input_file = f'input_data/{file}'
@@ -69,7 +74,7 @@ for country in countries:
 for country in countries:
     plt.figure(figsize=(10,8))
     for file in listf:    
-        # Find location with highest total capacity and total potential in the country
+        # Find location with highest total capacity 
         df_capact = calc_df(file,country)[1]
         df_capact_country = df_capact.iloc[np.where(df_capact['TECHNOLOGY'].str.contains(country))].set_index('TECHNOLOGY')
         df_capact_country['tot'] = df_capact_country.sum(axis=1)
@@ -77,7 +82,8 @@ for country in countries:
         plt.plot(max_cap_plant[:-1], label=file[:-5])
         plt.xlabel('year')
         plt.ylabel('Capacity [GW]')
-        plt.title('Capacity expansion for ' + max_cap_plant.name[:-3])
+        plant_name = names_dict[max_cap_plant.name[7:-4]]
+        plt.title('FPV capacity expansion for ' + plant_name)
         plt.legend()
         path = os.path.join('results/ScenarioComparison',max_cap_plant.name[:-3] + ' .png')
         plt.savefig(path)
@@ -85,15 +91,21 @@ for country in countries:
 
 for country in countries:
     plt.figure(figsize=(10,8))
-    for file in listf:        
+    for file in listf:
+        # Find location with highest total potential         
         df_ratio_country = calc_df(file,country)[0]
+        df_capact = calc_df(file,country)[1]
+        df_capact_country = df_capact.iloc[np.where(df_capact['TECHNOLOGY'].str.contains(country))].set_index('TECHNOLOGY')
+        df_capact_country['tot'] = df_capact_country.sum(axis=1)
         df_ratio_country['tot'] = df_ratio_country.sum(axis=1)
         max_ratio_plant = df_ratio_country.iloc[np.argmax(df_ratio_country['tot'])]
         plt.plot(max_ratio_plant[:-1], label=file[:-5])
         plt.xlabel('year')
         plt.ylabel('Used capacity potential [%]')
         plt.legend()
-        plt.title('Used capacity potential for ' + max_ratio_plant.name)
+        plant_name = names_dict[max_ratio_plant.name[7:-1]]
+        cap_act = df_capact_country[2070].iloc[np.where(df_capact_country.index.str.contains(max_ratio_plant.name))]
+        plt.title('Used FPV capacity potential for ' + plant_name + f' ({round(cap_act[0],2)} GW)')
         path = os.path.join('results/ScenarioComparison',max_ratio_plant.name + ' .png')
         plt.savefig(path)
         

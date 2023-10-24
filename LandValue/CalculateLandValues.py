@@ -11,16 +11,17 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Calculates the land use values and their statistics and plots
 
 # Read files
-file1 = 'Sampled_values_JRC.csv'
-file2 = 'Sampled_values_WRI.csv'
+file1 = 'Sampled_JRC.csv'
+file2 = 'Sampled_WRI.csv'
 jrc_df = pd.read_csv(file1)
 wri_df = pd.read_csv(file2)
 
 # Uniform column names
 cols_wri = ['latitude', 'longitude', 'country', 'name', 
-            'primary_fu','capacity_m', 'SAMPLE_1']
+            'primary_fu','capacity_m', 'Yield[K$/h']
 cols_jrc = jrc_df.columns[[8,7,3,1,5,2,6]]
 cols_merged = ['Lat', 'Long', 'Country', 'Plant name', 
                'Fuel', 'Capacity (MW)', 'Yield (K$/ha)']

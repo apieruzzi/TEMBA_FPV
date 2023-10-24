@@ -9,7 +9,8 @@ import pandas as pd
 import numpy as np 
 import os
        
-
+# Creates the final input files for OSEMOSYS merging TEMBA ENB with 
+# the hydro and fpv solar technologies 
 
 # Import existing input file
 
@@ -37,7 +38,8 @@ years = np.arange(first_year,2071)
 #               'EXT_High', 'EXT_Low']
 
 scenarios = ['Land_High', 'Land_Low', 
-             'EXT_High', 'EXT_Low']
+             'EXT_High', 'EXT_Low',
+             ]
 # 'ref', 'Carb_High', 'Carb_Low', 
 
 FPV_switch = 'Yes'
