@@ -1010,9 +1010,9 @@ with tempfile.TemporaryDirectory() as temp:
         # total_cap_df=total_cap_df.drop('gas_trade',axis=1)
 
         total_gen_df.to_csv(os.path.join(
-            homedir, tk + "-Power Generation (Aggregate).csv"))
+            homedir, tk + "-Power Generation (Aggregate)"+"-"+scenario+".csv"))
         total_cap_df.to_csv(os.path.join(
-            homedir, tk + "-capacity"+"-"+".csv"))
+            homedir, tk + "-Power Generation Capacity (Aggregate)"+"-"+scenario+".csv"))
 
 #%%
     # # In the follwoing block, the water consumption and withdrawal graphs for all the powerpools and TEMBA will be plotted and CSV files generated for each
