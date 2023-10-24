@@ -6,10 +6,8 @@ Created on Sun Oct  8 13:56:30 2023
 """
 
 import pandas as pd
-# import numpy as np
 import matplotlib.pyplot as plt
-# import os
-# import matplotlib as mpl
+import os
 import openpyxl
 
 locs = ['EAPP', 'EG', 'ET', 'SD', 'SS']
@@ -24,25 +22,31 @@ for idx in range(len(locs)-1):
     
     #  Scenario and variable lists
     sheet_names_in = ['TotalGeneration', 'MaxGenerationShare', 'Onset',
-                   'HydroNumber', 'TotalGeneration', 
+                   'HydroNumber', 'TotalGeneration', 'TotalWaterConsumption',
+                   'WaterConsumption(No Hydro)', 'WaterConsumption(Detail Hydro)',
                    'TotalCosts', 'Emissions']
     sheet_names_out = ['TotalGeneration', 'MaxGenerationShare', 'Onset',
-                   'HydroNumber', 'TotalGenerationHyd', 
+                   'HydroNumber', 'TotalGenerationHyd', 'TotalWaterConsumption',
+                   'WaterConsumption(No Hydro)', 'WaterConsumption(Detail Hydro)',
                    'TotalCosts', 'Emissions']
     
-    scenario_list = ['TEMBA_ENB_Carb_High', 'TEMBA_ENB_Carb_Low', 'TEMBA_ENB_EXT_High', 
-                     'TEMBA_ENB_Ext_Low', 'TEMBA_ENB_Land_High', 'TEMBA_ENB_Land_Low', "TEMBA_ENB_ref"]
+    inputfiles = os.listdir('input_data')
+    scenario_list = [file[:-5] for file in inputfiles if file.endswith('xlsx') and not file.startswith('~')]
+    # scenario_list = ['TEMBA_ENB_Carb_High', 'TEMBA_ENB_Carb_Low', 'TEMBA_ENB_EXT_High', 
+    #                  'TEMBA_ENB_Ext_Low', 'TEMBA_ENB_Land_High', 'TEMBA_ENB_Land_Low', "TEMBA_ENB_ref"]
     # ["TEMBA_ENB_EXT_High", "TEMBA_ENB_EXT_Low", "TEMBA_ENB_RCP26_dry",
     #                  "TEMBA_ENB_RCP26_wet", "TEMBA_ENB_RCP60_dry", "TEMBA_ENB_RCP60_wet", 
     #                  "TEMBA_ENB_ref", "TEMBA_ENB_EXT_HighNoFPV", "TEMBA_ENB_EXT_LowNoFPV", 
     #                  "TEMBA_ENB_RCP26_dryNoFPV", "TEMBA_ENB_RCP26_wetNoFPV", "TEMBA_ENB_RCP60_dryNoFPV", 
     #                  "TEMBA_ENB_RCP60_wetNoFPV", "TEMBA_ENB_refNoFPV"]
     
-    nrows = [6,6,6,6,6,2,2]
+    nrows = [6,6,6,6,6,2,2,2,2,2]
     col_names = ['Total generation FPV','Max generation share FPV',
                  'FPV onset year','Hydropower expansion','Hydropower total generation',
-                 'Total costs','Total emissions']
-    files = [file_fpv]*3+[file_hyd]*4
+                 'TotalWaterConsumption',
+                 'WaterConsumption(No Hydro)', 'WaterConsumption(Detail Hydro)',
+                 'TotalCosts','Emissions']
+    files = [file_fpv]*3+[file_hyd]*7
     
     if idx==1:
         sheet_names_in.remove('HydroNumber')
@@ -52,14 +56,13 @@ for idx in range(len(locs)-1):
         files = files[0:-1]
         
     if idx>=1:
-        sheet_names_in.remove('TotalCosts') 
-        sheet_names_in.remove('Emissions')
-        sheet_names_out.remove('TotalCosts') 
-        sheet_names_out.remove('Emissions')
-        col_names.remove('Total costs') 
-        col_names.remove('Total emissions')
-        nrows=nrows[0:-2]
-        files = files[0:-2]
+        sheet_names_to_remove = ['TotalCosts', 'Emissions', 'TotalWaterConsumption',
+                                 'WaterConsumption(No Hydro)', 'WaterConsumption(Detail Hydro)']
+        sheet_names_in = [name for name in sheet_names_in if name not in sheet_names_to_remove]
+        sheet_names_out = [name for name in sheet_names_out if name not in sheet_names_to_remove]
+        col_names = [name for name in col_names if name not in sheet_names_to_remove]
+        nrows=nrows[0:-5]
+        files = files[0:-5]
     
     #  Create new excel file
     wb = openpyxl.Workbook()
@@ -75,6 +78,10 @@ for idx in range(len(locs)-1):
                                skiprows=i*nrows+i, nrows=nrows)
             if sheet_name_in == 'HydroNumber':
                 values_list.append([df.columns[0][10:],df.iloc[1+idx,1]])
+            elif sheet_name_in in ['TotalWaterConsumption',
+                                   'WaterConsumption(No Hydro)', 
+                                   'WaterConsumption(Detail Hydro)']:
+                values_list.append([df.columns[0][10:],df.iloc[idx,0]])
             else:
                 values_list.append([df.columns[1][10:],df.iloc[idx,1]])
         

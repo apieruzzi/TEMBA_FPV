@@ -24,7 +24,9 @@ sheet_names = ['Metrics of built HP plants',
                'TotalWaterConsumption',
                'Max values_hydro',
                'Max values_fpv', 
-               'Total Costs']
+               'Total Costs',
+               'WaterConsumption(No Hydro)',
+               'WaterConsumption(Detail Hydro)']
 
 dest_path = os.path.join(folder, dest_folder)
 os.makedirs(dest_path, exist_ok=True)
@@ -62,6 +64,14 @@ for i, scenario in enumerate(scenario_list):
     df_water = pd.read_excel(filename, sheet_name=sheet_names[2])
     df_water = df_water.rename(columns={'Total Water Consumption':scenario})
     df_water.to_excel(writer_hyd, sheet_name='TotalWaterConsumption', index=False, startrow=i*(len(df_water)+1)+i)
+    
+    df_water_hyd = pd.read_excel(filename, sheet_name='WaterConsumption(No Hydro)',)
+    df_water_hyd = df_water_hyd.rename(columns={'WaterConsumption(No Hydro)':scenario})
+    df_water_hyd.to_excel(writer_hyd, sheet_name='WaterConsumption(No Hydro)', index=False, startrow=i*(len(df_water_hyd)+1)+i)
+    
+    df_water_nohyd = pd.read_excel(filename, sheet_name='WaterConsumption(Detail Hydro)',)
+    df_water_nohyd = df_water_nohyd.rename(columns={'WaterConsumption(Detail Hydro)':scenario})
+    df_water_nohyd.to_excel(writer_hyd, sheet_name='WaterConsumption(Detail Hydro)', index=False, startrow=i*(len(df_water_nohyd)+1)+i)
     
     df_totgen = pd.read_excel(filename, sheet_name=sheet_names[3], index_col='Unnamed: 0')
     df_totgen = df_totgen['TotalGeneration']
@@ -121,7 +131,7 @@ for i, scenario in enumerate(scenario_list):
     df.to_excel(writer_hyd, sheet_name='Emissions', startrow=i*(len(df)+1)+i)
     
     # Add total costs
-    df_cost = pd.read_excel(filename, sheet_name=sheet_names[-1])
+    df_cost = pd.read_excel(filename, sheet_name='Total Costs')
     df_cost.to_excel(writer_hyd, sheet_name='TotalCosts', index=False, startrow=i*(len(df_cost)+1)+i)
     
 writer_hyd.close()
