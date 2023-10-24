@@ -28,12 +28,11 @@ import cufflinks
 cufflinks.go_offline()
 cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
 
+
 picklefile = sys.argv[1]
 scenario = sys.argv[2]
 destination_folder = sys.argv[3]
 
-
-# picklefile = sys.argv[1]
 first_year = 2022
 last_year = 2070
 

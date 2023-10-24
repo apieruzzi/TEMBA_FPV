@@ -15,11 +15,10 @@ import sys
 import tempfile
 import shutil
 
-# Goal: obtain quantification of results
+# Goal: obtain quantification of results and create pie charts
 # - How many reservoirs are built out of the planned list (after 2023)? Total number and number per country
 # - Calculate the percentages and amounts of capacity and generation per aggregate technology 
-# - Save all these info in an excel
-
+# - Save all these info in an excel (mixes percentages excels)
 
 def create_pie_charts(filename, title, scenario, writer, file, code):
     
@@ -119,8 +118,8 @@ input_file_dummy = sys.argv[1]
 scenario = sys.argv[-2]
 destination_folder = sys.argv[-1]
 
-# scenario = 'TEMBA_2.0_ENB'
-# destination_folder = 'results/export_{scenario}'
+# scenario = 'TEMBA_ENB_ref'
+destination_folder = f'results/export_{scenario}/piecharts'
 
 with tempfile.TemporaryDirectory() as temp:
 
@@ -169,8 +168,8 @@ with tempfile.TemporaryDirectory() as temp:
      
     # Create pie charts
     colors_dict_agg = {
-        "Coal - Percentage":"darkgrey",
-        "Oil - Percentage" : "grey",
+        "Coal - Percentage":"grey",
+        "Oil - Percentage" : "darkgrey",
         "Gas - Percentage" : "darkorange",
         "Hydro - Percentage" : "lightblue",
         "Solar CSP - Percentage" : "red",
@@ -221,7 +220,11 @@ with tempfile.TemporaryDirectory() as temp:
             # Generation:
             generation_filename = f'results/export_{scenario}/barcharts/{code}/{code}-Power Generation ({file})-{scenario}.csv'
             create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code)
-        
+    
+    # Save mixes to excel
+    df_comb_hydro.to_excel(writer, sheet_name='Max values_hydro')
+    df_comb_fpv.to_excel(writer, sheet_name='Max values_fpv')   
+     
     # Calculate cumulative water consumption
     wc_filename = f'results/export_{scenario}/barcharts/EAPP/EAPP-Water Consumption-{scenario}.csv'
     wc_df = pd.read_csv(wc_filename)
@@ -230,8 +233,19 @@ with tempfile.TemporaryDirectory() as temp:
     df_wc = pd.DataFrame(data = [wc_tot], columns=['Total Water Consumption'])
     df_wc.to_excel(writer, sheet_name='TotalWaterConsumption', index=False)
     
-    df_comb_hydro.to_excel(writer, sheet_name='Max values_hydro')
-    df_comb_fpv.to_excel(writer, sheet_name='Max values_fpv')
+    wc_filename = f'results/export_{scenario}/barcharts/EAPP/EAPP-Water Consumption (No Hydro)-{scenario}.csv'
+    wc_df = pd.read_csv(wc_filename)
+    wc_df['tot'] = wc_df.iloc[:,2:].sum(axis=1)
+    wc_tot = wc_df['tot'].sum()
+    df_wc = pd.DataFrame(data = [wc_tot], columns=['WaterConsumption(No Hydro)'])
+    df_wc.to_excel(writer, sheet_name='WaterConsumption(No Hydro)', index=False)
+    
+    wc_filename = f'results/export_{scenario}/barcharts/EAPP/EAPP-Water Consumption (Detail Hydro)-{scenario}.csv'
+    wc_df = pd.read_csv(wc_filename)
+    wc_df['tot'] = wc_df.iloc[:,2:].sum(axis=1)
+    wc_tot = wc_df['tot'].sum()
+    df_wc = pd.DataFrame(data = [wc_tot], columns=['WaterConsumption(Detail Hydro)'])
+    df_wc.to_excel(writer, sheet_name='WaterConsumption(Detail Hydro)', index=False)
     
     # Read and save total costs
     filename_cost = f'results/{scenario}.SOL'
