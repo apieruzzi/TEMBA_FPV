@@ -495,7 +495,7 @@ for scenario in ['TEMBA_ENB_Carb_High', 'TEMBA_ENB_Carb_Low', 'TEMBA_ENB_EXT_Hig
                         watc_agg_df[each] = watc_agg_df[each] + wat_c_df[tech_exists]
                         watc_agg_df[each] = watc_agg_df[each].round(2)
             df_plot(watc_agg_df, 'Million cubic metres (Mm^3)',
-                    cc+'-'+'Water consumption aggregated')
+                    cc+'-'+'Water Consumption')
             
             # Water consumption (Aggregate no hydro)
             agg_col_nohyd = agg_col.copy()
