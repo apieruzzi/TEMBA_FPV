@@ -8,9 +8,11 @@ Created on Tue Sep 26 11:52:33 2023
 import os
 import pandas as pd
 import openpyxl
+import sys
+
+# Creates the ValuesHydro and ValuesFPV excels
 
 
-# folder = 'results/ScenarioComparison'
 folder = 'results/ScenarioComparison'
 dest_folder = 'AggregatedExcels'
 
@@ -21,7 +23,10 @@ sheet_names = ['Metrics of built HP plants',
                'List of built HP plants',
                'TotalWaterConsumption',
                'Max values_hydro',
-               'Max values_fpv']
+               'Max values_fpv', 
+               'Total Costs',
+               'WaterConsumption(No Hydro)',
+               'WaterConsumption(Detail Hydro)']
 
 dest_path = os.path.join(folder, dest_folder)
 os.makedirs(dest_path, exist_ok=True)
@@ -60,6 +65,14 @@ for i, scenario in enumerate(scenario_list):
     df_water = df_water.rename(columns={'Total Water Consumption':scenario})
     df_water.to_excel(writer_hyd, sheet_name='TotalWaterConsumption', index=False, startrow=i*(len(df_water)+1)+i)
     
+    df_water_hyd = pd.read_excel(filename, sheet_name='WaterConsumption(No Hydro)',)
+    df_water_hyd = df_water_hyd.rename(columns={'WaterConsumption(No Hydro)':scenario})
+    df_water_hyd.to_excel(writer_hyd, sheet_name='WaterConsumption(No Hydro)', index=False, startrow=i*(len(df_water_hyd)+1)+i)
+    
+    df_water_nohyd = pd.read_excel(filename, sheet_name='WaterConsumption(Detail Hydro)',)
+    df_water_nohyd = df_water_nohyd.rename(columns={'WaterConsumption(Detail Hydro)':scenario})
+    df_water_nohyd.to_excel(writer_hyd, sheet_name='WaterConsumption(Detail Hydro)', index=False, startrow=i*(len(df_water_nohyd)+1)+i)
+    
     df_totgen = pd.read_excel(filename, sheet_name=sheet_names[3], index_col='Unnamed: 0')
     df_totgen = df_totgen['TotalGeneration']
     df_totgen.name = scenario
@@ -76,8 +89,8 @@ for i, scenario in enumerate(scenario_list):
     df_maxcap.to_excel(writer_hyd, sheet_name='MaxCapacity', startrow=i*(len(df_maxcap)+1)+i)
     
     
-    # Create file with fpv info
-        # max generation share, total max capacity, FPVOnset, total generation
+    # # Create file with fpv info
+    #     # max generation share, total max capacity, FPVOnset, total generation
         
     # df_maxgen_share = pd.read_excel(filename, sheet_name=sheet_names[4], index_col='Unnamed: 0')
     # df_maxgen_share = df_maxgen_share[['MaxGenerationShare', 'YearGS']]
@@ -108,6 +121,18 @@ for i, scenario in enumerate(scenario_list):
     # df_onset = df_onset['Onset']
     # df_onset.name = scenario
     # df_onset.to_excel(writer_fpv, sheet_name='Onset', startrow=i*(len(df_onset)+1)+i)
+
+    # Add emission calculations
+    filename_emi = f'results/export_{scenario}/barcharts/EAPP/EAPP-Annual Emissions-{scenario}.csv'
+    df = pd.read_csv(filename_emi)
+    df.loc['tot'] = df.sum()
+    value = df.loc['tot'][-1]
+    df = pd.DataFrame({scenario:[value]}, index=['TotalEmissions'])
+    df.to_excel(writer_hyd, sheet_name='Emissions', startrow=i*(len(df)+1)+i)
+    
+    # Add total costs
+    df_cost = pd.read_excel(filename, sheet_name='Total Costs')
+    df_cost.to_excel(writer_hyd, sheet_name='TotalCosts', index=False, startrow=i*(len(df_cost)+1)+i)
     
 writer_hyd.close()
 writer_fpv.close()
