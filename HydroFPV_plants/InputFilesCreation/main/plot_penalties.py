@@ -8,6 +8,7 @@ Created on Wed Oct 18 11:02:59 2023
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.interpolate
 
 
 # =============================================================================
@@ -74,7 +75,7 @@ df_land.loc['Third quantile'] = df_land.loc['Third quantile'] * df_land.loc['Lan
 # =============================================================================
 # Carbon tax                  
 # =============================================================================
-
+years = np.arange(2015,2071,1)
 # Emission activity ratios
 df_emi = pd.read_excel(r'Created Files/TEMBA_ENB_ref.xlsx', sheet_name='EmissionActivityRatio')
 df_emi = df_emi.iloc[np.where(df_emi['EMISSION'].str.contains('CO2'))]
@@ -95,12 +96,12 @@ value_fin = value_init + 56 * value_init * 0.01
 carbon_tax_slow = np.arange(value_init,value_fin,increase)
 
 # Aggressive tax
-value_init = 50
-increase = value_init * 0.05
-value_fin = value_init + 56 * value_init * 0.05
-carbon_tax_agg = np.arange(value_init,value_fin,increase)
+values = [80,140,200]
+years_points = [2020,2030,2050]
+interp_lin = scipy.interpolate.interp1d(years_points, values, fill_value='extrapolate')
+carbon_tax_agg = interp_lin(years)
 
-years = np.arange(2015,2071,1)
+
 plt.figure(figsize=(10,8))
 plt.plot(years, carbon_tax_slow, label='Slow tax')
 plt.plot(years, carbon_tax_agg, label='Aggressive tax')

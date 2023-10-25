@@ -8,6 +8,7 @@ Created on Tue Jun 13 09:14:00 2023
 import pandas as pd
 import numpy as np 
 import os
+import scipy.interpolate
        
 # Creates the final input files for OSEMOSYS merging TEMBA ENB with 
 # the hydro and fpv solar technologies 
@@ -32,17 +33,16 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-# scenarios = ['ref',
-#               'RCP26_dry', 'RCP26_wet', 
-#               'RCP60_dry', 'RCP60_wet', 
-#               'EXT_High', 'EXT_Low']
+scenarios = ['ref',
+              'RCP26_dry', 'RCP26_wet', 
+              'RCP60_dry', 'RCP60_wet', 
+              'EXT_High', 'EXT_Low']
 
-scenarios = ['Land_High', 'Land_Low', 
-             'EXT_High', 'EXT_Low',
-             ]
-# 'ref', 'Carb_High', 'Carb_Low', 
+# scenarios = ['EXT_High', 'EXT_Low',
+#              ]
+# # 'ref', 'Carb_High', 'Carb_Low', 
 
-FPV_switch = 'Yes'
+FPV_switch = 'No'
 
 for s,scenario in enumerate(scenarios):
 
@@ -355,11 +355,12 @@ for s,scenario in enumerate(scenarios):
                         value_init = 25
                         increase = value_init * 0.01
                         value_fin = value_init + 56 * value_init * 0.01
+                        carbon_tax = np.arange(value_init,value_fin,increase)
                     elif carbon_tax_switch == 'High':
-                        value_init = 50
-                        increase = value_init * 0.05
-                        value_fin = value_init + 56 * value_init * 0.05
-                    carbon_tax = np.arange(value_init,value_fin,increase)
+                        values = [80,140,200]
+                        years_points = [2020,2030,2050]
+                        interp_lin = scipy.interpolate.interp1d(years_points, values, fill_value='extrapolate')
+                        carbon_tax = interp_lin(years)
                     
                     if sheet_names[i] == 'EmissionsPenalty':
                         df.loc[df['EMISSION'].str.contains('CO2'),2015:] = carbon_tax
@@ -367,16 +368,11 @@ for s,scenario in enumerate(scenarios):
                         carbon_tax_list[0:0] = ['SSCO2']
                         df.loc[len(df)] = carbon_tax_list
                 
-                    # if carbon_tax_switch == 'Low':
-                    #     value_init = 0.77
-                    #     increase = value_init * 0.01
-                    #     value_fin = value_init + 56 * value_init * 0.01
-                    # elif carbon_tax_switch == 'High':
-                    #     value_init = 4
-                    #     increase = value_init * 0.05
-                    #     value_fin = value_init + 56 * value_init * 0.05
-                    # land_tax = np.linspace(value_init,value_fin,56)
-                
+                values = [80,140,200]
+                years_points = [2020,2030,2050]
+                interp_lin = scipy.interpolate.interp1d(years_points, values, fill_value='extrapolate')
+                new_cost_values = interp_lin(years) 
+
                 if land_tax_switch != 'No':
                     # Read values
                     df_values = pd.read_excel(r'Data/LandValues.xlsx', sheet_name='Stats_ENB', index_col='Unnamed: 0')
