@@ -793,7 +793,7 @@ with tempfile.TemporaryDirectory() as temp:
                                     "-generation" + "-" + scenario + ".csv"), index=None)
 
     # Dictionary for the powerpool classifications and countries
-    pp_def = {'EAPP': ['ET', 'SD','EG', 'SS']}
+    pp_def = {'ENB': ['ET', 'SD','EG', 'SS']}
     
     
 #%%
@@ -1308,7 +1308,7 @@ with tempfile.TemporaryDirectory() as temp:
 
     # this block will create individual Power pool folders and paste (all country specific csv and png files)
     # files from the home directory to the path mentioned below
-    power_p = ['EAPP']
+    power_p = ['ENB']
     resultpath = os.path.join(destination_folder)
     files = os.listdir(homedir)
     for en in power_p:

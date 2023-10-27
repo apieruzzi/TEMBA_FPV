@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import os
 import openpyxl
 
-locs = ['EAPP', 'EG', 'ET', 'SD', 'SS']
+locs = ['ENB', 'EG', 'ET', 'SD', 'SS']
 
 for idx in range(len(locs)-1):
     # Index to select the country or region in the locs list

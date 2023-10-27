@@ -33,16 +33,18 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-scenarios = ['ref',
-              'RCP26_dry', 'RCP26_wet', 
-              'RCP60_dry', 'RCP60_wet', 
-              'EXT_High', 'EXT_Low']
+scenarios = ['ref']
+              # 'RCP26_dry', 'RCP26_wet', 
+              # 'RCP60_dry', 'RCP60_wet', 
+              # 'EXT_High', 'EXT_Low']
 
 # scenarios = ['EXT_High', 'EXT_Low',
 #              ]
 # # 'ref', 'Carb_High', 'Carb_Low', 
 
-FPV_switch = 'No'
+FPV_switch = 'Yes'
+NoConstSwitch = 'No'
+ssa_switch = 'Low'
 
 for s,scenario in enumerate(scenarios):
 
@@ -121,6 +123,19 @@ for s,scenario in enumerate(scenarios):
                     df_add = df_add.iloc[:,np.r_[0:idx1,idx2:idx3+1]]
                 df_comb = pd.concat([df, df_add], axis=0, ignore_index=True)
                 
+                def insert_row(row, data):                
+                    if 'HYDMS03X' in row['TECHNOLOGY']:
+                        if 'ET' in row['TECHNOLOGY']:
+                            return data[0]
+                    elif 'HYDMS02X' in row['TECHNOLOGY']:
+                        if 'ET' in row['TECHNOLOGY']:
+                            return data[1]
+                    if 'HYDMS01X' in row['TECHNOLOGY']:
+                        if 'ET' in row['TECHNOLOGY']:
+                            return data[2]
+                    else: 
+                        return row[1:]
+                
                 # Fix hydropower outside of the Nile Basin
                 if sheet_names[i] == 'ResidualCapacity':
                     resc_med1 = (np.ones(46)*0.107).tolist() #2015 to 2060
@@ -130,20 +145,6 @@ for s,scenario in enumerate(scenarios):
                     resc_small =np.zeros(56).tolist()
                     resc_large = (np.ones(56)*0.604).tolist()
                     data = [resc_large, resc_med, resc_small]
-        
-                    def insert_row(row, data):                
-                        if 'HYDMS03X' in row['TECHNOLOGY']:
-                            if 'ET' in row['TECHNOLOGY']:
-                                return data[0]
-                        elif 'HYDMS02X' in row['TECHNOLOGY']:
-                            if 'ET' in row['TECHNOLOGY']:
-                                return data[1]
-                        if 'HYDMS01X' in row['TECHNOLOGY']:
-                            if 'ET' in row['TECHNOLOGY']:
-                                return data[2]
-                        else: 
-                            return row[1:]
-                        
                     df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
                 
                 if sheet_names[i] == 'TotalAnnualMaxCapacity':
@@ -152,6 +153,8 @@ for s,scenario in enumerate(scenarios):
                     maxc_small = (np.ones(56)*0.006).tolist() 
                     data = [maxc_large, maxc_med, maxc_small]
                     df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
+                    if NoConstSwitch == 'Yes':
+                        df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:] = np.ones(56)*99999
                     
                 if sheet_names[i] == 'TotalAnnualMaxCapacityInvestmen':
                     maxci_large1 = np.zeros(9).tolist()
@@ -167,6 +170,8 @@ for s,scenario in enumerate(scenarios):
                     maxci_small = maxci_small1 + maxci_small2
                     data = [maxci_large, maxci_med, maxci_small]
                     df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
+                    if NoConstSwitch == 'Yes':
+                        df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:] = np.ones(56)*99999
                 
                 if sheet_names[i] == 'TotalAnnualMinCapacityInvestmen':
                     minci_large = np.zeros(56).tolist()
@@ -292,7 +297,15 @@ for s,scenario in enumerate(scenarios):
                         new_df.iloc[:,3:] = new_df.apply(lambda row: assign_land_ratios(row), axis=1)
                         df_comb = pd.concat([df_comb,new_df], ignore_index=True)
                     
-
+                
+                # Capital costs variation for sensitivity analysis
+                if sheet_names[i] == 'CapitalCost':
+                    value = df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('SO'))[0],2015:].values
+                    if ssa_switch == 'Low':
+                        value_changed = value*0.8
+                    elif ssa_switch == 'High':
+                        value_changed = value*1.2
+                    df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('SO'))[0],2015:] = value_changed
                 
                 # Fix trade link costs
                 if sheet_names[i] == 'VariableCost':

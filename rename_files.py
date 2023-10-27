@@ -12,9 +12,9 @@ import tempfile
 import shutil
 
 input_file_dummy = sys.argv[1]
-scenario = sys.argv[2]
+scenario = sys.argv[-2]
 
-codes = ['EAPP', 'EG', 'ET', 'SD', 'SS']
+codes = ['ENB', 'EG', 'ET', 'SD', 'SS']
 
 with tempfile.TemporaryDirectory() as temp:
 

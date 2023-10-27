@@ -47,6 +47,8 @@ det_col = dict(
     [(a, b) for a, b in zip(colorcode1.tech_code, colorcode1.tech_name)])
 color_dict = dict(
     [(a, b) for a, b in zip(colorcode2.tech_name, colorcode2.colour)])
+color_dict['import'] = 'pink'
+color_dict['export'] = 'lime'
 colorcode_hydro = colorcode[colorcode['tech_code'].str.contains('HYD')].iloc[1:].drop('tech_code', axis=1)
 new_colors_hydro = ['yellow','chartreuse', 'cornflowerblue', #Egypt
                     'brown', 'blue', 'chocolate', 'coral', 'crimson', 
@@ -110,54 +112,111 @@ def calculate_differences(scenario_ref, scenario, loc, variable):
     filename = f'{loc}-{variable}-{scenario}.csv'
     filepath = os.path.join(folder, filename)
     
-    df_ref = pd.read_csv(filepath_ref)
-    df_sc = pd.read_csv(filepath)
+    df_ref_data = pd.read_csv(filepath_ref).iloc[:,1:]
+    df_sc_data = pd.read_csv(filepath).iloc[:,1:]
+    
+    cols = agg2.columns.insert(0,'y')
+    cols = cols.insert(-1,'import')
+    cols = cols.insert(-1, 'export')
+    df_ref = pd.DataFrame(np.zeros(shape=(len(years),len(cols))), columns=cols)
+    df_sc = pd.DataFrame(np.zeros(shape=(len(years),len(cols))), columns=cols)
+    df_ref['y'] = years
+    df_sc['y'] = years    
+    df_ref = df_ref.set_index('y').add(
+        df_ref_data.set_index('y'), fill_value=0)
+    df_sc = df_sc.set_index('y').add(
+        df_sc_data.set_index('y'), fill_value=0)
+    
+    # Fix import and export
+    df_ref['import'] = abs(df_ref.iloc[np.where(df_ref['power_trade']>0)]['power_trade'])
+    df_ref['export'] = abs(df_ref.iloc[np.where(df_ref['power_trade']<0)]['power_trade'])
+    df_sc['import'] = abs(df_sc.iloc[np.where(df_sc['power_trade']>0)]['power_trade'])
+    df_sc['export'] = abs(df_sc.iloc[np.where(df_sc['power_trade']<0)]['power_trade'])
     
     df_diff = df_sc - df_ref
+    df_diff = df_diff.iloc[:,0:-1] #remove power trade column
     df_diff = df_diff.fillna(0)
-    df_diff['y'] = years
+    df_diff = df_diff.reset_index()
     return df_diff
 
+def get_ylims(loc,var, scenario):
+    # Define y ranges based on country and variable
+    if loc == 'EAPP':
+        if var == 'Power Generation (Aggregate)':
+            min_y, max_y = -800, 800
+        else:
+            min_y, max_y = -5000, 5000
+    elif loc == 'EG':
+        if var == 'Power Generation (Aggregate)':
+            if 'EXT' in scenario:
+                min_y, max_y = -800, 800
+            else:
+                min_y, max_y = -20, 20
+        else:
+            if 'EXT' in scenario:
+                min_y, max_y = -90, 90
+            else:
+                min_y, max_y = -200, 1800
+    elif loc == 'ET':
+        if var == 'Power Generation (Aggregate)':
+            min_y, max_y = -250, 250
+        else:
+            min_y, max_y = -500, 2000
+    elif loc == 'SD':
+        if var == 'Power Generation (Aggregate)':
+            if 'EXT' in scenario:
+                min_y, max_y = -150, 150
+            else:
+                min_y, max_y = -40, 40
+        else:
+            min_y, max_y = -3000, 3000
+    elif loc == 'SS':
+        if var == 'Power Generation (Aggregate)':
+            min_y, max_y = -20, 20
+        else:
+            min_y, max_y = -600, 300
+    return [min_y,max_y]
 
-def plot_differences(df, scenario, loc, y_title, p_title, color_dict = color_dict, barmode = 'relative'):
+def plot_differences(df, scenario, loc,var, color_dict = color_dict, barmode = 'relative'):
     dest_dir = f'results/ScenarioComparison/DifferencePlots/{loc}'
     os.makedirs(dest_dir, exist_ok=True)
     
-    df = df.loc[:, (df != 0).any(axis=0)] # Drop columns with all 0 values
+    df = df.loc[:, (df != 0).any(axis=0)] # Drop columns with all 0 values    
     
     if (len(df.columns) == 1) | (np.shape(df)[1] < 2):
         print('There are no values for the result variable that you want to plot')
-        print(p_title)
+        print( loc+' - '+var+' - '+sc)
     else:
         fig = df.iplot(x='y',
                     kind='bar',
                     barmode=barmode,
                     width=1,
                     xTitle='Year',
-                    yTitle=y_title,
+                    yTitle=variables[var],
                     color=[color_dict[x] for x in df.columns if x != 'y'],
-                    title=p_title,
+                    title= loc + ' - ' + var + ' - difference with reference scenario' +  ' - ' + sc,
                     showlegend=True,
                     asFigure=True)
         fig.update_xaxes(range=[first_year, last_year])
+        fig.update_yaxes(range=get_ylims(loc, var, scenario))
         fig.update_traces(width=0.7)
-        pio.write_image(fig, os.path.join(dest_dir, '{}.png'.format(p_title)), 
+        pio.write_image(fig, os.path.join(dest_dir, '{}.png'.format(loc+' - '+var+' - '+sc)), 
                         scale=1, width=1500, height=1000)
-        df.to_csv(os.path.join(dest_dir, p_title+".csv"))
+        df.to_csv(os.path.join(dest_dir, loc+' - '+var+' - '+sc+".csv"))
         return None
 
 
 
 # Debugging
-# loc='EG'
-# sc = scenario_list[0]
-# var = 'Power Generation (Aggregate)'
+loc='SD'
+sc = scenario_list[0]
+var = 'Power Generation (Aggregate)'
 
 for sc in scenario_list:
     for loc in locs:
         for var in variables.keys():
             df_diff = calculate_differences(scenario_ref, sc, loc, var)
-            plot_differences(df_diff, sc, loc,variables[var], loc+' - '+var+' - '+sc)
+            plot_differences(df_diff, sc, loc,var)
 
 
 

@@ -63,7 +63,13 @@ for country in countries:
     plt.figure(figsize=(10,8))
     for file in listf:
         df_country = calc_df(file,country)[0]
-        df_country.loc['mean'].transpose().plot(label=file[:-5])
+        if 'EXT' in file[:-5]:
+            linestyle = 'dashed'
+        elif 'RCP' in file[:-5]:
+            linestyle = 'dotted'
+        else:
+            linestyle='solid'
+        df_country.loc['mean'].transpose().plot(label=file[:-5], linestyle=linestyle)
         plt.legend()
         plt.xlabel('year')
         plt.ylabel('Used capacity potential [%]')
@@ -79,7 +85,13 @@ for country in countries:
         df_capact_country = df_capact.iloc[np.where(df_capact['TECHNOLOGY'].str.contains(country))].set_index('TECHNOLOGY')
         df_capact_country['tot'] = df_capact_country.sum(axis=1)
         max_cap_plant = df_capact_country.iloc[np.argmax(df_capact_country['tot'])]
-        plt.plot(max_cap_plant[:-1], label=file[:-5])
+        if 'EXT' in file[:-5]:
+            linestyle = 'dashed'
+        elif 'RCP' in file[:-5]:
+            linestyle = 'dotted'
+        else:
+            linestyle='solid'
+        plt.plot(max_cap_plant[:-1], label=file[:-5], linestyle=linestyle)
         plt.xlabel('year')
         plt.ylabel('Capacity [GW]')
         plant_name = names_dict[max_cap_plant.name[7:-4]]
@@ -99,7 +111,13 @@ for country in countries:
         df_capact_country['tot'] = df_capact_country.sum(axis=1)
         df_ratio_country['tot'] = df_ratio_country.sum(axis=1)
         max_ratio_plant = df_ratio_country.iloc[np.argmax(df_ratio_country['tot'])]
-        plt.plot(max_ratio_plant[:-1], label=file[:-5])
+        if 'EXT' in file[:-5]:
+            linestyle = 'dashed'
+        elif 'RCP' in file[:-5]:
+            linestyle = 'dotted'
+        else:
+            linestyle='solid'
+        plt.plot(max_ratio_plant[:-1], label=file[:-5], linestyle=linestyle)
         plt.xlabel('year')
         plt.ylabel('Used capacity potential [%]')
         plt.legend()
