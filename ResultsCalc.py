@@ -20,6 +20,8 @@ import shutil
 # - Calculate the percentages and amounts of capacity and generation per aggregate technology 
 # - Save all these info in an excel (mixes percentages excels)
 
+plt.rcParams.update({'font.size': 16})
+
 def create_pie_charts(filename, title, scenario, writer, file, code):
     
     try:
@@ -87,7 +89,7 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     df = df.iloc[:,idx:]
     df_t = df.transpose()
     
-    years_to_plot = [2023,2030,2040,2050,2060,2070]
+    years_to_plot = [2023,2030,2040,2050,2060,2065]
     years = [col for col in df_t.columns if col in years_to_plot] 
     df_sel = df_t.loc[:,years]
     df_sel = df_sel.loc[:, (df_sel != 0).any(axis=0)]

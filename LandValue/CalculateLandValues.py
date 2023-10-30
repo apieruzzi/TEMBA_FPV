@@ -105,6 +105,8 @@ def calc_dfs(country, merged_gdf):
         "Nuclear" : "#5ce6f2",
         }
     
+    # Remove biomass from plots
+    df_fuel = df_fuel[[col for col in df_fuel.columns if col!='Biomass & Waste']]
 
     plt.figure(figsize=(10,8))
     plt.ylabel('Value [K$/ha]')

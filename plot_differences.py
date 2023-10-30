@@ -13,6 +13,7 @@ import cufflinks
 
 cufflinks.go_offline()
 cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
+# plt.rcParams.update({'font.size': 16})
 
 # Script to create plots of differences of a scenario with the reference
 # Variables to plot:
@@ -20,10 +21,10 @@ cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
     # - Water consumption
 # Difference of each scenario with with the reference (FPV)
 # Difference of REF_FPV and REF
-# Differences for EAPP and each country
+# Differences for ENB and each country
 
 # Lists and files
-locs = ['EAPP', 'EG', 'ET', 'SD', 'SS']
+locs = ['ENB', 'EG', 'ET', 'SD', 'SS']
 variables = {'Power Generation (Aggregate)':'PJ', 'Water Consumption':'MCM'}
 data_dir = 'input_data'
 inputfiles = os.listdir(data_dir)
@@ -31,7 +32,7 @@ scenario_list = [file[:-5] for file in inputfiles if file.endswith('xlsx') and n
 scenario_ref = 'TEMBA_ENB_ref'
 scenario_list = [sc for sc in scenario_list if sc != scenario_ref]
 first_year = 2022
-last_year = 2070
+last_year = 2066
 years = pd.Series(range(first_year, last_year+1))
 
 # Codes and colours
@@ -141,7 +142,7 @@ def calculate_differences(scenario_ref, scenario, loc, variable):
 
 def get_ylims(loc,var, scenario):
     # Define y ranges based on country and variable
-    if loc == 'EAPP':
+    if loc == 'ENB':
         if var == 'Power Generation (Aggregate)':
             min_y, max_y = -800, 800
         else:
@@ -197,6 +198,7 @@ def plot_differences(df, scenario, loc,var, color_dict = color_dict, barmode = '
                     title= loc + ' - ' + var + ' - difference with reference scenario' +  ' - ' + sc,
                     showlegend=True,
                     asFigure=True)
+        fig.update_layout(font_size=16)
         fig.update_xaxes(range=[first_year, last_year])
         fig.update_yaxes(range=get_ylims(loc, var, scenario))
         fig.update_traces(width=0.7)
@@ -204,7 +206,6 @@ def plot_differences(df, scenario, loc,var, color_dict = color_dict, barmode = '
                         scale=1, width=1500, height=1000)
         df.to_csv(os.path.join(dest_dir, loc+' - '+var+' - '+sc+".csv"))
         return None
-
 
 
 # Debugging

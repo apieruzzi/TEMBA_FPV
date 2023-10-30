@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 16})
 
 # Scenarios
 listf = os.listdir('input_data')
@@ -20,6 +21,7 @@ df_names = pd.read_csv(r'input_data/CombinedHydroSolar_ref.csv')
 names = df_names['Unit Name']
 codes = df_names['loc_codes']
 names_dict = dict(zip(codes,names))
+
 
 def calc_df(file,country):
     input_file = f'input_data/{file}'
@@ -63,13 +65,16 @@ for country in countries:
     plt.figure(figsize=(10,8))
     for file in listf:
         df_country = calc_df(file,country)[0]
+        linewidth=1
         if 'EXT' in file[:-5]:
             linestyle = 'dashed'
         elif 'RCP' in file[:-5]:
             linestyle = 'dotted'
+            if '60' in file[:-5]:
+                linewidth=5
         else:
             linestyle='solid'
-        df_country.loc['mean'].transpose().plot(label=file[:-5], linestyle=linestyle)
+        df_country.loc['mean',:2065].transpose().plot(label=file[:-5], linestyle=linestyle, linewidth=linewidth)
         plt.legend()
         plt.xlabel('year')
         plt.ylabel('Used capacity potential [%]')
@@ -85,13 +90,16 @@ for country in countries:
         df_capact_country = df_capact.iloc[np.where(df_capact['TECHNOLOGY'].str.contains(country))].set_index('TECHNOLOGY')
         df_capact_country['tot'] = df_capact_country.sum(axis=1)
         max_cap_plant = df_capact_country.iloc[np.argmax(df_capact_country['tot'])]
+        linewidth=1
         if 'EXT' in file[:-5]:
             linestyle = 'dashed'
         elif 'RCP' in file[:-5]:
             linestyle = 'dotted'
+            if '60' in file[:-5]:
+                linewidth=5
         else:
             linestyle='solid'
-        plt.plot(max_cap_plant[:-1], label=file[:-5], linestyle=linestyle)
+        plt.plot(max_cap_plant[:-6], label=file[:-5], linestyle=linestyle, linewidth=linewidth)
         plt.xlabel('year')
         plt.ylabel('Capacity [GW]')
         plant_name = names_dict[max_cap_plant.name[7:-4]]
@@ -111,18 +119,21 @@ for country in countries:
         df_capact_country['tot'] = df_capact_country.sum(axis=1)
         df_ratio_country['tot'] = df_ratio_country.sum(axis=1)
         max_ratio_plant = df_ratio_country.iloc[np.argmax(df_ratio_country['tot'])]
+        linewidth=1
         if 'EXT' in file[:-5]:
             linestyle = 'dashed'
         elif 'RCP' in file[:-5]:
             linestyle = 'dotted'
+            if '60' in file[:-5]:
+                linewidth=5
         else:
             linestyle='solid'
-        plt.plot(max_ratio_plant[:-1], label=file[:-5], linestyle=linestyle)
+        plt.plot(max_ratio_plant[:-6], label=file[:-5], linestyle=linestyle, linewidth=linewidth)
         plt.xlabel('year')
         plt.ylabel('Used capacity potential [%]')
         plt.legend()
         plant_name = names_dict[max_ratio_plant.name[7:-1]]
-        cap_act = df_capact_country[2070].iloc[np.where(df_capact_country.index.str.contains(max_ratio_plant.name))]
+        cap_act = df_capact_country[2065].iloc[np.where(df_capact_country.index.str.contains(max_ratio_plant.name))]
         plt.title('Used FPV capacity potential for ' + plant_name + f' ({round(cap_act[0],2)} GW)')
         path = os.path.join('results/ScenarioComparison',max_ratio_plant.name + ' .png')
         plt.savefig(path)
