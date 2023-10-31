@@ -200,7 +200,7 @@ with tempfile.TemporaryDirectory() as temp:
     tech_codes_df['tech_name'] = [name + ' - Percentage' for name in tech_codes_df['tech_name']]
     
     df_comb_hydro = pd.DataFrame(columns=['MaxCapacity', 'YearC', 'MaxGeneration', 'YearG', 'TotalGeneration'], 
-                           index=['EAPP', 'EG', 'ET', 'SD', 'SS'])
+                           index=['ENB', 'EG', 'ET', 'SD', 'SS'])
     # df_comb_fpv = pd.DataFrame(columns=['MaxCapacity', 'YearC', 'MaxGeneration', 
     #                                     'YearG', 'TotalGeneration', 
     #                                     'MaxCapacityShare', 'YearCS',

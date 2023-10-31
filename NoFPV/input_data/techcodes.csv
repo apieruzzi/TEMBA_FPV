@@ -7,7 +7,7 @@ BIOM,Biomass,lightgreen
 BMCHP01N,Biomass & Waste CHP plant - Air cooling (new),cornsilk
 BMCHP01O,Biomass & Waste CHP plant - Air cooling (old),brown
 BMCHP02N,Biomass & Waste CHP plant - MDT cooling (new),cyan
-BMCHP02O,Biomass & Waste CHP plant - MDT cooling (old),cadetblue
+BMCHP02O,Biomass & Waste CHP plant - MDT cooling (old),cadetbluef
 BMCHP03N,Biomass & Waste CHP plant - NDT cooling (new),darkcyan
 BMCHP03O,Biomass & Waste CHP plant - NDT cooling (old),chartreuse
 BMCHP04N,Biomass & Waste CHP plant - OTF/OTS cooling (new),darkgray
@@ -40,14 +40,14 @@ COSCC03N,Coal power plant with CCS - NDT cooling (new),darkturquoise
 COSCC04N,Coal power plant with CCS - OTF/OTS cooling (new),deeppink
 CO00P00X,Coal process (non-power sector),darkorange
 COALPROD,Coal Production,darkgrey
-CR00X00X,Crude Oil extraction,grey05
-CR00I00X,Crude Oil imports,grey01
-CR00P00X,Crude Oil process (non-power sector),grey03
+CR00X00X,Crude Oil extraction,grey
+CR00I00X,Crude Oil imports,grey
+CR00P00X,Crude Oil process (non-power sector),grey
 CRUDPROD,Crude Oil production,coral
-CRUDREF,Crude oil Refinery,grey09
-CRUDRE1X,Crude oil refinery 1,grey11
-CRUDRE2X,Crude oil refinery 2,grey13
-CRUDPROX,Crude oil refinery capacity,grey07
+CRUDREF,Crude oil Refinery,grey
+CRUDRE1X,Crude oil refinery 1,grey
+CRUDRE2X,Crude oil refinery 2,grey
+CRUDPROX,Crude oil refinery capacity,grey
 CREXPORT,Crude oil exports,sienna
 SOC2P00X,CSP (with storage),lavender
 SOC1P00X,CSP (without storage),dimgrey
@@ -55,7 +55,7 @@ EL00TDTX,Distribution technology (Distribution to final electricity demand),grey
 EGELJOBP00,Egypt - Jordan Historic EL trade link,yellow
 EGELSABP00,Egypt - Saudi Arabia Planned EL trade link,green
 EGELSDBP00,Egypt - Sudan Historic and Planned EL trade link,tomato
-EGNGTUBP00,Egypt - Turkey Historic and Planned NG trade link,polarorange
+EGNGTUBP00,Egypt - Turkey Historic and Planned NG trade link,orange
 ETHANOLX,Ethanol production,honeydew
 ETELDJBP00,Ethiopia - Djibouti EL existing trade link,blue
 ETNGDJBP00,Ethiopia - Djibouti NG planned trade link,pink
@@ -63,7 +63,7 @@ ETELKEBP00,Ethiopia - Kenya EL planned trade link,orange
 ETELSDBP00,Ethiopia - Sudan EL existing trade link,purple
 FW00P00X,Firewood process (non-power sector),indianred
 GASAGG,Gas,orange
-gas_trade,gas_trade,polarpurple
+gas_trade,gas_trade,purple
 GEOTHERMAL,Geothermal,maroon
 GOCVP01N,Geothermal power plant - Air cooling (new),lightpurple
 GOCVP01O,Geothermal power plant - Air cooling (old),ivory
@@ -76,11 +76,11 @@ GOCVP04O,Geothermal power plant - OTF/OTS cooling (old),lemonchiffon
 HE00T00X,Heat network,lightivory
 HF00I00X,Heavy Fuel Oil imports,lightsalmon
 HF00P00X,Heavy Fuel Oil process (non-power sector),lightskyblue
-HFEXPORT,HFO exports,lightteal
+HFEXPORT,HFO exports,bisque
 HYDAGG,Hydro,aqua
 ISNGEGBP00,Israel - Egypt Planned NG trade link,silver
 HYDMS03X,Large hydropower plant (Dam),mediumpurple
-LFEXPORT,LFO exports,polarbluelight
+LFEXPORT,LFO exports,blueviolet
 LYELEGBP00,Libya - Egypt Historic EL trade link,burlywood
 LF00I00X,Light Fuel Oil imports,midnightblue
 LFRCP01N,Light Fuel Oil power plant - Air cooling (new),palegreen
@@ -89,7 +89,7 @@ LFRCP02N,Light Fuel Oil power plant - MDT cooling (new),paleturquoise
 LFRCP02O,Light Fuel Oil power plant - MDT cooling (old),olive
 LFRCP03N,Light Fuel Oil power plant - NDT cooling (new),papayawhip
 LFRCP03O,Light Fuel Oil power plant - NDT cooling (old),orange
-LFRCP04N,Light Fuel Oil power plant - OTF/OTS cooling (new),pearl
+LFRCP04N,Light Fuel Oil power plant - OTF/OTS cooling (new),lavender
 LFRCP04O,Light Fuel Oil power plant - OTF/OTS cooling (old),orchid
 LF00P00X,Light Fuel Oil process (non-power sector),mistyrose
 LFRCFURX,Light Fuel Oil stand alone (1kW),mustard
@@ -97,16 +97,16 @@ HYDMS02X,Medium hydropower plant (Run-of river),mediumslateblue
 NG00ELGX,Natural gas exports (Liquification terminal),indianred
 NG00X00X,Natural gas extraction,pinksalmon
 GASPROD,Natural gas extraction,sienna
-NG00I00X,Natural gas imports (inland/offshore pipeline),pearl03
-NG00ILGX,Natural gas imports (LNG),pearl05
+NG00I00X,Natural gas imports (inland/offshore pipeline),cornsilk
+NG00ILGX,Natural gas imports (LNG),beige
 NGCCP01N,Natural gas power plant (combined cycle) - Air cooling (new),rosybrown
-NGCCP01O,Natural gas power plant (combined cycle) - Air cooling (old),polargreen
-NGCCC02N,Natural gas power plant (combined cycle) - CCS  - MDT cooling (new),polarbluelight
-NGCCC04N,Natural gas power plant (combined cycle) - CCS  - OTF/OTS cooling (new),polardust
-NGCCC01N,Natural gas power plant (combined cycle) - CCS - Air cooling (new),polar
-NGCCC03N,Natural gas power plant (combined cycle) - CCS - NDT cooling (new),polardark
+NGCCP01O,Natural gas power plant (combined cycle) - Air cooling (old),green
+NGCCC02N,Natural gas power plant (combined cycle) - CCS  - MDT cooling (new),blueviolet
+NGCCC04N,Natural gas power plant (combined cycle) - CCS  - OTF/OTS cooling (new),khaki
+NGCCC01N,Natural gas power plant (combined cycle) - CCS - Air cooling (new),slateblue
+NGCCC03N,Natural gas power plant (combined cycle) - CCS - NDT cooling (new),olive
 NGCCP02N,Natural gas power plant (combined cycle) - MDT cooling (new),saddlebrown
-NGCCP02O,Natural gas power plant (combined cycle) - MDT cooling (old),polarpurple
+NGCCP02O,Natural gas power plant (combined cycle) - MDT cooling (old),purple
 NGCCP03N,Natural gas power plant (combined cycle) - NDT cooling (new),sandybrown
 NGCCP03O,Natural gas power plant (combined cycle) - NDT cooling (old),powderblue
 NGCCP04N,Natural gas power plant (combined cycle) - OTF/OTS cooling (new),seagreen
@@ -118,16 +118,16 @@ NGGCP02O,Natural gas power plant (single cycle) - MDT cooling (old),skyblue
 NGGCP03N,Natural gas power plant (single cycle) - NDT cooling (new),thistle
 NGGCP03O,Natural gas power plant (single cycle) - NDT cooling (old),slategray
 NGGCP04N,Natural gas power plant (single cycle) - OTF/OTS cooling (new),turquoise
-NGGCP04O,Natural gas power plant (single cycle) - OTF/OTS cooling (old),smurf
+NGGCP04O,Natural gas power plant (single cycle) - OTF/OTS cooling (old),linen
 NG00P00X,Natural gas process (non-power sector),peru
-NUCAGG,Nuclear,polarbluelight
+NUCAGG,Nuclear,blueviolet
 NULWP04N,Nuclear power plant - OTS/OTF cooling (new),yellowgreen
 NULWP04O,Nuclear power plant - OTS/OTF cooling (old),whitesmoke
 OILAGG,Oil,gray
 HFGCP01N,Oil fired gas turbine (SCGT) - Air cooling (new),limegreen
 HFGCP01O,Oil fired gas turbine (SCGT) - Air cooling (old),lightslategrey
 HFGCP02N,Oil fired gas turbine (SCGT) - MDT cooling (new),magenta
-HFGCP02O,Oil fired gas turbine (SCGT) - MDT cooling (old),lightteal
+HFGCP02O,Oil fired gas turbine (SCGT) - MDT cooling (old),teal
 HFGCP03N,Oil fired gas turbine (SCGT) - NDT cooling (new),mediumaquamarine
 HFGCP03O,Oil fired gas turbine (SCGT) - NDT cooling (old),lightblue2
 HFGCP04N,Oil fired gas turbine (SCGT) - OTF/OTS cooling (new),mediumgray
@@ -141,11 +141,11 @@ SOLPV,Solar PV,yellow
 SOLFPV,Solar FPV,darkgreen
 SOV1F01X,Solar PV (roof top),navajowhite
 SOU1P03X,Solar PV (utility),mediumorchid
-SOV2F01X,Solar PV with storage,pearl04
+SOV2F01X,Solar PV with storage,beige
 Transmission & Distribution,Transmission & Distribution,magenta
-EL00T00X,Transmission technology (Secondary to Tertiary),grey11
+EL00T00X,Transmission technology (Secondary to Tertiary),grey
 UR00X00X,Uranium extraction,silver
-UR00I00X,Uranium imports,polarorange
+UR00I00X,Uranium imports,orange
 WA00000X,Water production technology,tomato
 WIND,Wind,navy
 WINDP01X,Wind (offshore),burlywood
@@ -154,8 +154,8 @@ WIND000X,Wind potential,yellow
 BM00E00X,Biomass exports (outside Africa),lightsalmon
 CO00E00X,Coal exports (outside Africa),black
 CR00E00X,Crude oil exports (outside Africa),sienna
-HF00E00X,HFO exports (outside Africa),lightteal
-LF00E00X,LFO exports (outside Africa),polarbluelight
+HF00E00X,HFO exports (outside Africa),teal
+LF00E00X,LFO exports (outside Africa),blueviolet
 HYDA1S03,Aswan 1,aquamarine
 HYDA2S03,Aswan 2,aquamarine
 HYDHAS03,High Aswan Dam,aquamarine

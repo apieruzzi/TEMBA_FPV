@@ -28,9 +28,9 @@ locs = ['ENB', 'EG', 'ET', 'SD', 'SS']
 variables = {'Power Generation (Aggregate)':'PJ', 'Water Consumption':'MCM'}
 data_dir = 'input_data'
 inputfiles = os.listdir(data_dir)
-scenario_list = [file[:-5] for file in inputfiles if file.endswith('xlsx') and not file.startswith('~')]
-scenario_ref = 'TEMBA_ENB_ref'
-scenario_list = [sc for sc in scenario_list if sc != scenario_ref]
+scenario_list = [file[:-5] for file in inputfiles if file.endswith('xlsx') and not file.startswith('~') and 'NoFPV' in file]
+scenario_ref_list = [file[:-5] for file in inputfiles if file.endswith('xlsx') and not file.startswith('~') and 'NoFPV' not in file]
+scenario_dict = dict(zip(scenario_ref_list, scenario_list))
 first_year = 2022
 last_year = 2066
 years = pd.Series(range(first_year, last_year+1))
@@ -144,7 +144,7 @@ def get_ylims(loc,var, scenario):
     # Define y ranges based on country and variable
     if loc == 'ENB':
         if var == 'Power Generation (Aggregate)':
-            min_y, max_y = -800, 800
+            min_y, max_y = -150, 150
         else:
             min_y, max_y = -5000, 5000
     elif loc == 'EG':
@@ -152,7 +152,7 @@ def get_ylims(loc,var, scenario):
             if 'EXT' in scenario:
                 min_y, max_y = -800, 800
             else:
-                min_y, max_y = -20, 20
+                min_y, max_y = -30, 30
         else:
             if 'EXT' in scenario:
                 min_y, max_y = -90, 90
@@ -160,7 +160,7 @@ def get_ylims(loc,var, scenario):
                 min_y, max_y = -200, 1800
     elif loc == 'ET':
         if var == 'Power Generation (Aggregate)':
-            min_y, max_y = -250, 250
+            min_y, max_y = -100, 100
         else:
             min_y, max_y = -500, 2000
     elif loc == 'SD':
@@ -173,7 +173,7 @@ def get_ylims(loc,var, scenario):
             min_y, max_y = -3000, 3000
     elif loc == 'SS':
         if var == 'Power Generation (Aggregate)':
-            min_y, max_y = -20, 20
+            min_y, max_y = -1, 1
         else:
             min_y, max_y = -600, 300
     return [min_y,max_y]
@@ -213,10 +213,10 @@ loc='SD'
 sc = scenario_list[0]
 var = 'Power Generation (Aggregate)'
 
-for sc in scenario_list:
+for sc in scenario_dict.keys():
     for loc in locs:
         for var in variables.keys():
-            df_diff = calculate_differences(scenario_ref, sc, loc, var)
+            df_diff = calculate_differences(scenario_dict[sc], sc, loc, var)
             plot_differences(df_diff, sc, loc,var)
 
 
