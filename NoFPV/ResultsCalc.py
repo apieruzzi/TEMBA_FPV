@@ -20,6 +20,10 @@ import shutil
 # - Calculate the percentages and amounts of capacity and generation per aggregate technology 
 # - Save all these info in an excel (mixes percentages excels)
 
+plt.rcParams.update({'font.size': 16})
+plt.rcParams['legend.handlelength'] = 1
+plt.rcParams['legend.handleheight'] = 1
+
 def create_pie_charts(filename, title, scenario, writer, file, code):
     
     try:
@@ -87,13 +91,13 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     df = df.iloc[:,idx:]
     df_t = df.transpose()
     
-    years_to_plot = [2023,2030,2040,2050,2060,2070]
+    years_to_plot = [2023,2030,2040,2050,2060,2065]
     years = [col for col in df_t.columns if col in years_to_plot] 
     df_sel = df_t.loc[:,years]
     df_sel = df_sel.loc[:, (df_sel != 0).any(axis=0)]
     
     labels = [label[:-13] for label in df_sel.index]
-    fig, axes = plt.subplots(2,3, figsize=(20,15))
+    fig, axes = plt.subplots(2,3, figsize=(12, 8))
     if file != 'Aggregate':
         colors_dict = colors_dict_detail
     else:
@@ -103,14 +107,14 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
         ax.set_axis_off()
     for col, ax in zip(df_sel.columns,axes.flatten()):
         ax.pie(df_sel[col],
-               autopct=lambda p: '{:.1f}%'.format(round(p)) if p > 0 else '', 
+               autopct=lambda p: '{:.0f}%'.format(round(p)) if p > 1.5 else '', 
                colors=[colors_dict[p] for p in df_sel.index])
-        ax.set(ylabel='', title=col, aspect='equal')
+        ax.set(ylabel='', title=int(col), aspect='equal')
         ax.set_axis_on()
 
-    plt.subplots_adjust(wspace=0.01, hspace=0.1)        
-    fig.suptitle(title + ' mixes' + ' - ' + file + ' - ' + code + ' - '+ scenario)
-    axes.flatten()[0].legend(bbox_to_anchor=(0, 0.7), labels=labels)
+    plt.subplots_adjust(wspace=0.01, hspace=0.1)     
+    # fig.suptitle(code + ' - ' + title + ' mixes ' + f'({file})'+ ' - '+ scenario)
+    # axes.flatten()[0].legend(bbox_to_anchor=(3.8, 1), labels=labels, frameon=False)
     fig.savefig(os.path.join(homedir, f'{code} - {title} - {file}.png'), bbox_inches='tight')
     plt.close()
 
@@ -119,7 +123,7 @@ scenario = sys.argv[-2]
 destination_folder = sys.argv[-1]
 
 # scenario = 'TEMBA_ENB_ref'
-destination_folder = f'results/export_{scenario}/piecharts'
+# destination_folder = f'results/export_{scenario}/piecharts'
 
 with tempfile.TemporaryDirectory() as temp:
 
@@ -168,18 +172,17 @@ with tempfile.TemporaryDirectory() as temp:
      
     # Create pie charts
     colors_dict_agg = {
-        "Coal - Percentage":"grey",
         "Oil - Percentage" : "darkgrey",
         "Gas - Percentage" : "darkorange",
-        "Hydro - Percentage" : "lightblue",
+        "Hydro - Percentage" : "aqua",
         "Solar CSP - Percentage" : "red",
         "Solar PV - Percentage" : "yellow",
         "Solar FPV - Percentage" : "green",
-        "Wind - Percentage" : "blue",
+        "Wind - Percentage" : "royalblue",
         "Biomass - Percentage" : "lightgreen",
         "Geothermal - Percentage" : "brown", 
         "power_trade - Percentage" : "pink",
-        "Nuclear - Percentage" : "cyan",
+        "Nuclear - Percentage" : "blueviolet",
 	"Backstop - Percentage": "red"
         }
     
@@ -206,19 +209,19 @@ with tempfile.TemporaryDirectory() as temp:
     files = ['Aggregate', 'Detail solar', 'Detail hydro']
     
     for file in files:
-        capacity_filename = f'results/export_{scenario}/barcharts/EAPP/EAPP-Power Generation Capacity ({file})-{scenario}.csv'
-        create_pie_charts(capacity_filename, 'Capacity', scenario, writer, file, code='EAPP')
-        generation_filename =   f'results/export_{scenario}/barcharts/EAPP/EAPP-Power Generation ({file})-{scenario}.csv'
-        create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code='EAPP')
+        capacity_filename = f'results/export_{scenario}/barcharts/ENB/ENB - Power Generation Capacity ({file})-{scenario}.csv'
+        create_pie_charts(capacity_filename, 'Capacity', scenario, writer, file, code='ENB')
+        generation_filename =   f'results/export_{scenario}/barcharts/ENB/ENB - Power Generation ({file})-{scenario}.csv'
+        create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code='ENB')
     
     for code in country_codes:
         for file in files:
             # Capacity:
-            capacity_filename = f'results/export_{scenario}/barcharts/{code}/{code}-Power Generation Capacity ({file})-{scenario}.csv'
+            capacity_filename = f'results/export_{scenario}/barcharts/{code}/{code} - Power Generation Capacity ({file})-{scenario}.csv'
             create_pie_charts(capacity_filename, 'Capacity', scenario, writer, file, code)
             
             # Generation:
-            generation_filename = f'results/export_{scenario}/barcharts/{code}/{code}-Power Generation ({file})-{scenario}.csv'
+            generation_filename = f'results/export_{scenario}/barcharts/{code}/{code} - Power Generation ({file})-{scenario}.csv'
             create_pie_charts(generation_filename, 'Generation', scenario, writer, file, code)
     
     # Save mixes to excel
@@ -226,21 +229,21 @@ with tempfile.TemporaryDirectory() as temp:
     # df_comb_fpv.to_excel(writer, sheet_name='Max values_fpv')   
      
     # Calculate cumulative water consumption
-    wc_filename = f'results/export_{scenario}/barcharts/EAPP/EAPP-Water Consumption-{scenario}.csv'
+    wc_filename = f'results/export_{scenario}/barcharts/ENB/ENB - Water Consumption-{scenario}.csv'
     wc_df = pd.read_csv(wc_filename)
     wc_df['tot'] = wc_df.iloc[:,2:].sum(axis=1)
     wc_tot = wc_df['tot'].sum()
     df_wc = pd.DataFrame(data = [wc_tot], columns=['Total Water Consumption'])
     df_wc.to_excel(writer, sheet_name='TotalWaterConsumption', index=False)
     
-    wc_filename = f'results/export_{scenario}/barcharts/EAPP/EAPP-Water Consumption (No Hydro)-{scenario}.csv'
+    wc_filename = f'results/export_{scenario}/barcharts/ENB/ENB - Water Consumption (No Hydro)-{scenario}.csv'
     wc_df = pd.read_csv(wc_filename)
     wc_df['tot'] = wc_df.iloc[:,2:].sum(axis=1)
     wc_tot = wc_df['tot'].sum()
     df_wc = pd.DataFrame(data = [wc_tot], columns=['WaterConsumption(No Hydro)'])
     df_wc.to_excel(writer, sheet_name='WaterConsumption(No Hydro)', index=False)
     
-    wc_filename = f'results/export_{scenario}/barcharts/EAPP/EAPP-Water Consumption (Detail Hydro)-{scenario}.csv'
+    wc_filename = f'results/export_{scenario}/barcharts/ENB/ENB - Water Consumption (Detail Hydro)-{scenario}.csv'
     wc_df = pd.read_csv(wc_filename)
     wc_df['tot'] = wc_df.iloc[:,2:].sum(axis=1)
     wc_tot = wc_df['tot'].sum()
@@ -259,7 +262,7 @@ with tempfile.TemporaryDirectory() as temp:
     
     # Move files:    
     os.makedirs(os.path.join(destination_folder), exist_ok=True)
-    folder_names = ['EAPP', 'EG', 'ET', 'SD', 'SS']
+    folder_names = ['ENB', 'EG', 'ET', 'SD', 'SS']
         
     resultpath = os.path.join(destination_folder)
     files = os.listdir(homedir)
