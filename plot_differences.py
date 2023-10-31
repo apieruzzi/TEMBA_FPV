@@ -106,11 +106,11 @@ t_include_fpv = [i for i in t_include if i.startswith('SOFPV')]
 
 def calculate_differences(scenario_ref, scenario, loc, variable):
     folder_ref = f'results/export_{scenario_ref}/barcharts/{loc}'
-    filename_ref = f'{loc}-{variable}-{scenario_ref}.csv'
+    filename_ref = f'{loc} - {variable}-{scenario_ref}.csv'
     filepath_ref = os.path.join(folder_ref, filename_ref)
     
     folder = f'results/export_{scenario}/barcharts/{loc}'
-    filename = f'{loc}-{variable}-{scenario}.csv'
+    filename = f'{loc} - {variable}-{scenario}.csv'
     filepath = os.path.join(folder, filename)
     
     df_ref_data = pd.read_csv(filepath_ref).iloc[:,1:]

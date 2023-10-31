@@ -47,7 +47,7 @@ with tempfile.TemporaryDirectory() as temp:
     for code in codes:
         # Remove useless files:
         files = os.listdir(os.path.join(homedir,'barcharts',code))
-        files_to_keep_c = [code + '-' + file + '.png' for file in files_to_keep]
+        files_to_keep_c = [code + ' - ' + file + '.png' for file in files_to_keep]
         for filename in files:        
             filepath = os.path.join(homedir,'barcharts', code, filename)
             if filename not in files_to_keep_c:
@@ -58,7 +58,7 @@ with tempfile.TemporaryDirectory() as temp:
         os.makedirs(f'results/ScenarioComparison/barcharts/{code}', exist_ok=True)
         for filename in files:        
             filepath = os.path.join(homedir,'barcharts', code, filename)
-            filename_new = filename[3:-4] + '_' + scenario + '.png'
+            filename_new = filename[2:-4] + '_' + scenario + '.png'
             filepath_new = os.path.join(folder, code, filename_new)
             shutil.move(filepath,filepath_new)            
             

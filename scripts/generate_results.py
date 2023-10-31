@@ -24,6 +24,7 @@ import pickle
 import plotly.io as pio
 import tempfile
 import cufflinks
+import plotly.graph_objects as go
 
 cufflinks.go_offline()
 cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
@@ -32,6 +33,10 @@ cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
 picklefile = sys.argv[1]
 scenario = sys.argv[2]
 destination_folder = sys.argv[3]
+
+# scenario = 'TEMBA_ENB_ref'
+# picklefile = f'results/{scenario}.pickle'
+# destination_folder = f'results/export_{scenario}/barcharts'
 
 first_year = 2022
 last_year = 2066
@@ -152,27 +157,40 @@ with tempfile.TemporaryDirectory() as temp:
         # Drop columns with all 0 values
         df = df.loc[:, (df != 0).any(axis=0)]
         
-        if (len(df.columns) == 1) | (np.shape(df)[1] < 2):
+        if (len(df.columns) == 1) or (np.shape(df)[1] < 2):
             print('There are no values for the result variable that you want to plot')
             print(p_title)
         else:
-            fig = df.iplot(x='y',
-                        kind='bar',
-                        barmode=barmode,
-                        width=1,
-                        xTitle='Year',
-                        yTitle=y_title,
-                        color=[color_dict[x] for x in df.columns if x != 'y'],
-                        title=p_title+" - "+scenario,
-                        showlegend=True,
-                        asFigure=True)
-            fig.update_layout(font_size=16)
-            fig.update_xaxes(range=[first_year, last_year])
-            fig.update_traces(width=0.7)
+            # Create a bar trace for each column in the DataFrame
+            bar_traces = []
+            for column in df.columns:
+                if column != 'y':
+                    bar_trace = go.Bar(
+                        x=df['y'],
+                        y=df[column],
+                        name=column,
+                        marker=dict(color=color_dict[column])
+                    )
+                    bar_traces.append(bar_trace)
+            
+            # Create the figure with bar traces
+            fig = go.Figure(data=bar_traces)
+            
+            # Modify the layout
+            fig.update_layout(
+                barmode=barmode,
+                xaxis_title='Year',
+                yaxis_title=y_title,
+                #title=p_title + " - " + scenario,
+                font=dict(size=18, color='black'),
+                xaxis=dict(range=[first_year, last_year]),
+                legend=dict(orientation="h", x=0, xanchor='left', y=-0.2)
+            )
+            
             pio.write_image(fig, os.path.join(homedir, '{}.png'.format(p_title)), 
-                            scale=1, width=1500, height=1000)
-            df.to_csv(os.path.join(homedir, p_title+"-"+scenario+".csv"))
-            return None
+                            scale=1, width=846, height=611)
+            df.to_csv(os.path.join(homedir, f"{p_title}-{scenario}.csv"))
+        return None
 
     def df_filter_emission_tech(df, lb, ub):
         """Emissions
@@ -492,7 +510,7 @@ with tempfile.TemporaryDirectory() as temp:
                     watc_agg_df[each] = watc_agg_df[each] + wat_c_df[tech_exists]
                     watc_agg_df[each] = watc_agg_df[each].round(2)
         df_plot(watc_agg_df, 'Million cubic metres (Mm^3)',
-                cc+'-'+'Water Consumption')
+                cc+" - "+'Water Consumption')
         
         # Water consumption (Aggregate no hydro)
         agg_col_nohyd = agg_col.copy()
@@ -506,7 +524,7 @@ with tempfile.TemporaryDirectory() as temp:
                     watc_agg_df_nohyd[each] = watc_agg_df_nohyd[each] + wat_c_df[tech_exists]
                     watc_agg_df_nohyd[each] = watc_agg_df_nohyd[each].round(2)
         df_plot(watc_agg_df_nohyd, 'Million cubic metres (Mm^3)',
-                cc+'-'+'Water consumption aggregated no hydro')
+                cc+" - "+'Water consumption aggregated no hydro')
         
         # Detail rest
         wat_c_df_other = wat_c_df_original[[col for col in wat_c_df_original.columns if col not in t_include_hydro]]
@@ -536,19 +554,19 @@ with tempfile.TemporaryDirectory() as temp:
     #     co2_df = co2_df.reindex(sorted(co2_df.columns), axis=1).set_index('y').reset_index().rename(columns=det_col)
     #     #co2_df['y'] = years
         #co2_df=co2_df[co2_df['y']>2022]
-    #     df_plot(co2_df,'Million Tonnes (Mt)',cc+'-'+'Emissions (CO2)-by technology')
+    #     df_plot(co2_df,'Million Tonnes (Mt)',cc+" - "+'Emissions (CO2)-by technology')
     #     co2_df.iplot(x='y',
     #                   kind='bar',
     #                   barmode='relative',
     #                   xTitle='Year',
     #                   yTitle="Million Tonnes (Mt)",
     #                   color=[color_dict[x] for x in co2_df.columns if x != 'y'],
-    #                   title=cc+'-'+'Emissions (CO2)-by technology',showlegend=True)
+    #                   title=cc+" - "+'Emissions (CO2)-by technology',showlegend=True)
         # Total emissions by type- This graph shows the total emissions in the country by emissiontype
         emis_df = all_params['AnnualEmissions']
         emis_df = emis_df[emis_df['e'].str[:5] == cc+'CO2'].copy()
         emis_df = df_filter_emission_tot(emis_df)
-        df_plot(emis_df, 'Million Tonnes of CO2  (Mt)', cc+'-'+'Annual Emissions')
+        df_plot(emis_df, 'Million Tonnes of CO2  (Mt)', cc+" - "+'Annual Emissions')
 
     def gas_chart(Country):
         cc = country_code[country_code['Country Name'] == Country]['Country code'].tolist()[
@@ -594,7 +612,7 @@ with tempfile.TemporaryDirectory() as temp:
                             title=cc+" - "+"Gas extraction, imports and exports"+"-"+scenario,
                             showlegend=True,
                             asFigure=True)
-            fig.update_layout(font_size=16)
+            fig.update_layout(font_size=18, font_color='black')
             fig.update_xaxes(range=[first_year, last_year])
             title = (cc+" - "+"Gas extraction, imports and exports")
             pio.write_image(fig, os.path.join(homedir, 
@@ -648,7 +666,7 @@ with tempfile.TemporaryDirectory() as temp:
                             title=cc+" - "+"Crude oil extraction, imports and exports"+"-"+scenario,
                             showlegend=True,
                             asFigure=True)
-            fig.update_layout(font_size=16)
+            fig.update_layout(font_size=18, font_color='black')
             fig.update_xaxes(range=[first_year, last_year])
             title = (cc+" - "+"Crude oil extraction, imports and exports")
             pio.write_image(fig, os.path.join(homedir, 
@@ -673,7 +691,7 @@ with tempfile.TemporaryDirectory() as temp:
         coal_df = coal_df.iloc[np.where(coal_df['y']>first_year)]
         #coal_df['y'] = years
         # coal_df=coal_df[coal_df['y']>2022]
-        df_plot(coal_df, 'Petajoules (PJ)', cc+'-'+'Coal production by technology')
+        df_plot(coal_df, 'Petajoules (PJ)', cc+" - "+'Coal production by technology')
         # Biomass overview
         biom_df = all_params['ProductionByTechnologyAnnual']
         biom_df = biom_df[biom_df['f'].str[:6] == cc+'BIOM'].copy()
@@ -687,7 +705,7 @@ with tempfile.TemporaryDirectory() as temp:
         biom_df = biom_df.iloc[np.where(biom_df['y']>first_year)]
         #biom_df['y'] = years
         # biom_df=biom_df[biom_df['y']>2022]
-        df_plot(biom_df, 'Petajoules (PJ)', cc+'-' +
+        df_plot(biom_df, 'Petajoules (PJ)', cc+" - " +
                 'Biomass production by technology')
 
     def hfo_lfo_chart(Country):
@@ -706,7 +724,7 @@ with tempfile.TemporaryDirectory() as temp:
         hfo_df = hfo_df.iloc[np.where(hfo_df['y']>first_year)]
         #hfo_df['y'] = years
         # hfo_df=hfo_df[hfo_df['y']>2022]
-        df_plot(hfo_df, 'Petajoules (PJ)', cc+'-'+'HFO production by technology')
+        df_plot(hfo_df, 'Petajoules (PJ)', cc+" - "+'HFO production by technology')
         # Light Fuel Oil overview
         lfo_df = all_params['ProductionByTechnologyAnnual']
         lfo_df = lfo_df[lfo_df['f'].str[:6] == cc+'LFOI'].copy()
@@ -720,7 +738,7 @@ with tempfile.TemporaryDirectory() as temp:
         lfo_df = lfo_df.iloc[np.where(lfo_df['y']>first_year)]
         #lfo_df['y'] = years
         # lfo_df=lfo_df[lfo_df['y']>2022]
-        df_plot(lfo_df, 'Petajoules (PJ)', cc+'-'+'LFO production by technology')
+        df_plot(lfo_df, 'Petajoules (PJ)', cc+" - "+'LFO production by technology')
 
 
     for ref_y in [2020, 2030, 2040, 2050, 2060, 2070]:
@@ -879,21 +897,21 @@ with tempfile.TemporaryDirectory() as temp:
             #     total_cap_df_fossil.set_index('y'), fill_value=0).reset_index()
 
 
-            # Power generation
-            # Extract detailed generation 
-            gen_df = all_params['ProductionByTechnologyAnnual'].copy()
-            gen_df_export = gen_df[(gen_df['f'].str[2:6] == 'EL01') & (
-                gen_df['f'].str[0:2] != cc)].copy()
-            gen_df_export = gen_df_export[gen_df_export['t'].str[6:10] == 'BP00'].copy(
-            )
+            # Power generation (Detailed)
+            gen_df = all_params['ProductionByTechnologyAnnual'].copy() # Get power production from the file
+            gen_df_export = gen_df[((gen_df['f'].str[2:6] == 'EL01') & (gen_df['f'].str[0:2] != cc))
+                                   | ((gen_df['f'].str[2:6] == 'DUEL') & (gen_df['f'].str[0:2] == cc))].copy() # Get all the techs that produce ele01 and are not in the country
+            gen_df_export = gen_df_export[gen_df_export['t'].str[6:10] == 'BP00'].copy() # Get trade links 
             gen_df_export = gen_df_export[(gen_df_export['t'].str[0:2] == cc) | (
-                gen_df_export['t'].str[4:6] == cc)]
-            gen_df_export['value'] = gen_df_export['value'].astype(float)*-1
+                gen_df_export['t'].str[4:6] == cc)] # Get trade links that contain the selected country
+            gen_df_export['value'] = gen_df_export['value'].astype(float)*-1 # Put negative the production values
+           
+            gen_df['y'] = gen_df['y'].astype('float64')
             gen_df = gen_df[(gen_df['f'].str[:2] == cc)].copy()
             gen_df = gen_df[(gen_df['f'].str[2:6] == 'EL01') |
                             (gen_df['f'].str[2:6] == 'EL03')].copy()
-            gen_df = gen_df[(gen_df['t'].str[2:10] != 'EL00T00X') & (
-                gen_df['t'].str[2:10] != 'EL00TDTX')].copy()
+            gen_df = gen_df[(gen_df['t'].str[2:10] != 'EL00T00X') &
+                            (gen_df['t'].str[2:10] != 'EL00TDTX')].copy() # remove transmission and distribution 
             gen_df = pd.concat([gen_df, gen_df_export])
             gen_df['value'] = gen_df['value'].astype('float64')
             gen_df = gen_df.pivot_table(index='y',
@@ -969,50 +987,34 @@ with tempfile.TemporaryDirectory() as temp:
         # total_gen_df_fossil = total_gen_df_fossil.loc[:, (total_gen_df_fossil != 0).any(axis=0)]
 
         # Plot
-        df_plot(total_cap_df, 'Gigawatts (GW)', tk + "-" +
+        df_plot(total_cap_df, 'Gigawatts (GW)', tk + " - " +
                 'Power Generation Capacity (Aggregate)') 
-        df_plot(total_cap_df_hydro, 'Gigawatts (GW)', tk + "-" +
+        df_plot(total_cap_df_hydro, 'Gigawatts (GW)', tk + " - " +
                 'Power Generation Capacity (Detail hydro)', color_dict=color_dict_hydro_pp) 
-        df_plot(total_cap_df_solar, 'Gigawatts (GW)', tk + "-" +
+        df_plot(total_cap_df_solar, 'Gigawatts (GW)', tk + " - " +
                 'Power Generation Capacity (Detail solar)', color_dict=color_dict_solar_pp) 
-        df_plot(total_cap_df_fpv, 'Gigawatts (GW)', tk + "-" +
+        df_plot(total_cap_df_fpv, 'Gigawatts (GW)', tk + " - " +
                 'Power Generation Capacity (Detail fpv)', color_dict=color_dict_solar_pp) 
-        # df_plot(total_cap_df_fossil, 'Gigawatts (GW)', tk + "-" +
+        # df_plot(total_cap_df_fossil, 'Gigawatts (GW)', tk + " - " +
         #         'Power Generation Capacity (Detail fossil)', color_dict=color_dict_fossil) 
-        df_plot(total_gen_df_hydro, "Petajoules (PJ)", tk + "-" +
+        df_plot(total_gen_df_hydro, "Petajoules (PJ)", tk + " - " +
                 'Power Generation (Detail hydro)', color_dict=color_dict_hydro_pp) 
-        df_plot(total_gen_df_solar, "Petajoules (PJ)", tk + "-" +
+        df_plot(total_gen_df_solar, "Petajoules (PJ)", tk + " - " +
                 'Power Generation (Detail solar)', color_dict=color_dict_solar_pp) 
-        df_plot(total_gen_df_fpv, "Petajoules (PJ)", tk + "-" +
+        df_plot(total_gen_df_fpv, "Petajoules (PJ)", tk + " - " +
                 'Power Generation (Detail fpv)', color_dict=color_dict_solar_pp) 
-        # df_plot(total_gen_df_fossil, "Petajoules (PJ)", tk + "-" +
+        # df_plot(total_gen_df_fossil, "Petajoules (PJ)", tk + " - " +
         #         'Power Generation (Detail fossil)', color_dict=color_dict_fossil) 
         
         
-        fig = total_gen_df.iplot(x='y',
-                                kind='bar',
-                                barmode='relative',
-                                xTitle='Year',
-                                yTitle="Petajoules (PJ)",
-                                color=[color_dict[x]
-                                        for x in total_gen_df.columns if x != 'y'],
-                                title=tk+"-" +
-                                "Power Generation (Aggregate)"+"-"+scenario,
-                                showlegend=True,
-                                asFigure=True)
-        fig.update_layout(font_size=16)
-        fig.update_xaxes(range=[first_year, last_year])
-        title = (tk+"-"+"Power Generation (Aggregate)")
-        pio.write_image(fig, os.path.join(homedir, '{}.png'.format(title)),
-                        scale=1, width=1500, height=1000)
-        # fig.show()
-        # total_cap_df['y']=years
-        # total_cap_df=total_cap_df.drop('gas_trade',axis=1)
+       
+        df_plot(total_gen_df, "Petajoules (PJ)", tk + " - " +
+                'Power Generation (Aggregate)', color_dict=color_dict, barmode='relative',) 
 
         total_gen_df.to_csv(os.path.join(
-            homedir, tk + "-Power Generation (Aggregate)"+"-"+scenario+".csv"))
+            homedir, tk + " - Power Generation (Aggregate)"+"-"+scenario+".csv"))
         total_cap_df.to_csv(os.path.join(
-            homedir, tk + "-Power Generation Capacity (Aggregate)"+"-"+scenario+".csv"))
+            homedir, tk + " - Power Generation Capacity (Aggregate)"+"-"+scenario+".csv"))
 
 #%%
     # # In the follwoing block, the water consumption and withdrawal graphs for all the powerpools and TEMBA will be plotted and CSV files generated for each
@@ -1134,13 +1136,13 @@ with tempfile.TemporaryDirectory() as temp:
         total_watc_hydro = total_watc_hydro[total_watc_hydro['y'] <= last_year]
         
         df_plot(total_watw_df, 'Million cubic metres (Mm^3)',
-                tk+"-"+'Water Withdrawal')
+                tk+" - "+'Water Withdrawal')
         df_plot(total_watc_df, 'Million cubic metres (Mm^3)',
-                tk+"-"+'Water Consumption')
+                tk+" - "+'Water Consumption')
         df_plot(total_watc_nohyd_df, 'Million cubic metres (Mm^3)',
-                tk+"-"+'Water Consumption (No Hydro)')
+                tk+" - "+'Water Consumption (No Hydro)')
         df_plot(total_watc_hydro, 'Million cubic metres (Mm^3)',
-                tk+"-"+'Water Consumption (Detail Hydro)', color_dict=color_dict_hydro)
+                tk+" - "+'Water Consumption (Detail Hydro)', color_dict=color_dict_hydro)
 
 
     # %%
@@ -1170,7 +1172,7 @@ with tempfile.TemporaryDirectory() as temp:
         total_emis_df['y'] = years
         total_emis_df = total_emis_df[total_emis_df['y'] <= last_year]
         df_plot(total_emis_df, 'Million Tonnes of CO2 (Mt)',
-                tk+"-"+'Annual Emissions')
+                tk+" - "+'Annual Emissions')
         #total_emis_df.to_csv(os.path.join(homedir,tk +"-"+ scenario +"-"+'Annual Emissions.csv'))
 
 

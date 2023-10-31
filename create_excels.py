@@ -123,7 +123,7 @@ for i, scenario in enumerate(scenario_list):
     df_onset.to_excel(writer_fpv, sheet_name='Onset', startrow=i*(len(df_onset)+1)+i)
 
     # Add emission calculations
-    filename_emi = f'results/export_{scenario}/barcharts/ENB/ENB-Annual Emissions-{scenario}.csv'
+    filename_emi = f'results/export_{scenario}/barcharts/ENB/ENB - Annual Emissions-{scenario}.csv'
     df = pd.read_csv(filename_emi)
     df.loc['tot'] = df.sum()
     value = df.loc['tot'][-1]
