@@ -172,6 +172,7 @@ with tempfile.TemporaryDirectory() as temp:
      
     # Create pie charts
     colors_dict_agg = {
+        "Coal - Percentage":"dimgrey",
         "Oil - Percentage" : "darkgrey",
         "Gas - Percentage" : "darkorange",
         "Hydro - Percentage" : "aqua",
