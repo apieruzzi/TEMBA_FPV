@@ -32,18 +32,18 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-scenarios = ['ref']
-              # 'RCP26_dry', 'RCP26_wet', 
-              # 'RCP60_dry', 'RCP60_wet', 
-              # 'EXT_High', 'EXT_Low']
+scenarios = ['ref',
+               'RCP26_dry', 'RCP26_wet', 
+               'RCP60_dry', 'RCP60_wet', 
+               'EXT_High', 'EXT_Low']
 
 # scenarios = ['EXT_High', 'EXT_Low',
 #              ]
 # # 'ref', 'Carb_High', 'Carb_Low', 
 
 FPV_switch = 'Yes'
-NoConstSwitch = 'No'
-ssa_switch = 'Low'
+NoConstSwitch = 'Yes'
+ssa_switch = 'No'
 
 for s,scenario in enumerate(scenarios):
 
@@ -153,7 +153,8 @@ for s,scenario in enumerate(scenarios):
                     data = [maxc_large, maxc_med, maxc_small]
                     df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
                     if NoConstSwitch == 'Yes':
-                        df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:] = np.ones(56)*99999
+                        data = df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:].values
+                        df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:] = data*10
                     
                 if sheet_names[i] == 'TotalAnnualMaxCapacityInvestmen':
                     maxci_large1 = np.zeros(9).tolist()
@@ -298,7 +299,7 @@ for s,scenario in enumerate(scenarios):
                     
                 
                 # Capital costs variation for sensitivity analysis
-                if sheet_names[i] == 'CapitalCost':
+                if sheet_names[i] == 'CapitalCost' and ssa_switch!='No':
                     value = df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('SO'))[0],2015:].values
                     if ssa_switch == 'Low':
                         value_changed = value*0.8
