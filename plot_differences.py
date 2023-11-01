@@ -10,6 +10,8 @@ import numpy as np
 import os
 import plotly.io as pio
 import cufflinks
+import plotly.graph_objects as go
+
 
 cufflinks.go_offline()
 cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
@@ -144,7 +146,7 @@ def get_ylims(loc,var, scenario):
     # Define y ranges based on country and variable
     if loc == 'ENB':
         if var == 'Power Generation (Aggregate)':
-            min_y, max_y = -800, 800
+            min_y, max_y = -1000, 1000
         else:
             min_y, max_y = -5000, 5000
     elif loc == 'EG':
@@ -168,12 +170,12 @@ def get_ylims(loc,var, scenario):
             if 'EXT' in scenario:
                 min_y, max_y = -150, 150
             else:
-                min_y, max_y = -40, 40
+                min_y, max_y = -15, 15
         else:
             min_y, max_y = -3000, 3000
     elif loc == 'SS':
         if var == 'Power Generation (Aggregate)':
-            min_y, max_y = -20, 20
+            min_y, max_y = -15,15
         else:
             min_y, max_y = -600, 300
     return [min_y,max_y]
@@ -182,28 +184,46 @@ def plot_differences(df, scenario, loc,var, color_dict = color_dict, barmode = '
     dest_dir = f'results/ScenarioComparison/DifferencePlots/{loc}'
     os.makedirs(dest_dir, exist_ok=True)
     
+    # Ignore import and export differences
+    cols = [col for col in df.columns if col!='import' and col!='export']
+    df = df[cols]
     df = df.loc[:, (df != 0).any(axis=0)] # Drop columns with all 0 values    
     
     if (len(df.columns) == 1) | (np.shape(df)[1] < 2):
         print('There are no values for the result variable that you want to plot')
         print( loc+' - '+var+' - '+sc)
     else:
-        fig = df.iplot(x='y',
-                    kind='bar',
-                    barmode=barmode,
-                    width=1,
-                    xTitle='Year',
-                    yTitle=variables[var],
-                    color=[color_dict[x] for x in df.columns if x != 'y'],
-                    title= loc + ' - ' + var + ' - difference with reference scenario' +  ' - ' + sc,
-                    showlegend=True,
-                    asFigure=True)
-        fig.update_layout(font_size=16)
-        fig.update_xaxes(range=[first_year, last_year])
-        fig.update_yaxes(range=get_ylims(loc, var, scenario))
-        fig.update_traces(width=0.7)
+        # Create a bar trace for each column in the DataFrame
+        bar_traces = []
+        for column in df.columns:
+            if column != 'y':
+                bar_trace = go.Bar(
+                    x=df['y'],
+                    y=df[column],
+                    name=column,
+                    marker=dict(color=color_dict[column]),
+                    showlegend=False
+                )
+                bar_traces.append(bar_trace)
+        
+        # Create the figure with bar traces
+        fig = go.Figure(data=bar_traces)
+        
+
+        fig.update_layout(
+            barmode=barmode,
+            xaxis_title='Year',
+            yaxis_title=variables[var],
+            #title=p_title + " - " + scenario,
+            font=dict(size=18, color='black'),
+            xaxis=dict(range=[first_year, last_year]),
+            yaxis=dict(range=get_ylims(loc, var, scenario)),
+           # legend=dict(orientation="h", x=0, xanchor='left', y=-0.2)
+        )
+        fig.update_layout(title_text=None, title_x=0.5, margin=dict(t=10, r=10, b=10, l=10))
+
         pio.write_image(fig, os.path.join(dest_dir, '{}.png'.format(loc+' - '+var+' - '+sc)), 
-                        scale=1, width=1500, height=1000)
+                        scale=1, width=846, height=611)
         df.to_csv(os.path.join(dest_dir, loc+' - '+var+' - '+sc+".csv"))
         return None
 

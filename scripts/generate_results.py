@@ -186,7 +186,7 @@ with tempfile.TemporaryDirectory() as temp:
                 xaxis=dict(range=[first_year, last_year]),
                 legend=dict(orientation="h", x=0, xanchor='left', y=-0.2)
             )
-            
+            fig.update_layout(title_text=None, title_x=0.5, margin=dict(t=10, r=10, b=10, l=10))
             pio.write_image(fig, os.path.join(homedir, '{}.png'.format(p_title)), 
                             scale=1, width=846, height=611)
             df.to_csv(os.path.join(homedir, f"{p_title}-{scenario}.csv"))
