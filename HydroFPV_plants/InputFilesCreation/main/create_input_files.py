@@ -33,20 +33,18 @@ first_year = 2015
 years = np.arange(first_year,2071)
 
 scenarios = ['ref']
-             # ,
-             #   'RCP26_dry', 'RCP26_wet', 
-             #   'RCP60_dry', 'RCP60_wet', 
-             #   'EXT_High', 'EXT_Low']
+                 # 'RCP26_dry', 'RCP26_wet', 
+                 # 'RCP60_dry', 'RCP60_wet', 
+                 # 'EXT_High', 'EXT_Low']
 
 # scenarios = ['EXT_High', 'EXT_Low',
 #              ]
 # # 'ref', 'Carb_High', 'Carb_Low', 
 
-FPV_switch = 'Yes'
-NoConstSwitch = 'No'
-ssa_switch = 'No'
-
-pot_switch = 'Yes'
+FPV_switch = 'Yes' # [Yes or No]
+NoConstSwitch = 'No' # [Yes or No]
+ssa_switch = 'Low' # [Low or High or No]
+pot_switch = 'Yes' # [Yes or No]
 
 for s,scenario in enumerate(scenarios):
 
@@ -160,8 +158,10 @@ for s,scenario in enumerate(scenarios):
                         df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:] = data*10
                     if pot_switch == 'Yes':
                         df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('EGSOU1P03X'))[0], 2015:] = np.ones(56) * 99999
-                        
-                    
+                        df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('EGSOV1F01X'))[0], 2015:] = np.ones(56) * 99999
+                        df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('EGSOV2F01X'))[0], 2015:] = np.ones(56) * 99999
+                        df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('EGWINDP00X'))[0], 2015:] = np.ones(56) * 99999
+                                            
                 if sheet_names[i] == 'TotalAnnualMaxCapacityInvestmen':
                     maxci_large1 = np.zeros(9).tolist()
                     maxci_large1[2] = 1.87 #2017
@@ -306,11 +306,11 @@ for s,scenario in enumerate(scenarios):
                 
                 # Capital costs variation for sensitivity analysis
                 if sheet_names[i] == 'CapitalCost' and ssa_switch!='No':
-                    value = df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('SO'))[0],2015:].values
+                    value = df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('SO'))[0],2015:]
                     if ssa_switch == 'Low':
-                        value_changed = value*0.8
+                        value_changed = value.subtract(value[2015]*0.2, axis=0)
                     elif ssa_switch == 'High':
-                        value_changed = value*1.2
+                        value_changed = value.add(value[2015]*0.2, axis=0)
                     df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('SO'))[0],2015:] = value_changed
                 
                 # Fix trade link costs
@@ -363,12 +363,12 @@ for s,scenario in enumerate(scenarios):
                 
                 # Fix potentials
                 if sheet_names[i] == 'TotalTechnologyModelPeriodActUp' and pot_switch == 'Yes':
-                    df.loc[len(df),:] = ['EGSOU1P03X',31.536*63.8]
-                    df.loc[len(df),:] = ['ETSOU1P03X', 31.536*16.5]
-                    df.loc[len(df),:] = ['SDSOU1P03X',31.536*2.16]
-                    df.loc[len(df),:] = ['EGWINDP00X',31.536*58.8]
-                    df.loc[len(df),:] = ['ETWINDP00X',31.536*5.93]
-                    df.loc[len(df),:] = ['SDWINDP00X',31.536*5.78]           
+                    df.loc[len(df),:] = ['EGSOU1P03X',31.536*63.8*len(years)]
+                    df.loc[len(df),:] = ['ETSOU1P03X', 31.536*16.5*len(years)]
+                    df.loc[len(df),:] = ['SDSOU1P03X',31.536*2.16*len(years)]
+                    df.loc[len(df),:] = ['EGWINDP00X',31.536*58.8*len(years)]
+                    df.loc[len(df),:] = ['ETWINDP00X',31.536*5.93*len(years)]
+                    df.loc[len(df),:] = ['SDWINDP00X',31.536*5.78*len(years)]           
                 
                 # Add new emissions
                 if sheet_names[i] == 'EMISSION':

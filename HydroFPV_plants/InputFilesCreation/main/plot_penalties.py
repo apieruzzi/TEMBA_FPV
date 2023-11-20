@@ -85,9 +85,9 @@ mean_ratio_oil = df_emi[2015].iloc[
              df_emi['TECHNOLOGY'].str.contains('LF') |
              df_emi['TECHNOLOGY'].str.contains('CR'))].mean()
 mean_ratio_coal = df_emi[2015].iloc[
-    np.where(df_emi['TECHNOLOGY'].str.contains('NG'))].mean()
-mean_ratio_gas = df_emi[2015].iloc[
     np.where(df_emi['TECHNOLOGY'].str.contains('CO'))].mean()
+mean_ratio_gas = df_emi[2015].iloc[
+    np.where(df_emi['TECHNOLOGY'].str.contains('NG'))].mean()
              
 # Slow tax 
 value_init = 25
