@@ -72,8 +72,14 @@ stats_df = pd.DataFrame(index=['mean', 'min', 'max', 'median',
 def calc_dfs(country, merged_gdf):
     if country == 'ENB':
         df_country = merged_gdf
-    else:
-        df_country = merged_gdf.loc[merged_gdf['Country'] == country]
+    elif country == 'ETSDSS':
+        df_country = merged_gdf.iloc[np.where((merged_gdf['Country']=='ET') |
+                                              (merged_gdf['Country']=='SD') | 
+                                              (merged_gdf['Country']=='SS') |
+                                              ((merged_gdf['Country']=='EG') & (merged_gdf['Fuel']=='Nuclear')))]                                      
+    elif country == 'EG':
+        df_country = merged_gdf.iloc[np.where((merged_gdf['Country'] == country)|
+                                              (merged_gdf['Fuel'] == 'Geothermal'))]
     
     df_fuel = pd.DataFrame()
     for fuel in fuels:
@@ -121,7 +127,7 @@ def calc_dfs(country, merged_gdf):
 writer = pd.ExcelWriter('LandValues.xlsx')
 
 
-for country in ['ENB', 'EG', 'ET', 'SD', 'SS']:
+for country in ['ENB', 'EG', 'ETSDSS']:
     dfs = calc_dfs(country,merged_gdf)
     df_fuel = dfs[0]
     df_stats = dfs[1]

@@ -27,7 +27,7 @@ cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
 
 # Lists and files
 locs = ['ENB', 'EG', 'ET', 'SD', 'SS']
-variables = {'Power Generation (Aggregate)':'PJ', 'Water Consumption':'MCM'}
+variables = {'Power Generation (Aggregate)':'PJ', 'Power Generation Capacity (Aggregate)':'GW'}
 data_dir = 'input_data'
 inputfiles = os.listdir(data_dir)
 scenario_list = [file[:-5] for file in inputfiles if file.endswith('xlsx') and not file.startswith('~')]
@@ -118,6 +118,7 @@ def calculate_differences(scenario_ref, scenario, loc, variable):
     df_ref_data = pd.read_csv(filepath_ref).iloc[:,1:]
     df_sc_data = pd.read_csv(filepath).iloc[:,1:]
     
+    
     cols = agg2.columns.insert(0,'y')
     cols = cols.insert(-1,'import')
     cols = cols.insert(-1, 'export')
@@ -129,6 +130,7 @@ def calculate_differences(scenario_ref, scenario, loc, variable):
         df_ref_data.set_index('y'), fill_value=0)
     df_sc = df_sc.set_index('y').add(
         df_sc_data.set_index('y'), fill_value=0)
+    df_sc['tot'] = df_sc.iloc[:,:-4].sum(axis=1)
     
     # Fix import and export
     df_ref['import'] = abs(df_ref.iloc[np.where(df_ref['power_trade']>0)]['power_trade'])
@@ -137,51 +139,75 @@ def calculate_differences(scenario_ref, scenario, loc, variable):
     df_sc['export'] = abs(df_sc.iloc[np.where(df_sc['power_trade']<0)]['power_trade'])
     
     df_diff = df_sc - df_ref
-    df_diff = df_diff.iloc[:,0:-1] #remove power trade column
+    df_diff = df_diff.iloc[:,0:-5] #remove power trade column
     df_diff = df_diff.fillna(0)
     df_diff = df_diff.reset_index()
+    df_diff.iloc[:,1:] = df_diff.iloc[:,1:]/max(df_ref.iloc[:,1:-4].sum(axis=1)) * 100  
+    df_diff = df_diff.fillna(0)
+    
     return df_diff
 
 def get_ylims(loc,var, scenario):
     # Define y ranges based on country and variable
     if loc == 'ENB':
         if var == 'Power Generation (Aggregate)':
-            min_y, max_y = -1000, 1000
+            if 'EXT' in scenario:
+                min_y, max_y = -40, 40
+            else:
+                min_y, max_y = -12, 12
         else:
-            min_y, max_y = -5000, 5000
+            if 'EXT' in scenario:
+                min_y, max_y = -40, 40
+            else:
+                min_y, max_y = -12, 12
     elif loc == 'EG':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -800, 800
+                min_y, max_y = -45, 45
             else:
-                min_y, max_y = -20, 20
+                min_y, max_y = -25, 25
         else:
             if 'EXT' in scenario:
-                min_y, max_y = -90, 90
+                min_y, max_y = -45, 45
             else:
-                min_y, max_y = -200, 1800
+                min_y, max_y = -25, 25
     elif loc == 'ET':
         if var == 'Power Generation (Aggregate)':
-            min_y, max_y = -250, 250
+            if 'EXT' in scenario:
+                min_y, max_y = -45, 45
+            else:
+                min_y, max_y = -25, 25
         else:
-            min_y, max_y = -500, 2000
+            if 'EXT' in scenario:
+                min_y, max_y = -45, 45
+            else:
+                min_y, max_y = -25, 25
     elif loc == 'SD':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -150, 150
+                min_y, max_y = -45, 45
             else:
-                min_y, max_y = -15, 15
+                min_y, max_y = -25, 25
         else:
-            min_y, max_y = -3000, 3000
+            if 'EXT' in scenario:
+                min_y, max_y = -45, 45
+            else:
+                min_y, max_y = -25, 25
     elif loc == 'SS':
         if var == 'Power Generation (Aggregate)':
-            min_y, max_y = -15,15
+           if 'EXT' in scenario:
+               min_y, max_y = -45, 45
+           else:
+               min_y, max_y = -25, 25
         else:
-            min_y, max_y = -600, 300
+            if 'EXT' in scenario:
+                min_y, max_y = -45, 45
+            else:
+                min_y, max_y = -25, 25
     return [min_y,max_y]
 
 def plot_differences(df, scenario, loc,var, color_dict = color_dict, barmode = 'relative'):
-    dest_dir = f'results/ScenarioComparison/DifferencePlots/{loc}'
+    dest_dir = f'results/ScenarioComparison/DifferencePlots/{var}/{scenario}'
     os.makedirs(dest_dir, exist_ok=True)
     
     # Ignore import and export differences
@@ -213,10 +239,11 @@ def plot_differences(df, scenario, loc,var, color_dict = color_dict, barmode = '
         fig.update_layout(
             barmode=barmode,
             xaxis_title='Year',
-            yaxis_title=variables[var],
+            yaxis_title='Difference [% of max generation]',
             #title=p_title + " - " + scenario,
             font=dict(size=18, color='black'),
             xaxis=dict(range=[first_year, last_year]),
+            # yaxis=dict(range=[-50, 50])
             yaxis=dict(range=get_ylims(loc, var, scenario)),
            # legend=dict(orientation="h", x=0, xanchor='left', y=-0.2)
         )
@@ -229,9 +256,11 @@ def plot_differences(df, scenario, loc,var, color_dict = color_dict, barmode = '
 
 
 # Debugging
-loc='SD'
+loc='EG'
 sc = scenario_list[0]
 var = 'Power Generation (Aggregate)'
+variable = var
+scenario=sc
 
 for sc in scenario_list:
     for loc in locs:

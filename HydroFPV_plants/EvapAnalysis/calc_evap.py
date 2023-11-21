@@ -27,6 +27,10 @@ df_wl = pd.DataFrame(data)
 # Evaporation reduction rates 
 coverage_perc = [0,0.1, 0.3, 0.5, 0.7, 1]
 evap_red_perc = [0,0.18, 0.49, 0.73, 0.89, 1]
+plt.figure()
+plt.plot(coverage_perc,evap_red_perc)
+plt.xlabel('FPV area coverage [%]')
+plt.ylabel('Evaporation reduction [%]')
 # data = {0.1:[0.18],
 #         0.3:[0.49],
 #         0.5:[0.73],
@@ -99,7 +103,6 @@ for i in range(len(files_hydro)):
     df_reductions_perc = df_area_perc.copy()
     df_reductions_perc.loc[:] = interp(df_area_perc.values)
 
-    
     # Calculate the volume of water saved
     df_wl_loc = df_wl_loc[df_reductions_perc.columns]
     df_reductions = df_reductions_perc.copy()
@@ -114,6 +117,8 @@ for i in range(len(files_hydro)):
     df_reductions.loc['tot%'] = df_reductions.loc['tot'] / df_wl_loc.loc['tot']
     df_reductions.loc[:,'tot%'] = df_reductions.loc[:,'tot'] / df_wl_loc.loc[:,'tot']
     
+    # Transform to percentages 
+    df_reductions_perc = df_reductions_perc*100
     
 # =============================================================================
 #     Save to excel
@@ -123,6 +128,7 @@ for i in range(len(files_hydro)):
     wb.save(output_filepath)
     writer = pd.ExcelWriter(output_filepath, mode='a', if_sheet_exists='overlay')
     
+    df_wl_loc.to_excel(writer, sheet_name='Reservoir evaporation', index=True, startcol=0)
     df_area_perc.to_excel(writer, sheet_name='FPVArea %', index=True, startcol=0)
     df_reductions_perc.to_excel(writer, sheet_name='Reductions %', index=True, startcol=0)
     df_reductions.to_excel(writer, sheet_name='Reductions mcm', index=True, startcol=0)

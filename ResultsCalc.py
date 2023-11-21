@@ -24,6 +24,10 @@ plt.rcParams.update({'font.size': 16})
 plt.rcParams['legend.handlelength'] = 1
 plt.rcParams['legend.handleheight'] = 1
 
+# filename = capacity_filename
+# title = 'Capacity'
+# code = 'ENB'
+
 def create_pie_charts(filename, title, scenario, writer, file, code):
     
     try:
@@ -96,7 +100,8 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     df_sel = df_t.loc[:,years]
     df_sel = df_sel.loc[:, (df_sel != 0).any(axis=0)]
     
-    labels = [label[:-13] for label in df_sel.index]
+
+    # labels = [label[:-13] for label in df_sel.index]
     fig, axes = plt.subplots(2,3, figsize=(12, 8))
     if file != 'Aggregate':
         colors_dict = colors_dict_detail
@@ -105,14 +110,32 @@ def create_pie_charts(filename, title, scenario, writer, file, code):
     
     for ax in axes.flatten():
         ax.set_axis_off()
-    for col, ax in zip(df_sel.columns,axes.flatten()):
-        ax.pie(df_sel[col],
-               autopct=lambda p: '{:.0f}%'.format(round(p)) if p > 1.5 else '', 
-               colors=[colors_dict[p] for p in df_sel.index])
+    for col, ax in zip(df_sel.columns, axes.flatten()):
+        
+        # Threshold for combining small slices into the "other" category
+        threshold = 0.05
+    
+        # Identify slices smaller than the threshold
+        df_sel_mod = df_sel[col]
+        small_slices = df_sel_mod.index[df_sel_mod < threshold]
+    
+        # Combine small slices into the "other" category
+        small_slice_sum = df_sel_mod.loc[small_slices].sum()
+        df_sel_mod.loc['Other'] = small_slice_sum
+        df_sel_mod = df_sel_mod.drop(small_slices)
+   
+        # Plot the pie chart with the updated data
+        ax.pie(df_sel_mod,
+               autopct=lambda p: '{:.0f}%'.format(round(p)) if (p > 2 and small_slice_sum != 0) else '',
+               pctdistance=0.8,
+               colors=[colors_dict[p] for p in df_sel_mod.index])
+    
         ax.set(ylabel='', title=int(col), aspect='equal')
         ax.set_axis_on()
-
-    plt.subplots_adjust(wspace=0.01, hspace=0.1)     
+    
+    plt.subplots_adjust(wspace=0.01, hspace=0.1)
+    
+    # Save the figure
     # fig.suptitle(code + ' - ' + title + ' mixes ' + f'({file})'+ ' - '+ scenario)
     # axes.flatten()[0].legend(bbox_to_anchor=(3.8, 1), labels=labels, frameon=False)
     fig.savefig(os.path.join(homedir, f'{code} - {title} - {file}.png'), bbox_inches='tight')
@@ -184,7 +207,8 @@ with tempfile.TemporaryDirectory() as temp:
         "Geothermal - Percentage" : "brown", 
         "power_trade - Percentage" : "pink",
         "Nuclear - Percentage" : "blueviolet",
-	"Backstop - Percentage": "red"
+        "Other" : "greenyellow",
+        "Backstop - Percentage": "red"
         }
     
     file_prodtechs = r'input_data/power_tech.csv'
@@ -192,6 +216,7 @@ with tempfile.TemporaryDirectory() as temp:
     prod_techs_codes_df = tech_codes_df.iloc[np.where(tech_codes_df['tech_code'].isin(prodtechs_df['power_tech']))]
     names_list = [name + ' - Percentage' for name in  prod_techs_codes_df['tech_name']]
     names_list.append('Solar FPV - Percentage')
+    names_list.append('Other')
     
     palette = sns.color_palette(cc.glasbey, n_colors=len(names_list))
     palette = palette.as_hex()

@@ -32,10 +32,10 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-scenarios = ['ref']
-                 # 'RCP26_dry', 'RCP26_wet', 
-                 # 'RCP60_dry', 'RCP60_wet', 
-                 # 'EXT_High', 'EXT_Low']
+scenarios = ['ref',
+                  'RCP26_dry', 'RCP26_wet', 
+                  'RCP60_dry', 'RCP60_wet', 
+                  'EXT_High', 'EXT_Low']
 
 # scenarios = ['EXT_High', 'EXT_Low',
 #              ]
@@ -43,7 +43,7 @@ scenarios = ['ref']
 
 FPV_switch = 'Yes' # [Yes or No]
 NoConstSwitch = 'No' # [Yes or No]
-ssa_switch = 'Low' # [Low or High or No]
+ssa_switch = 'No' # [Low or High or No]
 pot_switch = 'Yes' # [Yes or No]
 
 for s,scenario in enumerate(scenarios):
@@ -256,26 +256,48 @@ for s,scenario in enumerate(scenarios):
                         oil_value = gas_value
                         
                         def assign_emission(row):
-                            if 'WINDP00X' in row['TECHNOLOGY']:
-                                return 'LANDWND'
-                            if 'SOU1P03X' in row['TECHNOLOGY']:
-                                return 'LANDSOL'
-                            if 'HYD'in row['TECHNOLOGY']:
-                                return 'LANDHYD'
-                            if 'SOC'in row['TECHNOLOGY']:
-                                return 'LANDSOC'
-                            if 'NULWP04N' in row['TECHNOLOGY']:
-                                return 'LANDNUL'
-                            if 'GOCVP0'in row['TECHNOLOGY']:
-                                return 'LANDGT'
-                            if 'NGCC'in row['TECHNOLOGY']:
-                                return 'LANDGAS'
-                            if 'COSC'in row['TECHNOLOGY']:
-                                return 'LANDCOAL'
-                            if 'LF' in row['TECHNOLOGY'] or 'HF' in row['TECHNOLOGY']:
-                                return 'LANDOIL'
-                            else:
-                                return row[3:]
+                            if 'EG' in row['TECHNOLOGY']:
+                                if 'WINDP00X' in row['TECHNOLOGY']:
+                                    return 'EGLANDWND'
+                                if 'SOU1P03X' in row['TECHNOLOGY']:
+                                    return 'EGLANDSOL'
+                                if 'HYD'in row['TECHNOLOGY']:
+                                    return 'EGLANDHYD'
+                                if 'SOC'in row['TECHNOLOGY']:
+                                    return 'EGLANDSOC'
+                                if 'NULWP04N' in row['TECHNOLOGY']:
+                                    return 'EGLANDNUL'
+                                if 'GOCVP0'in row['TECHNOLOGY']:
+                                    return 'EGLANDGT'
+                                if 'NGCC'in row['TECHNOLOGY']:
+                                    return 'EGLANDGAS'
+                                if 'COSC'in row['TECHNOLOGY']:
+                                    return 'EGLANDCOAL'
+                                if 'LF' in row['TECHNOLOGY'] or 'HF' in row['TECHNOLOGY']:
+                                    return 'EGLANDOIL'
+                                else:
+                                    return row[3:]
+                            else: 
+                                if 'WINDP00X' in row['TECHNOLOGY']:
+                                    return 'LANDWND'
+                                if 'SOU1P03X' in row['TECHNOLOGY']:
+                                    return 'LANDSOL'
+                                if 'HYD'in row['TECHNOLOGY']:
+                                    return 'LANDHYD'
+                                if 'SOC'in row['TECHNOLOGY']:
+                                    return 'LANDSOC'
+                                if 'NULWP04N' in row['TECHNOLOGY']:
+                                    return 'LANDNUL'
+                                if 'GOCVP0'in row['TECHNOLOGY']:
+                                    return 'LANDGT'
+                                if 'NGCC'in row['TECHNOLOGY']:
+                                    return 'LANDGAS'
+                                if 'COSC'in row['TECHNOLOGY']:
+                                    return 'LANDCOAL'
+                                if 'LF' in row['TECHNOLOGY'] or 'HF' in row['TECHNOLOGY']:
+                                    return 'LANDOIL'
+                                else:
+                                    return row[3:]
                         new_df.iloc[:,1] = new_df.apply(lambda row: assign_emission(row), axis=1)
                         
                         def assign_land_ratios(row):
@@ -374,8 +396,9 @@ for s,scenario in enumerate(scenarios):
                 if sheet_names[i] == 'EMISSION':
                     codes = ['WND', 'SOL', 'HYD', 'SOC', 'NUL', 
                           'GT', 'GAS', 'COAL', 'OIL']
-                    for code in codes:
-                        df.loc[len(df)] = 'LAND' + code
+                    for pl in ['EG','']:
+                        for code in codes:
+                            df.loc[len(df)] = pl + 'LAND' + code
                 
                 if carbon_tax_switch != 'No':
                     # Add carbon tax
@@ -402,8 +425,6 @@ for s,scenario in enumerate(scenarios):
                 new_cost_values = interp_lin(years) 
 
                 if land_tax_switch != 'No':
-                    # Read values
-                    df_values = pd.read_excel(r'Data/LandValues.xlsx', sheet_name='Stats_ENB', index_col='Unnamed: 0')
                     # Add land tax 
                     if sheet_names[i] == 'EmissionsPenalty':
                         codes_dict = {'OIL':'Oil',
@@ -417,12 +438,17 @@ for s,scenario in enumerate(scenarios):
                                       'NUL':'Nuclear'}
                         codes = ['WND', 'SOL', 'HYD', 'SOC', 'NUL', 
                               'GT', 'GAS', 'COAL', 'OIL']
-                        for code in codes:
-                            if land_tax_switch == 'Low':
-                                land_tax = np.ones(56) * df_values.loc['First quantile', codes_dict[code]] * 0.001
-                            elif land_tax_switch == 'High':
-                                land_tax = np.ones(56) * df_values.loc['Third quantile', codes_dict[code]] * 0.001    
-                            df.loc[len(df)] = ['LAND' + code] + land_tax.tolist()
+                        for pl in ['EG','']:
+                            if pl == 'EG':
+                                df_values = pd.read_excel(r'Data/LandValues.xlsx', sheet_name='Stats_EG', index_col='Unnamed: 0')
+                            else:
+                                df_values = pd.read_excel(r'Data/LandValues.xlsx', sheet_name='Stats_ETSDSS', index_col='Unnamed: 0')
+                            for code in codes:
+                                if land_tax_switch == 'Low':
+                                    land_tax = np.ones(56) * df_values.loc['First quantile', codes_dict[code]] * 0.001
+                                elif land_tax_switch == 'High':
+                                    land_tax = np.ones(56) * df_values.loc['Third quantile', codes_dict[code]] * 0.001    
+                                df.loc[len(df)] = [pl + 'LAND' + code] + land_tax.tolist()
                     
 
                 # Remove REN emission limits
