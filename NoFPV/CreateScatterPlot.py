@@ -16,16 +16,15 @@ for idx in range(len(locs)-1):
     # Index to select the country or region in the locs list
     
     # File paths
-    file_fpv = r'results/ScenarioComparison/AggregatedExcels/ValuesFPV.xlsx'
+    # file_fpv = r'results/ScenarioComparison/AggregatedExcels/ValuesFPV.xlsx'
     file_hyd = r'results/ScenarioComparison/AggregatedExcels/ValuesHydro.xlsx'
     output_filepath = f'results/ScenarioComparison/AggregatedExcels/ValuesRanked_{locs[idx]}.xlsx'
     
     #  Scenario and variable lists
-    sheet_names_in = ['TotalGeneration', 'MaxGenerationShare', 'Onset',
-                   'HydroNumber', 'TotalGeneration', 'TotalWaterConsumption',
+    sheet_names_in = ['HydroNumber', 'TotalGeneration', 'TotalWaterConsumption',
                    'WaterConsumption(No Hydro)', 'WaterConsumption(Detail Hydro)',
                    'TotalCosts', 'Emissions']
-    sheet_names_out = ['TotalGeneration', 'MaxGenerationShare', 'Onset',
+    sheet_names_out = [
                    'HydroNumber', 'TotalGenerationHyd', 'TotalWaterConsumption',
                    'WaterConsumption(No Hydro)', 'WaterConsumption(Detail Hydro)',
                    'TotalCosts', 'Emissions']
@@ -40,13 +39,12 @@ for idx in range(len(locs)-1):
     #                  "TEMBA_ENB_RCP26_dryNoFPV", "TEMBA_ENB_RCP26_wetNoFPV", "TEMBA_ENB_RCP60_dryNoFPV", 
     #                  "TEMBA_ENB_RCP60_wetNoFPV", "TEMBA_ENB_refNoFPV"]
     
-    nrows = [6,6,6,6,6,2,2,2,2,2]
-    col_names = ['Total generation FPV','Max generation share FPV',
-                 'FPV onset year','Hydropower expansion','Hydropower total generation',
+    nrows = [6,6,2,2,2,2,2]
+    col_names = ['Hydropower expansion','Hydropower total generation',
                  'TotalWaterConsumption',
                  'WaterConsumption(No Hydro)', 'WaterConsumption(Detail Hydro)',
                  'TotalCosts','Emissions']
-    files = [file_fpv]*3+[file_hyd]*7
+    files = [file_hyd]*7
     
     if idx==1:
         sheet_names_in.remove('HydroNumber')

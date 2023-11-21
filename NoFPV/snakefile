@@ -1,4 +1,4 @@
-MODELRUNS = ["TEMBA_ENB_ref", "TEMBA_ENB_Carb_High", "TEMBA_ENB_Carb_Low", "TEMBA_ENB_EXT_High", "TEMBA_ENB_Ext_Low", "TEMBA_ENB_Land_High", "TEMBA_ENB_Land_Low"]
+MODELRUNS = ["TEMBA_ENB_EXT_HighNoFPV", "TEMBA_ENB_EXT_LowNoFPV", "TEMBA_ENB_RCP26_dryNoFPV", "TEMBA_ENB_RCP26_wetNoFPV", "TEMBA_ENB_RCP60_dryNoFPV", "TEMBA_ENB_RCP60_wetNoFPV", "TEMBA_ENB_refNoFPV"]
 
 rule all:
       input: 
