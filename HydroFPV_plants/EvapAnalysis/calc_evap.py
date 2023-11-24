@@ -188,7 +188,8 @@ plt.legend()
 #         }
 # df_rates = pd.DataFrame(data)
 scenlist = [file[57:-4] for file in files_hydro]
-df_tot = pd.DataFrame(index=scenlist, columns=['Tot reduction [%]','Tot reduction [mcm]'])
+df_tot_sc = pd.DataFrame(index=scenlist, columns=['Tot reduction [%]','Tot reduction [mcm]', 
+                                                  'Tot extra generation [PJ]', 'Tot extra generation [%]'])
 
 years = np.arange(2022,2066,1)
 
@@ -253,16 +254,16 @@ for i in range(len(files_hydro)):
     df_fpv = df_fpv.loc[years]
     cols_fpv = df_fpv.columns[2:]
     df_fpv = df_fpv.loc[:,cols_fpv]
-    df_fpv = df_fpv/0.1
+    df_area_fpv = df_fpv/0.1
     # df_fpv.drop('Sor2',axis=1,inplace=True)
     
     # Calculate the cover percentage
-    df_area_perc = df_fpv/df_area_loc
+    df_area_perc = df_area_fpv/df_area_loc
     df_area_perc.fillna(0,inplace=True)
     df_area_perc.replace([np.inf, -np.inf], 0, inplace=True)
     
     # Assign the evaporation reduction percentage
-     df_reductions_perc = df_area_perc.copy()
+    df_reductions_perc = df_area_perc.copy()
     df_reductions_perc.loc[:] = interp(df_area_perc.values)
 
     # Calculate the volume of water saved
@@ -310,6 +311,102 @@ for i in range(len(files_hydro)):
     df_ele_perc = df_ele / df_gen * 100
     df_ele_perc.loc['tot'] = df_ele.loc['tot'] / df_gen.sum() *100
     df_ele_perc.loc[:,'tot'] = df_ele.loc[:,'tot'] / df_gen.sum(axis=1) *100
+    
+
+# =============================================================================
+# Create a table with all max YEARLY values
+# =============================================================================
+    
+    # Reservoir water loss mcm
+    df_wl_loc_max = df_wl_loc[:-1].max().rename('Reservoir evaporation [mcm/y]')
+
+    # Max FPV capacity GW
+    df_fpv_max = df_fpv.max().rename('Installed FPV capacity [GW]')
+    
+    # Max Area coverage %
+    df_area_max = df_area_perc.max().rename('FPV coverage area [%]')
+    
+    # Max water reduction %
+    df_reductions_perc_max = df_reductions_perc.max().rename('Evaporation reduction [%]')
+    
+    # Max water savings mcm
+    df_reductions_max = df_reductions[:-2].max()[:-1].rename('Water savings [mcm/y]')
+    
+    # Max extra HP generation
+    df_ele_max = df_ele[:-1].max().rename('Extra hp generation [PJ/y]')
+    
+    # Max extra HP gen  %
+    df_ele_perc_max = df_ele_perc[:-1].max().rename('Extra hp generation [% of HP]')
+    
+    df_max = pd.concat([df_fpv_max,df_area_max,df_wl_loc_max,df_reductions_max,
+                        df_reductions_perc_max,df_ele_max, df_ele_perc_max],
+                       axis=1)
+    df_max = df_max.drop('tot')
+    
+    # Disaggregate by country
+    df_max_eg = df_max.loc[plants_eg]
+    df_max_et = df_max.loc[plants_et]
+    df_max_sd = df_max.loc[plants_sd]
+    
+    # Calculate totals
+    df_max.loc['tot'] = df_max.sum()
+    df_max.loc['tot']['FPV coverage area [%]'] = df_max['Installed FPV capacity [GW]'].sum()*0.1/df_areas.sum(axis=1).iloc[0]*100
+    df_max.loc['tot']['Evaporation reduction [%]'] = df_max['Water savings [mcm/y]'].sum()/df_max['Reservoir evaporation [mcm/y]'].sum()*100
+    df_max.loc['tot']['Extra hp generation [% of HP]'] = df_max['Extra hp generation [PJ/y]'].sum()/df_gen.max().sum()*100
+    
+    df_max_eg.loc['tot'] = df_max_eg.sum()
+    df_max_eg.loc['tot']['FPV coverage area [%]'] = df_max_eg['Installed FPV capacity [GW]'].sum()*0.1/df_areas[plants_eg].sum(axis=1).iloc[0]*100
+    df_max_eg.loc['tot']['Evaporation reduction [%]'] = df_max_eg['Water savings [mcm/y]'].sum()/df_max_eg['Reservoir evaporation [mcm/y]'].sum()*100
+    df_max_eg.loc['tot']['Extra hp generation [% of HP]'] = df_max_eg['Extra hp generation [PJ/y]'].sum()/df_gen[plants_eg].max().sum()*100
+    
+    df_max_et.loc['tot'] = df_max_et.sum()
+    df_max_et.loc['tot']['FPV coverage area [%]'] = df_max_et['Installed FPV capacity [GW]'].sum()*0.1/df_areas[plants_et].sum(axis=1).iloc[0]*100
+    df_max_et.loc['tot']['Evaporation reduction [%]'] = df_max_et['Water savings [mcm/y]'].sum()/df_max_et['Reservoir evaporation [mcm/y]'].sum()*100
+    df_max_et.loc['tot']['Extra hp generation [% of HP]'] = df_max_et['Extra hp generation [PJ/y]'].sum()/df_gen[plants_et].max().sum()*100
+    
+    df_max_sd.loc['tot'] = df_max_sd.sum()
+    df_max_sd.loc['tot']['FPV coverage area [%]'] = df_max_sd['Installed FPV capacity [GW]'].sum()*0.1/df_areas[plants_sd].sum(axis=1).iloc[0]*100
+    df_max_sd.loc['tot']['Evaporation reduction [%]'] = df_max_sd['Water savings [mcm/y]'].sum()/df_max_sd['Reservoir evaporation [mcm/y]'].sum()*100
+    df_max_sd.loc['tot']['Extra hp generation [% of HP]'] = df_max_sd['Extra hp generation [PJ/y]'].sum()/df_gen[plants_sd].max().sum()*100
+    
+    df_max_tot = pd.DataFrame(index = df_max.columns, columns = ['ENB','EG', 'ET', 'SD'])
+    df_max_tot['ENB'] = df_max.loc['tot']
+    df_max_tot['EG'] = df_max_eg.loc['tot']
+    df_max_tot['ET'] = df_max_et.loc['tot']
+    df_max_tot['SD'] = df_max_sd.loc['tot']
+
+# =============================================================================
+# Create tables with all total values per country
+# =============================================================================
+    cols_tot = ['Reservoir evaporation [mcm]','Water savings [mcm]','Water savings [%]',
+                'Extra hp generation [PJ]','Extra hp generation [% of HP]']
+    df_tot = pd.DataFrame(index = cols_tot, columns = ['ENB','EG', 'ET', 'SD'])
+    
+    df_tot['ENB']['Reservoir evaporation [mcm]'] = df_wl_loc.loc['tot']['tot']
+    df_tot['ENB']['Water savings [mcm]'] = df_reductions['tot']['tot']
+    df_tot['ENB']['Water savings [%]'] = df_reductions['tot']['tot']/df_wl_loc.loc['tot']['tot']*100
+    df_tot['ENB']['Extra hp generation [PJ]'] = df_ele.loc['tot']['tot']
+    df_tot['ENB']['Extra hp generation [% of HP]'] = df_ele.loc['tot']['tot'] / df_gen.sum().sum() *100
+
+    df_tot['EG']['Reservoir evaporation [mcm]'] = df_wl_loc[plants_eg].loc['tot'].sum()
+    df_tot['EG']['Water savings [mcm]'] = df_reductions[plants_eg].loc['tot'].sum()
+    df_tot['EG']['Water savings [%]'] = df_reductions[plants_eg].loc['tot'].sum()/df_wl_loc[plants_eg].loc['tot'].sum()*100
+    df_tot['EG']['Extra hp generation [PJ]'] = df_ele[plants_eg].loc['tot'].sum()
+    df_tot['EG']['Extra hp generation [% of HP]'] = df_ele[plants_eg].loc['tot'].sum() / df_gen[plants_eg].sum().sum() *100
+    
+    df_tot['ET']['Reservoir evaporation [mcm]'] = df_wl_loc[plants_et].loc['tot'].sum()
+    df_tot['ET']['Water savings [mcm]'] = df_reductions[plants_et].loc['tot'].sum()
+    df_tot['ET']['Water savings [%]'] = df_reductions[plants_et].loc['tot'].sum()/df_wl_loc[plants_et].loc['tot'].sum()*100
+    df_tot['ET']['Extra hp generation [PJ]'] = df_ele[plants_et].loc['tot'].sum()
+    df_tot['ET']['Extra hp generation [% of HP]'] = df_ele[plants_et].loc['tot'].sum() / df_gen[plants_et].sum().sum() *100
+    
+    df_tot['SD']['Reservoir evaporation [mcm]'] = df_wl_loc[plants_sd].loc['tot'].sum()
+    df_tot['SD']['Water savings [mcm]'] = df_reductions[plants_sd].loc['tot'].sum()
+    df_tot['SD']['Water savings [%]'] = df_reductions[plants_sd].loc['tot'].sum()/df_wl_loc[plants_sd].loc['tot'].sum()*100
+    df_tot['SD']['Extra hp generation [PJ]'] = df_ele[plants_sd].loc['tot'].sum()
+    df_tot['SD']['Extra hp generation [% of HP]'] = df_ele[plants_sd].loc['tot'].sum() / df_gen[plants_sd].sum().sum() *100
+
+
 # =============================================================================
 #     Save to excel
 # =============================================================================
@@ -324,18 +421,23 @@ for i in range(len(files_hydro)):
     df_reductions.to_excel(writer, sheet_name='Reductions mcm', index=True, startcol=0)
     df_reductions_mm.to_excel(writer, sheet_name='Reductions mm', index=True, startcol=0)
     df_ele.to_excel(writer, sheet_name='Extra HP generation PJ', index=True, startcol=0)
-    df_ele.max().to_excel(writer, sheet_name='Max extra HP generation PJ', index=True, startcol=0)
     df_ele_perc.to_excel(writer, sheet_name='Extra HP generation %', index=True, startcol=0)
-    df_ele_perc.max().to_excel(writer, sheet_name='Max extra HP generation %', index=True, startcol=0)
-    
+    df_max.to_excel(writer, sheet_name='Max values', index=True, startcol=0)
+    df_max_eg.to_excel(writer, sheet_name='Max values EG', index=True, startcol=0)
+    df_max_et.to_excel(writer, sheet_name='Max values ET', index=True, startcol=0)
+    df_max_sd.to_excel(writer, sheet_name='Max values SD', index=True, startcol=0)
+    df_max_tot.to_excel(writer, sheet_name='Max values overv', index=True, startcol=0)
+    df_tot.to_excel(writer, sheet_name='Tot values overv', index=True, startcol=0)
     
 # =============================================================================
-# Save all the totals 
+# Save all the totals to compare scenarios
 # =============================================================================
-    df_tot.loc[scenlist[i]]['Tot reduction [%]'] = df_reductions.loc['tot']['tot%']
-    df_tot.loc[scenlist[i]]['Tot reduction [mcm]'] = df_reductions.loc['tot']['tot']
-    df_tot.sort_values(by=('Tot reduction [%]'), ascending=False, inplace=True)
-    
+    df_tot_sc.loc[scenlist[i]]['Tot reduction [%]'] = df_reductions.loc['tot']['tot%']
+    df_tot_sc.loc[scenlist[i]]['Tot reduction [mcm]'] = df_reductions.loc['tot']['tot']
+    df_tot_sc.loc[scenlist[i]]['Tot extra generation [PJ]'] = df_ele.loc['tot']['tot']
+    df_tot_sc.loc[scenlist[i]]['Tot extra generation [%]'] = df_tot['ENB']['Extra hp generation [% of HP]']
+    df_tot_sc.sort_values(by=('Tot reduction [%]'), ascending=False, inplace=True)
+        
 # =============================================================================
 #     Plot the barchart
 # =============================================================================
@@ -351,13 +453,10 @@ for i in range(len(files_hydro)):
             df_reductions_country = df_reductions[plants_sd]
             
         plot_df(df_reductions_country,scenario, loc)
+        
+        
+    writer.close()
 
 
-
-
-
-writer.close()
-
-
-df_tot.to_excel('TotalValues.xlsx')
+df_tot_sc.to_excel('TotalValues.xlsx')
 
