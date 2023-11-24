@@ -10,6 +10,9 @@ import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import seaborn as sns
+plt.rcParams.update({'font.size': 14})
+plt.rcParams['legend.handlelength'] = 1
+plt.rcParams['legend.handleheight'] = 1
 
 # Calculates the land use values and their statistics and plots
 
@@ -116,8 +119,9 @@ def calc_dfs(country, merged_gdf):
 
     plt.figure(figsize=(10,8))
     plt.ylabel('Value [K$/ha]')
-    plt.title(f'Agricultural land yield at power plants locations: {country}')
+    # plt.title(f'Agricultural land yield at power plants locations: {country}')
     sns.boxplot(df_fuel, palette=color_dict)
+    plt.ylim((0,20))
     plt.savefig(f'Boxplots_{country}.png')
     
     return df_fuel, stats_df

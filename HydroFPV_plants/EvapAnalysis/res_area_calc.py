@@ -43,12 +43,12 @@ unknown = df.iloc[np.where((~df['Volume'].isna() & df['Area'].isna()))[0]]
 unknown.loc[:,'Area'] = model.predict(unknown['Volume'].values.reshape(-1, 1))
 
 plt.figure()
-plt.scatter(known['Volume'],known['Area'])
-plt.scatter(unknown['Volume'],unknown['Area'])
+plt.scatter(known['Volume'],known['Area'], label='Data points')
+plt.scatter(unknown['Volume'],unknown['Area'], label='Predicted points')
 plt.plot(known['Volume'], model.predict(known['Volume'].values.reshape(-1, 1)), color='red', label='Regression line')
 plt.xlabel('Volume [mcm]')
 plt.ylabel('Area [km2]')
-
+plt.legend()
 
 df.loc[unknown.index] = unknown # Fill the gaps in the whole df
 
@@ -65,11 +65,12 @@ unknown_cap = df.iloc[np.where((~df['Capacity(MW)'].isna() & df['Area'].isna()))
 unknown_cap.loc[:,'Area'] = model.predict(unknown_cap['Capacity(MW)'].values.reshape(-1, 1))
 
 plt.figure()
-plt.scatter(known_cap['Capacity(MW)'],known_cap['Area'])
-plt.scatter(unknown_cap['Capacity(MW)'],unknown_cap['Area'])
+plt.scatter(known_cap['Capacity(MW)'],known_cap['Area'], label='Data points')
+plt.scatter(unknown_cap['Capacity(MW)'],unknown_cap['Area'], label='Predicted points')
 plt.plot(known_cap['Capacity(MW)'], model.predict(known_cap['Capacity(MW)'].values.reshape(-1, 1)), color='red', label='Regression line')
-plt.xlabel('Capacity(MW) [MW]')
+plt.xlabel('Capacity(MW)')
 plt.ylabel('Area [km2]')
+plt.legend()
 
 df.loc[unknown_cap.index] = unknown_cap
 

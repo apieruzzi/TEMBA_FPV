@@ -32,10 +32,10 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-scenarios = ['ref',
-                  'RCP26_dry', 'RCP26_wet', 
-                  'RCP60_dry', 'RCP60_wet', 
-                  'EXT_High', 'EXT_Low']
+scenarios = ['ref']
+                  # 'RCP26_dry', 'RCP26_wet', 
+                  # 'RCP60_dry', 'RCP60_wet', 
+                  # 'EXT_High', 'EXT_Low']
 
 # scenarios = ['EXT_High', 'EXT_Low',
 #              ]
@@ -43,7 +43,7 @@ scenarios = ['ref',
 
 FPV_switch = 'Yes' # [Yes or No]
 NoConstSwitch = 'No' # [Yes or No]
-ssa_switch = 'No' # [Low or High or No]
+ssa_switch = 'Low' # [Low or High or No]
 pot_switch = 'Yes' # [Yes or No]
 
 for s,scenario in enumerate(scenarios):
@@ -88,7 +88,14 @@ for s,scenario in enumerate(scenarios):
         if FPV_switch =='No':
             name = os.path.join(folder,filename_out +'_'+ scenario + 'NoFPV'+'.xlsx')
         else:
-            name = os.path.join(folder,filename_out + '_'+ scenario +'.xlsx')
+            if ssa_switch == 'Low':
+                name = os.path.join(folder,filename_out + '_'+ scenario + '_Low' + '.xlsx')
+            if ssa_switch == 'High':
+                name = os.path.join(folder,filename_out + '_'+ scenario + '_High' + '.xlsx')
+            if NoConstSwitch == 'Yes':
+                name = os.path.join(folder,filename_out + '_'+ scenario + '_Const' + '.xlsx')
+            # else:
+            #     name = os.path.join(folder,filename_out + '_'+ scenario +'.xlsx')
 
         writer = pd.ExcelWriter(name)
         xl = pd.ExcelFile(filename)
