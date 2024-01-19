@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 14})
 
 
 # Import files 
@@ -20,6 +21,7 @@ countries = ['EGYPT', 'ETHIOPIA', 'SUDAN', 'SOUTH SUDAN']
 seasons = [1,2,3,4]
 
 # Read data hydro
+df_lines_hydro = pd.DataFrame(columns=['S1','S2', 'S3', 'S4'])
 for country in countries:
     df_lines = pd.DataFrame(index=scenario_list,columns=['S1','S2', 'S3', 'S4'])
     for file in file_list:
@@ -41,7 +43,8 @@ for country in countries:
         # plt.savefig(path)
         # plt.close()
         
-     # Lines        
+     # Lines  
+    df_lines_hydro.loc[country] = df_lines.loc['ref']      
     df_lines.transpose().plot(title=f'Average hydropower capacity factors vs season - {country}')
     path = os.path.join('boxplots_cf', country + ' hydro'+'.png')
     plt.savefig(path)
@@ -115,6 +118,89 @@ for cc in country_codes.keys():
     path = os.path.join('boxplots_cf', country_codes[cc]+ ' solar FPV'+ '.png')
     plt.savefig(path)
 
+
+
+# Plot CFs of all techs, both together and day and night separately
+file = 'CombinedHydroSolar_ref.csv'
+df_read = pd.read_csv(os.path.join('Data',file))
+df_temba = pd.read_excel(r'Created Files/TEMBA_ENB_ref.xlsx', sheet_name='CapacityFactor')
+df_lines = pd.DataFrame(columns=['S1D1', 'S1D2','S2D1', 'S2D2', 'S3D1','S3D2', 'S4D1','S4D2'])
+country_codes = dict({'EG':'EGYPT', 'ET':'ETHIOPIA', 'SD':'SUDAN', 'SS':'SOUTH SUDAN'})
+df_lines_hydro.loc[:,'S1D1'] = df_lines_hydro['S1']
+df_lines_hydro.loc[:,'S1D2'] = df_lines_hydro['S1']
+df_lines_hydro.loc[:,'S2D1'] = df_lines_hydro['S2']
+df_lines_hydro.loc[:,'S2D2'] = df_lines_hydro['S2']
+df_lines_hydro.loc[:,'S3D1'] = df_lines_hydro['S3']
+df_lines_hydro.loc[:,'S3D2'] = df_lines_hydro['S3']
+df_lines_hydro.loc[:,'S4D1'] = df_lines_hydro['S4']
+df_lines_hydro.loc[:,'S4D2'] = df_lines_hydro['S4']
+df_lines_hydro = df_lines_hydro[df_lines.columns]
+
+
+colors_dict_agg = {
+    "Coal":"black",
+    "Oil" : "darkgrey",
+    "Gas" : "darkorange",
+    "Hydro" : "aqua",
+    "Solar CSP" : "red",
+    "Solar PV" : "gold",
+    "Solar FPV" : "green",
+    "Wind" : "royalblue",
+    "Biomass" : "lightgreen",
+    "Geothermal" : "brown", 
+    "Nuclear" : "blueviolet",
+    "Solar CSP_high" : "red",
+    "Solar PV_high" : "yellow",
+    "Solar CSP_low" : "red",
+    "Solar PV_low" : "orange",
+    }
+
+
+for cc in country_codes.keys():
+    # Calculate FPV means from csv file
+    df = pd.DataFrame()
+    for col in df_lines.columns:
+        col_read = 'CF_S' + col[1:] 
+        df[col] = df_read.iloc[np.where(df_read['Country'] == country_codes[cc])][col_read]
+    df_lines.loc['Solar FPV'] = df.mean()
+    
+    # Take cf for other solar techs from temba file
+    df_lines.loc['Solar PV'] = df_temba.loc[np.where(df_temba['TECHNOLOGY']==cc+'SOU1P03X')[0],2015].values
+    df_lines.loc['Solar CSP'] = df_temba.loc[np.where(df_temba['TECHNOLOGY']==cc+'SOC1P00X')[0],2015].values
+    df_lines.loc['Biomass'] = df_temba.loc[np.where(df_temba['TECHNOLOGY']==cc+'BMCHC01N')[0],2015].values
+    df_lines.loc['Coal'] = df_temba.loc[np.where(df_temba['TECHNOLOGY']==cc+'COSCP02N')[0],2015].values
+    df_lines.loc['Gas'] = df_temba.loc[np.where(df_temba['TECHNOLOGY']==cc+'NGCCP01N')[0],2015].values
+    df_lines.loc['Geothermal'] = df_temba.loc[np.where(df_temba['TECHNOLOGY']==cc+'GOCVP02N')[0],2015].values
+    df_lines.loc['Hydro'] = df_lines_hydro.loc[country_codes[cc]]
+    df_lines.loc['Oil'] = df_temba.loc[np.where(df_temba['TECHNOLOGY']==cc+'LFRCP01N')[0],2015].values
+    df_lines.loc['Wind'] = df_temba.loc[np.where(df_temba['TECHNOLOGY']==cc+'WINDP00X')[0],2015].values
+    df_lines.loc['Nuclear'] = df_temba.loc[np.where(df_temba['TECHNOLOGY']==cc+'NULWP04N')[0],2015].values
+    
+    
+    # df_lines.transpose().plot(title=f'Average capacity factors vs season - {country_codes[cc]}')
+
+    
+    lines = []
+    plt.figure(figsize=(10,8))
+
+    for idx, row in df_lines.iterrows():
+        if row.name in ['Geothermal','Coal']:
+            style = 'dashed'
+        else:
+            style = 'solid'
+            
+        line, = plt.plot(row,color=colors_dict_agg[idx], linestyle=style)
+        lines.append(line)
+
+    # plt.legend(lines, df_lines.index, loc='upper left', bbox_to_anchor=(1, 1))
+    plt.legend(lines, df_lines.index, loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=6)
+    plt.title(f'Capacity factors vs timeslices - {country_codes[cc]}')
+    plt.xlabel('Timeslice')
+    plt.ylabel('Capacity factor [-]')
+    plt.tight_layout()
+    path = os.path.join('boxplots_cf', country_codes[cc]+ ' total'+ '.png')
+    plt.savefig(path)
+    
 
 
 

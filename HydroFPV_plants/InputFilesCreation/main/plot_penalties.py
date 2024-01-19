@@ -84,14 +84,14 @@ for country in ['EG', 'ETSDSS']:
     df_emi = pd.read_excel(r'Created Files/TEMBA_ENB_ref.xlsx', sheet_name='EmissionActivityRatio')
     df_emi = df_emi.iloc[np.where(df_emi['EMISSION'].str.contains('CO2'))]
     
-    mean_ratio_oil = df_emi[2015].iloc[
+    mean_ratio_oil = abs(df_emi[2015].iloc[
         np.where(df_emi['TECHNOLOGY'].str.contains('HF') | 
                  df_emi['TECHNOLOGY'].str.contains('LF') |
-                 df_emi['TECHNOLOGY'].str.contains('CR'))].mean()
-    mean_ratio_coal = df_emi[2015].iloc[
-        np.where(df_emi['TECHNOLOGY'].str.contains('CO'))].mean()
-    mean_ratio_gas = df_emi[2015].iloc[
-        np.where(df_emi['TECHNOLOGY'].str.contains('NG'))].mean()
+                 df_emi['TECHNOLOGY'].str.contains('CR'))]).mean()
+    mean_ratio_coal = abs(df_emi[2015].iloc[
+        np.where(df_emi['TECHNOLOGY'].str.contains('CO'))]).mean()
+    mean_ratio_gas = abs(df_emi[2015].iloc[
+        np.where(df_emi['TECHNOLOGY'].str.contains('NG'))]).mean()
                  
     # Slow tax 
     value_init = 25
@@ -151,6 +151,6 @@ for country in ['EG', 'ETSDSS']:
     plt.xlabel('Year')
     plt.ylabel('Tax price [M$/PJ]')
     # plt.title('Externality taxes evolution (Aggressive case)')
-    plt.ylim((-0.5,18))
+    plt.ylim((-0.5,25))
     # plt.legend()
     plt.savefig(f'penalties_plots/PenaltiesAgg_{country}.png', bbox_inches='tight')

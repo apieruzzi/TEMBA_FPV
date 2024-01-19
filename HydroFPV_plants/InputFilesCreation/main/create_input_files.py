@@ -32,8 +32,8 @@ sheet_names_to_comb = ['TECHNOLOGY', 'AvailabilityFactor', 'CapacityFactor',
 first_year = 2015
 years = np.arange(first_year,2071)
 
-scenarios = ['ref',
-                   'RCP26_dry']
+scenarios = ['Carb_Low', 'Land_Low']
+                   # 'RCP26_dry']
 # 'RCP26_wet', 
 #                    'RCP60_dry', 'RCP60_wet', 
 #                    'EXT_High', 'EXT_Low']
@@ -162,8 +162,9 @@ for s,scenario in enumerate(scenarios):
                     data = [maxc_large, maxc_med, maxc_small]
                     df_comb.iloc[:,1:] = df_comb.apply(lambda row: insert_row(row, data), axis = 1)
                     if NoConstSwitch == 'Yes':
-                        data = df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:].values
-                        df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:] = data*10
+                        # data = df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:].values
+                        # df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('FPV'))[0], 2015:] = data*10
+                        df_comb.iloc[:,1:] = 99999
                     if pot_switch == 'Yes':
                         df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('EGSOU1P03X'))[0], 2015:] = np.ones(56) * 99999
                         df_comb.loc[np.where(df_comb['TECHNOLOGY'].str.contains('EGSOV1F01X'))[0], 2015:] = np.ones(56) * 99999

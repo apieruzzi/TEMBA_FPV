@@ -20,6 +20,9 @@ plt.rcParams.update({'font.size': 16})
 # Scenarios
 listf = os.listdir('input_data')
 listf = [file for file in listf if file.endswith('.xlsx') and not file.startswith('~')]
+listf = [file for file in listf if 'ref.' not in file]
+listf = listf[-2:] + listf
+listf = listf[:-2]
 countries = ['ENB', 'EG', 'ET', 'SD', 'SS']
 scenarios = [file[10:-5] for file in listf]
 # Years
@@ -69,19 +72,19 @@ for country in countries:
         plt.legend()
         # plt.title(country)
         
-        plt.plot(df_land.index,df_land.iloc[:,-1],label=scenarios[i])
-        plt.xlabel('year')
-        plt.ylabel('Land use (ha)')
-        plt.legend()
+        # plt.plot(df_land.index,df_land.iloc[:,-1],label=scenarios[i])
+        # plt.xlabel('year')
+        # plt.ylabel('Land use (ha)')
+        # plt.legend()
         
         # Calculate tot and save to excel
-        df_save_co2.loc[scenarios[i],'TotEmissions'] = df_co2.sum().iloc[0]
-        df_save_land.loc[scenarios[i],'TotLandUse'] = df_land.iloc[:,-1].sum()
+    #     df_save_co2.loc[scenarios[i],'TotEmissions'] = df_co2.sum().iloc[0]
+    #     df_save_land.loc[scenarios[i],'TotLandUse'] = df_land.iloc[:,-1].sum()
         
-    df_save_co2.to_excel(writer,
-                          sheet_name=f'{country}-CO2')
-    df_save_land.to_excel(writer,
-                          sheet_name=f'{country}-land')
+    # df_save_co2.to_excel(writer,
+    #                       sheet_name=f'{country}-CO2')
+    # df_save_land.to_excel(writer,
+    #                       sheet_name=f'{country}-land')
     
 writer.close()    
         
