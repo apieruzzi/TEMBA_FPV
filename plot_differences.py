@@ -152,56 +152,56 @@ def get_ylims(loc,var, scenario):
     if loc == 'ENB':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -40, 40
+                min_y, max_y = -25, 25
             else:
-                min_y, max_y = -12, 12
+                min_y, max_y = -4, 4
         else:
             if 'EXT' in scenario:
-                min_y, max_y = -40, 40
+                min_y, max_y = -25, 25
             else:
-                min_y, max_y = -12, 12
+                min_y, max_y = -4, 4
     elif loc == 'EG':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -25, 25
             else:
                 min_y, max_y = -25, 25
         else:
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -25, 25
             else:
                 min_y, max_y = -25, 25
     elif loc == 'ET':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -25, 25
             else:
                 min_y, max_y = -25, 25
         else:
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -25, 25
             else:
                 min_y, max_y = -25, 25
     elif loc == 'SD':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -25, 25
             else:
                 min_y, max_y = -25, 25
         else:
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -25, 25
             else:
                 min_y, max_y = -25, 25
     elif loc == 'SS':
         if var == 'Power Generation (Aggregate)':
-           if 'EXT' in scenario:
-               min_y, max_y = -45, 45
-           else:
-               min_y, max_y = -25, 25
+            if 'EXT' in scenario:
+                min_y, max_y = -25, 25
+            else:
+                min_y, max_y = -25, 25
         else:
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -25, 25
             else:
                 min_y, max_y = -25, 25
     return [min_y,max_y]

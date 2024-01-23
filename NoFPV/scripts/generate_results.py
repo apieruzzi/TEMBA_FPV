@@ -182,7 +182,7 @@ with tempfile.TemporaryDirectory() as temp:
                 barmode=barmode,
                 xaxis_title='Year',
                 yaxis_title=y_title,
-                #title=p_title + " - " + scenario,
+                title=p_title + " - " + scenario,
                 font=dict(size=18, color='black'),
                 xaxis=dict(range=[first_year, last_year]),
                 # legend=dict(orientation="h", x=0, xanchor='left', y=-0.2)

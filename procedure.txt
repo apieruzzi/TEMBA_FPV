@@ -1,19 +1,35 @@
-run ubuntu as admin
+Apps and packages that need to be installed:
+- WSL 2 (Windows Subsystem for Linux)
+- ubuntu app for windows (UBUNTU 20.04.6 LTS) 
+- gurobi 
+- snakemake 
+- python 3.10.11 with mamba
 
-When re running make sure to remove all output_data and CSVfiles 
+Installing WLS and ubuntu: https://www.minitool.com/partition-disk/install-ubuntu-on-windows-11.html
+Installing snakemake: https://snakemake.readthedocs.io/en/stable/getting_started/installation.html
+Gurobi: https://support.gurobi.com/hc/en-us/articles/13232844297489-How-do-I-set-up-a-Web-License-Service-WLS-license-
 
-Run:
+Workflow:
+- Run the ubuntu app as admin
+- Run in the command line:
+
 mamba activate snakemake
-cd /mnt/c/Users/Alessandro\ Pieruzzi/Documenti/Thesis/Run_FPV_ext_1810
+cd /mnt/c/Users/... (put the current working directory with all the files) 
 snakemake -j 2
+At some point the code will crash (it can't do the plotting in parallel). At this point run snakemake -j 1 to finish the process
 
-After it finished, run in python:
+If the code crashes giving a "Killed" error, try to run snakemake -j 1. This will use one core only, it is slower but may solve the issue.
+Depending on the PC hardware, it might be wise to run only a few scenarios at the same time. 
+
+After it successfully finished, run in python:
 - CreateScatterPlot -> sorts the results metrics by scenario and creates ValuesRanked.xlsx
 - calc_ratios -> calculates the potential usage of FPVs and the locations with largest usage and largest capacity
+- calc differences -> creates the differential charts
 The output files of this scripts will be saved in the ScenarioComparison folder
 
+Script order:
 
-Script order
+Within snakemake workflow:
 - excel_to_osemosys
 - CBC_results_AS_MODEX
 - run osemosys
@@ -22,5 +38,7 @@ Script order
 - ResultsCalc
 - rename_files
 - create_excels
+Outside snakemake worflow:
 - CreateScatterPlot
 - calc_ratios 
+- calc differences

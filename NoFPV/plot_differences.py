@@ -26,7 +26,7 @@ cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
 
 # Lists and files
 locs = ['ENB', 'EG', 'ET', 'SD', 'SS']
-variables = {'Power Generation (Aggregate)':'PJ', 'Water Consumption':'MCM'}
+variables = {'Power Generation (Aggregate)':'PJ', 'Power Generation Capacity (Aggregate)':'GW', 'Power Generation (Detail Hydro)':'PJ'}
 data_dir = 'input_data'
 inputfiles = os.listdir(data_dir)
 scenario_list = [file[:-5] for file in inputfiles if file.endswith('xlsx') and not file.startswith('~') and 'NoFPV' in file]
@@ -147,46 +147,58 @@ def get_ylims(loc,var, scenario):
     if loc == 'ENB':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -40, 40
+                min_y, max_y = -20, 20
             else:
-                min_y, max_y = -8, 8
+                min_y, max_y = -20, 20
         else:
-            min_y, max_y = -5000, 5000
+            if 'EXT' in scenario:
+                min_y, max_y = -20, 20
+            else:
+                min_y, max_y = -20, 20
     elif loc == 'EG':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -20, 20
             else:
-                min_y, max_y = -8, 8
+                min_y, max_y = -20, 20
         else:
             if 'EXT' in scenario:
-                min_y, max_y = -90, 90
+                min_y, max_y = -20, 20
             else:
-                min_y, max_y = -200, 1800
+                min_y, max_y = -20, 20
     elif loc == 'ET':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -20, 20
             else:
-                min_y, max_y = -8, 8
+                min_y, max_y = -20, 20
         else:
-            min_y, max_y = -500, 2000
+            if 'EXT' in scenario:
+                min_y, max_y = -20, 20
+            else:
+                min_y, max_y = -20, 20
     elif loc == 'SD':
         if var == 'Power Generation (Aggregate)':
             if 'EXT' in scenario:
-                min_y, max_y = -45, 45
+                min_y, max_y = -20, 20
             else:
-                min_y, max_y = -8, 8
+                min_y, max_y = -20, 20
         else:
-            min_y, max_y = -3000, 3000
+            if 'EXT' in scenario:
+                min_y, max_y = -20, 20
+            else:
+                min_y, max_y = -20, 20
     elif loc == 'SS':
         if var == 'Power Generation (Aggregate)':
-           if 'EXT' in scenario:
-               min_y, max_y = -45, 45
-           else:
-               min_y, max_y = -8, 8
+            if 'EXT' in scenario:
+                min_y, max_y = -20, 20
+            else:
+                min_y, max_y = -20, 20
         else:
-            min_y, max_y = -600, 300
+            if 'EXT' in scenario:
+                min_y, max_y = -20, 20
+            else:
+                min_y, max_y = -20, 20
     return [min_y,max_y]
 
 def plot_differences(df, scenario, loc,var, color_dict = color_dict, barmode = 'relative'):
@@ -247,6 +259,9 @@ for sc in scenario_dict.keys():
         for var in variables.keys():
             df_diff = calculate_differences(scenario_dict[sc], sc, loc, var)
             plot_differences(df_diff, sc, loc,var)
+            
+            if var == 'Power Generation (Detail Hydro)':
+                plot_differences(df_diff, sc, loc,var, color_dict=color_dict_hydro)
 
 
 
