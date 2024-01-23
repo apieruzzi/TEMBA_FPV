@@ -11,6 +11,9 @@ import matplotlib.pyplot as plt
 import os
 plt.rcParams.update({'font.size': 16})
 
+# Script to compare the results of the reference scenario in 2020 with actual
+#  data from IEA
+
 #Import all filenames
 
 PG_mod_EG_filename = r'results\export_TEMBA_ENB_ref\barcharts\EG\EG - Power Generation (Aggregate)-TEMBA_ENB_ref.csv'

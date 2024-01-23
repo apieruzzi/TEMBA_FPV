@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import os
 import openpyxl
 
+# Script that sorts the results metrics by scenario and creates ValuesRanked.xlsx
+
 locs = ['ENB', 'EG', 'ET', 'SD', 'SS']
 
 for idx in range(len(locs)-1):
@@ -32,14 +34,7 @@ for idx in range(len(locs)-1):
     
     inputfiles = os.listdir('input_data')
     scenario_list = [file[:-5] for file in inputfiles if file.endswith('xlsx') and not file.startswith('~')]
-    # scenario_list = ['TEMBA_ENB_Carb_High', 'TEMBA_ENB_Carb_Low', 'TEMBA_ENB_EXT_High', 
-    #                  'TEMBA_ENB_Ext_Low', 'TEMBA_ENB_Land_High', 'TEMBA_ENB_Land_Low', "TEMBA_ENB_ref"]
-    # ["TEMBA_ENB_EXT_High", "TEMBA_ENB_EXT_Low", "TEMBA_ENB_RCP26_dry",
-    #                  "TEMBA_ENB_RCP26_wet", "TEMBA_ENB_RCP60_dry", "TEMBA_ENB_RCP60_wet", 
-    #                  "TEMBA_ENB_ref", "TEMBA_ENB_EXT_HighNoFPV", "TEMBA_ENB_EXT_LowNoFPV", 
-    #                  "TEMBA_ENB_RCP26_dryNoFPV", "TEMBA_ENB_RCP26_wetNoFPV", "TEMBA_ENB_RCP60_dryNoFPV", 
-    #                  "TEMBA_ENB_RCP60_wetNoFPV", "TEMBA_ENB_refNoFPV"]
-    
+
     nrows = [6,6,6,6,6,2,2,2,2,2]
     col_names = ['Total generation FPV','Max generation share FPV',
                  'FPV onset year','Hydropower expansion','Hydropower total generation',

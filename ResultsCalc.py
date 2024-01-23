@@ -16,9 +16,7 @@ import tempfile
 import shutil
 
 # Goal: obtain quantification of results and create pie charts
-# - How many reservoirs are built out of the planned list (after 2023)? Total number and number per country
-# - Calculate the percentages and amounts of capacity and generation per aggregate technology 
-# - Save all these info in an excel (mixes percentages excels)
+
 
 plt.rcParams.update({'font.size': 16})
 plt.rcParams['legend.handlelength'] = 1
@@ -147,8 +145,6 @@ input_file_dummy = sys.argv[1]
 scenario = sys.argv[-2]
 destination_folder = sys.argv[-1]
 
-# scenario = 'TEMBA_ENB_ref'
-# destination_folder = f'results/export_{scenario}/piecharts'
 
 with tempfile.TemporaryDirectory() as temp:
 

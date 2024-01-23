@@ -11,6 +11,9 @@ from distutils.dir_util import copy_tree
 import tempfile
 import shutil
 
+# Script to move the result files from the different scenarios and rename them in order
+#  to compare them 
+
 input_file_dummy = sys.argv[1]
 scenario = sys.argv[-2]
 

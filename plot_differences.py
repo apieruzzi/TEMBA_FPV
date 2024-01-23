@@ -18,9 +18,6 @@ cufflinks.set_config_file(world_readable=True, theme='white', offline=True)
 # plt.rcParams.update({'font.size': 16})
 
 # Script to create plots of differences of a scenario with the reference
-# Variables to plot:
-    # - Power generation
-    # - Water consumption
 # Difference of each scenario with with the reference (FPV)
 # Difference of REF_FPV and REF
 # Differences for ENB and each country
@@ -254,13 +251,6 @@ def plot_differences(df, scenario, loc,var, color_dict = color_dict, barmode = '
         df.to_csv(os.path.join(dest_dir, loc+' - '+var+' - '+sc+".csv"))
         return None
 
-
-# Debugging
-loc='EG'
-sc = scenario_list[0]
-var = 'Power Generation (Aggregate)'
-variable = var
-scenario=sc
 
 for sc in scenario_list:
     for loc in locs:

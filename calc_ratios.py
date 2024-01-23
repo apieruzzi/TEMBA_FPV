@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 plt.rcParams.update({'font.size': 16})
 
+ # Script that calculates the potential usage of FPVs and the locations with largest usage and largest capacity
+
 # Scenarios
 listf = os.listdir('input_data')
 listf = [file for file in listf if file.endswith('.xlsx') and not file.startswith('~')]
